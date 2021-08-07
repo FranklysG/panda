@@ -18,6 +18,7 @@ class ViewInventory extends TRecord
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('system_user_id');
         parent::addAttribute('product_id');
+        parent::addAttribute('product_sku');
         parent::addAttribute('product_name');
         parent::addAttribute('amount');
         parent::addAttribute('price');
