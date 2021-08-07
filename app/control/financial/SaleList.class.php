@@ -28,9 +28,11 @@ class SaleList extends TPage
 
         // create the form fields
         $id = new THidden('id');
-        $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'name');
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+        $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'product_id', 'product_name', null, $criteria);
         $product_id->setMinLength(1);
-        $product_id->setMask('(SKU: {sku}) {name} ');
+        $product_id->setMask('{product_name} : R$ {final_price} ');
         $discount = new TEntry('discount');
         $created_at = new TDate('created_at');
         $updated_at = new TDate('updated_at');
@@ -54,8 +56,7 @@ class SaleList extends TPage
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
         $this->datagrid->style = 'width: 100%';
         $this->datagrid->datatable = 'true';
-        // $this->datagrid->enablePopover('Popover', 'Hi <b> {name} </b>');
-        
+        $this->datagrid->enablePopover('Produto', "<img style='max-height: 300px' src='tmp/".TSession::getvalue('userid')."/{image}'>");       
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'id', 'left');

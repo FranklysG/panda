@@ -33,6 +33,9 @@ class ProductForm extends TPage
         $alias = new TEntry('alias');
         $alias->forceUpperCase();
         $alias->addValidation('Apelido do produto', new TRequiredValidator);
+        $image = new TFile('image');
+        $image->setAllowedExtensions( ['png', 'jpg', 'jpeg'] );
+        $image->addValidation('Imagem do produto', new TRequiredValidator);
         $status = new TCombo('status');
         $status->addItems(
             [
@@ -46,16 +49,22 @@ class ProductForm extends TPage
         $created_at = new TEntry('created_at');
         $updated_at = new TEntry('updated_at');
 
+        $this->frame = new TElement('div');
+        $this->frame->id = 'image_frame';
+        $this->frame->style = 'width:100px;height:auto;;border:1px solid gray;padding:4px;';
+
 
         // add the fields
         $this->form->addFields( [ $id ] );
         $row = $this->form->addFields( 
                                 [ new TLabel('Sku'), $sku ],
-                                [ new TLabel('Name'), $name ],
-                                [ new TLabel('Alias'), $alias ],
-                                [ new TLabel('Status'), $status ]);
+                                [ new TLabel('<br />Name'), $name ],
+                                [ new TLabel('<br />Alias'), $alias ],
+                                [ new TLabel('<br />Escudo'), $image ],
+                                [ new TLabel('<br />'), $this->frame ],
+                                [ new TLabel('<br />Status'), $status ]);
 
-        $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
+        $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
         
         if (!empty($id))
         {
@@ -103,6 +112,10 @@ class ProductForm extends TPage
             $object->system_user_id = TSession::getValue('userid');
             $object->store(); // save the object
             
+            // paste img another folder
+            if(!empty($data->image))
+                AppUtil::paste_another_folder($data->image, TSession::getValue('userid'));
+
             // get the generated id
             $data->id = $object->id;
             
@@ -138,9 +151,15 @@ class ProductForm extends TPage
         {
             if (isset($param['key']))
             {
+                $userid = TSession::getValue('userid');
                 $key = $param['key'];  // get the parameter $key
                 TTransaction::open('app'); // open a transaction
                 $object = new Product($key); // instantiates the Active Record
+                if (isset($object->image)) {
+                    $image = new TImage("tmp/{$userid}/{$object->image}");
+                    $image->style = 'width: 100%';
+                    $this->frame->add($image);
+                }
                 $this->form->setData($object); // fill the form
                 TTransaction::close(); // close the transaction
             }
@@ -154,5 +173,14 @@ class ProductForm extends TPage
             new TMessage('error', $e->getMessage()); // shows the exception error message
             TTransaction::rollback(); // undo all pending operations
         }
+    }
+
+    public static function onComplete($param)
+    {
+        $userid = TSession::getValue('userid');
+        // refresh photo_frame
+        $path = PATH."/tmp/{$userid}/{$param['image']}";
+        TScript::create("$('#image_frame').html('')");
+        TScript::create("$('#image_frame').append(\"<img style='width:100%' src='$path'>\");");
     }
 }

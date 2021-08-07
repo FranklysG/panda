@@ -35,7 +35,7 @@ class SystemRegistrationForm extends TPage
         
         $this->form->addAction( _t('Save'),  new TAction([$this, 'onSave']), 'far:save')->{'class'} = 'btn btn-sm btn-primary';
         $this->form->addAction( _t('Clear'), new TAction([$this, 'onClear']), 'fa:eraser red' );
-        //$this->form->addActionLink( _t('Back'),  new TAction(['LoginForm','onReload']), 'far:arrow-alt-circle-left blue' );
+        $this->form->addActionLink( _t('Back'),  new TAction(['LoginForm','onLoad']), 'far:arrow-alt-circle-left blue' );
         
         $login->addValidation( _t('Login'), new TRequiredValidator);
         $name->addValidation( _t('Name'), new TRequiredValidator);

@@ -24,6 +24,7 @@ class Product extends TRecord
         parent::addAttribute('sku');
         parent::addAttribute('name');
         parent::addAttribute('alias');
+        parent::addAttribute('image');
         parent::addAttribute('status');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');
@@ -157,7 +158,7 @@ class Product extends TRecord
         $criteria = new TCriteria;
         $criteria->add(new TFilter('product_id', '=', $this->id));
         $repository = new TRepository('Sale');
-        $repository->delete($criteria);
+        $repository->load($criteria);
         // store the related Sale objects
         if ($this->sales)
         {

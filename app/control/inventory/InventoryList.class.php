@@ -28,9 +28,11 @@ class InventoryList extends TPage
 
         // create the form fields
         $id = new THidden('id');
-        $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'name');
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+        $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'product_id', 'product_name', null, $criteria);
         $product_id->setMinLength(1);
-        $product_id->setMask('(SKU: {sku}) {name} ');
+        $product_id->setMask('{product_name}');
         $amount = new TEntry('amount');
         $price = new TEntry('price');
         $final_price = new TEntry('final_price');

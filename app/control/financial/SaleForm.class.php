@@ -24,14 +24,17 @@ class SaleForm extends TPage
 
         // create the form fields
         $id = new THidden('id');
-        $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'product_id', 'product_name');
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+        $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'product_id', 'product_name', null, $criteria);
         $product_id->setMinLength(1);
-        $product_id->setMask('{product_name} : R$ {final_price} ');
+        $product_id->setMask('{product_name}');
         $product_id->addValidation('Nome do produto', new TRequiredValidator);
         $price = new TEntry('price');
         $price->setNumericMask(2, '.', ',', true);
         $price->addValidation('Preço do produto', new TRequiredValidator);
         $quantity = new TEntry('quantity');
+        $quantity->setvalue(1);
         $discount = new TEntry('discount');
         $discount->setNumericMask(2, '.', ',', true);
         $created_at = new TEntry('created_at');
@@ -41,13 +44,18 @@ class SaleForm extends TPage
         $change_action = new TAction(array($this, 'onChangeAction'));
         $product_id->setChangeAction($change_action);
 
+        $this->frame = new TElement('div');
+        $this->frame->id = 'image_frame';
+        $this->frame->style = 'width:100%;height:auto;;border:1px solid gray;padding:4px;';
+
         // add the fields
         $this->form->addFields( [ $id ] );
         $row = $this->form->addFields(
                                 [ new TLabel('<br />Buscar produto'), $product_id ],
-                                [ new TLabel('<br />Preço produto'), $quantity],
+                                [ new TLabel('<br />'), $this->frame ],
                                 [ new TLabel('<br />Preço produto'), $price ],
-                                [ new TLabel('<br />Disconto na venda'), $discount ]
+                                [ new TLabel('<br />Quantidade'), $quantity],
+                                [ new TLabel('<br />Desconto na venda'), $discount ]
                             );
         $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
 
@@ -83,6 +91,12 @@ class SaleForm extends TPage
             $object = ViewInventory::where('product_id', '=', $product_id)->first();
             $obj = new stdClass;
             $obj->price = $object->final_price;
+            if (isset($object->product_image)) {
+                $userid = TSession::getValue('userid');
+                $path = "tmp/{$userid}/{$object->product_image}";
+                TScript::create("$('#image_frame').html('')");
+                TScript::create("$('#image_frame').append(\"<img style='max-height: 300px' src='$path'>\");");
+            }
             TForm::sendData('form_Inventory', $obj);
             TTransaction::close();
         }catch (Exception $e) // in case of exception

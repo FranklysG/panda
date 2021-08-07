@@ -30,6 +30,11 @@ class ProductList extends TPage
         // create the form fields
         $id = new THidden('id');
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+        $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'name', null, $criteria);
+        $product_id->setMinLength(1);
+        $product_id->setMask('(SKU: {sku}) {name} ');
         $sku = new TEntry('sku');
         $name = new TEntry('name');
         $alias = new TEntry('alias');
@@ -41,7 +46,7 @@ class ProductList extends TPage
         // add the fields
         $this->form->addFields( [ $id ] );
         $this->form->addFields( [ new TLabel('Sku'), $sku ],
-                                [ new TLabel('Nome'), $name ],
+                                [ new TLabel('Nome'), $product_id ],
                                 [ new TLabel('Status'), $status ],
                                 [ new TLabel('Criado em'), $created_at ],
                                 [ new TLabel('até'), $updated_at ]);
@@ -59,8 +64,7 @@ class ProductList extends TPage
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
         $this->datagrid->style = 'width: 100%';
         $this->datagrid->datatable = 'true';
-        // $this->datagrid->enablePopover('Popover', 'Hi <b> {name} </b>');
-        
+        $this->datagrid->enablePopover('Produto', "<img style='max-height: 300px' src='tmp/".TSession::getvalue('userid')."/{image}'>");
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'Id', 'right');

@@ -20,6 +20,7 @@ class ViewInventory extends TRecord
         parent::addAttribute('product_id');
         parent::addAttribute('product_sku');
         parent::addAttribute('product_name');
+        parent::addAttribute('product_image');
         parent::addAttribute('amount');
         parent::addAttribute('price');
         parent::addAttribute('final_price');

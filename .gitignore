@@ -2,3 +2,4 @@ task.md
 app/config
 lib/ 
 vendor/
+tmp/
