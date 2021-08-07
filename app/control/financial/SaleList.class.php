@@ -22,36 +22,26 @@ class SaleList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Sale');
-        $this->form->setFormTitle('Sale');
-        
+        $this->form->setFormTitle('LISTAGEM DE VENDAS');
+        $this->form->setFieldSizes('100%');
+        $this->form->setProperty('style', 'margin-bottom:0;box-shadow:none');
 
         // create the form fields
-        $id = new TEntry('id');
-        $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
-        $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'system_user_id');
+        $id = new THidden('id');
+        $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'name');
+        $product_id->setMinLength(1);
+        $product_id->setMask('(SKU: {sku}) {name} ');
         $discount = new TEntry('discount');
-        $created_at = new TEntry('created_at');
-        $updated_at = new TEntry('updated_at');
-
+        $created_at = new TDate('created_at');
+        $updated_at = new TDate('updated_at');
 
         // add the fields
-        $this->form->addFields( [ new TLabel('Id') ], [ $id ] );
-        $this->form->addFields( [ new TLabel('System User Id') ], [ $system_user_id ] );
-        $this->form->addFields( [ new TLabel('Product Id') ], [ $product_id ] );
-        $this->form->addFields( [ new TLabel('Discount') ], [ $discount ] );
-        $this->form->addFields( [ new TLabel('Created At') ], [ $created_at ] );
-        $this->form->addFields( [ new TLabel('Updated At') ], [ $updated_at ] );
+        $this->form->addFields( [ $id ] );
+        $row = $this->form->addFields( [ new TLabel('Buscar produto'), $product_id ],
+                                [ new TLabel('Criado em'), $created_at ],
+                                [ new TLabel('até'), $updated_at ] );
+        $row->layout = ['col-sm-4','col-sm-4','col-sm-4'];
 
-
-        // set sizes
-        $id->setSize('100%');
-        $system_user_id->setSize('100%');
-        $product_id->setSize('100%');
-        $discount->setSize('100%');
-        $created_at->setSize('100%');
-        $updated_at->setSize('100%');
-
-        
         // keep the form filled during navigation with session data
         $this->form->setData( TSession::getValue(__CLASS__ . '_filter_data') );
         
@@ -68,20 +58,39 @@ class SaleList extends TPage
         
 
         // creates the datagrid columns
-        $column_id = new TDataGridColumn('id', 'Id', 'right');
-        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'right');
-        $column_product_id = new TDataGridColumn('product_id', 'Product Id', 'right');
-        $column_discount = new TDataGridColumn('discount', 'Discount', 'right');
+        $column_id = new TDataGridColumn('id', 'id', 'left');
+        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'left');
+        $column_product_sku = new TDataGridColumn('product->sku', 'SKU', 'left');
+        $column_product_id = new TDataGridColumn('product->name', 'PRODUTO', 'left');
+        $column_quantity = new TDataGridColumn('quantity', 'QUANTIDADE', 'left');
+        $column_price = new TDataGridColumn('price', 'PREÇO', 'left');
+        $column_discount = new TDataGridColumn('discount', 'DESCONTO', 'left');
+        $column_total = new TDataGridColumn('= {quantity} * ({price} - {discount})', 'TOTAL', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
-        $column_updated_at = new TDataGridColumn('updated_at', 'Updated At', 'left');
+        $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA MODIFICAÇÃO', 'right');
 
+        $column_price->setTransformer(function($value){
+            return Convert::toMonetario($value);
+        });
+
+        $column_discount->setTransformer(function($value){
+            return Convert::toMonetario($value);
+        });
+        
+        $column_updated_at->setTransformer(function($value){
+            return Convert::toDate($value, 'd / m / Y');
+        });
 
         // add the columns to the DataGrid
-        $this->datagrid->addColumn($column_id);
-        $this->datagrid->addColumn($column_system_user_id);
+        // $this->datagrid->addColumn($column_id);
+        // $this->datagrid->addColumn($column_system_user_id);
+        $this->datagrid->addColumn($column_product_sku);
         $this->datagrid->addColumn($column_product_id);
+        $this->datagrid->addColumn($column_quantity);
+        $this->datagrid->addColumn($column_price);
         $this->datagrid->addColumn($column_discount);
-        $this->datagrid->addColumn($column_created_at);
+        $this->datagrid->addColumn($column_total);
+        // $this->datagrid->addColumn($column_created_at);
         $this->datagrid->addColumn($column_updated_at);
 
 
@@ -180,18 +189,10 @@ class SaleList extends TPage
             TSession::setValue(__CLASS__.'_filter_discount',   $filter); // stores the filter in the session
         }
 
-
-        if (isset($data->created_at) AND ($data->created_at)) {
-            $filter = new TFilter('created_at', 'like', "%{$data->created_at}%"); // create the filter
+        if ((isset($data->created_at) AND ($data->created_at)) AND (isset($data->updated_at) AND ($data->updated_at))) {
+            $filter = new TFilter('created_at', 'between', "{$data->created_at}", "{$data->updated_at}"); // create the filter
             TSession::setValue(__CLASS__.'_filter_created_at',   $filter); // stores the filter in the session
         }
-
-
-        if (isset($data->updated_at) AND ($data->updated_at)) {
-            $filter = new TFilter('updated_at', 'like', "%{$data->updated_at}%"); // create the filter
-            TSession::setValue(__CLASS__.'_filter_updated_at',   $filter); // stores the filter in the session
-        }
-
         
         // fill the form with data again
         $this->form->setData($data);
@@ -255,11 +256,8 @@ class SaleList extends TPage
                 $criteria->add(TSession::getValue(__CLASS__.'_filter_created_at')); // add the session filter
             }
 
-
-            if (TSession::getValue(__CLASS__.'_filter_updated_at')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_updated_at')); // add the session filter
-            }
-
+            // citerios especificos
+            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid'))); 
             
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);

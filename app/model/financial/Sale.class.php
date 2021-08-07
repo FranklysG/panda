@@ -21,7 +21,9 @@ class Sale extends TRecord
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('system_user_id');
         parent::addAttribute('product_id');
+        parent::addAttribute('price');
         parent::addAttribute('discount');
+        parent::addAttribute('quantity');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');
     }

@@ -29,11 +29,15 @@ class InventoryForm extends TPage
         $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'name');
         $product_id->setMinLength(1);
         $product_id->setMask('(SKU: {sku}) {name} ');
+        $product_id->addValidation('Nome do produto', new TRequiredValidator);
         $amount = new TEntry('amount');
+        $amount->addValidation('Quantidade disponivel', new TRequiredValidator);
         $price = new TEntry('price');
         $price->setNumericMask(2, ',', '.', true);
+        $price->addValidation('Preço do produto', new TRequiredValidator);
         $final_price = new TEntry('final_price');
         $final_price->setNumericMask(2, ',', '.', true);
+        $final_price->addValidation('Preço final', new TRequiredValidator);
         $created_at = new TEntry('created_at');
         $updated_at = new TEntry('updated_at');
 
