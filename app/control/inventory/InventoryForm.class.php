@@ -28,9 +28,8 @@ class InventoryForm extends TPage
         $id = new THidden('id');
         $criteria = new TCriteria;
         $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
-        $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'product_id', 'product_name', null, $criteria);
+        $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'name', null, $criteria);
         $product_id->setMinLength(1);
-        $product_id->setMask('{product_name}');
         $product_id->addValidation('Nome do produto', new TRequiredValidator);
         $amount = new TEntry('amount');
         $amount->addValidation('Quantidade disponivel', new TRequiredValidator);

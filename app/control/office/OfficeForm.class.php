@@ -1,9 +1,9 @@
 <?php
 /**
- * ProductForm Form
+ * OfficeForm Form
  * @author  <your name here>
  */
-class ProductForm extends TPage
+class OfficeForm extends TPage
 {
     protected $form; // form
     
@@ -16,9 +16,10 @@ class ProductForm extends TPage
         parent::__construct();
         parent::setTargetContainer('adianti_right_panel');
         
+        
         // creates the form
-        $this->form = new BootstrapFormBuilder('form_Product');
-        $this->form->setFormTitle('CADASTRO DE PRODUTO');
+        $this->form = new BootstrapFormBuilder('form_Office');
+        $this->form->setFormTitle('CADASTRO DE SERVIÇO');
         $this->form->setFieldSizes('100%');
         $this->form->setProperty('style', 'margin-bottom:0;box-shadow:none');
         
@@ -26,52 +27,29 @@ class ProductForm extends TPage
         // create the form fields
         $id = new THidden('id');
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
-        $sku = new TEntry('sku');
-        $name = new TEntry('name');
-        $name->forceUpperCase();
-        $name->addValidation('Nome do produto', new TRequiredValidator);
-        $alias = new TEntry('alias');
-        $alias->forceUpperCase();
-        $alias->addValidation('Apelido do produto', new TRequiredValidator);
-        $image = new TFile('image', TSession::getValue('userid'));
-        $image->setAllowedExtensions( ['png', 'jpg', 'jpeg'] );
-        $image->addValidation('Imagem do produto', new TRequiredValidator);
-        $status = new TCombo('status');
-        $status->addItems(
-            [
-                '1' => 'ATIVO',
-                '0' => 'INATIVO'
-            ]
-        );
-        $status->setDefaultOption(false);
-
-        $status->addValidation('Status', new TRequiredValidator);
+        $office_type_id = new TDBUniqueSearch('office_type_id', 'app', 'OfficeType', 'id', 'name');
+        $office_type_id->setMinLength(1);
+        $description = new TEntry('description');
+        $description->forceUpperCase();
+        $description->addValidation('Descrição', new TRequiredValidator);
+        $price = new TEntry('price');
+        $price->setNumericMask(2, '.', ',', true);
+        $price->addValidation('Preço', new TRequiredValidator);
         $created_at = new TEntry('created_at');
         $updated_at = new TEntry('updated_at');
-
-        $this->frame = new TElement('div');
-        $this->frame->id = 'image_frame';
-        $this->frame->style = 'width:100px;height:auto;;border:1px solid gray;padding:4px;';
 
 
         // add the fields
         $this->form->addFields( [ $id ] );
-        $row = $this->form->addFields( 
-                                [ new TLabel('Sku'), $sku ],
-                                [ new TLabel('<br />Name'), $name ],
-                                [ new TLabel('<br />Alias'), $alias ],
-                                [ new TLabel('<br />Escudo'), $image ],
-                                [ new TLabel('<br />'), $this->frame ],
-                                [ new TLabel('<br />Status'), $status ]);
+        $this->form->addFields( [ new TLabel('TIPO DE SERVIÇO'), $office_type_id ] );
+        $this->form->addFields( [ new TLabel('<br />Descrição'), $description ] );
+        $this->form->addFields( [ new TLabel('<br />Preço'), $price ] );
 
-        $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
-        
         if (!empty($id))
         {
             $id->setEditable(FALSE);
-            $sku->setEditable(FALSE);
         }
-
+        
         // create the form actions
         $btn = $this->form->addAction(_t('Save'), new TAction([$this, 'onSave']), 'fa:save');
         $btn->class = 'btn btn-sm btn-primary';
@@ -87,10 +65,12 @@ class ProductForm extends TPage
         parent::add($container);
     }
 
+
     public static function onClose($param)
     {
         TScript::create("Template.closeRightPanel()");
     }
+
 
     /**
      * Save form data
@@ -101,24 +81,22 @@ class ProductForm extends TPage
         try
         {
             TTransaction::open('app'); // open a transaction
-            
+           
             $this->form->validate(); // validate form data
             $data = $this->form->getData(); // get form data as array
-            $object = new Product;  // create an empty object
+            
+            $object = new Office;  // create an empty object
             $object->fromArray( (array) $data); // load the object with data
-            if(empty($data->sku) and Product::where('sku','!=',$data->sku)->load()){
-                $object->sku = AppUtil::hash(8);
-            }
             $object->system_user_id = TSession::getValue('userid');
             $object->store(); // save the object
-
+            
             // get the generated id
             $data->id = $object->id;
             
             $this->form->setData($data); // fill form data
             TTransaction::close(); // close the transaction
             
-            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['ProductList', 'onReload']));
+            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['OfficeList', 'onReload']));
         }
         catch (Exception $e) // in case of exception
         {
@@ -147,15 +125,9 @@ class ProductForm extends TPage
         {
             if (isset($param['key']))
             {
-                $userid = TSession::getValue('userid');
                 $key = $param['key'];  // get the parameter $key
                 TTransaction::open('app'); // open a transaction
-                $object = new Product($key); // instantiates the Active Record
-                if (isset($object->image)) {
-                    $image = new TImage("tmp/{$userid}/{$object->image}");
-                    $image->style = 'width: 100%';
-                    $this->frame->add($image);
-                }
+                $object = new Office($key); // instantiates the Active Record
                 $this->form->setData($object); // fill the form
                 TTransaction::close(); // close the transaction
             }
@@ -169,14 +141,5 @@ class ProductForm extends TPage
             new TMessage('error', $e->getMessage()); // shows the exception error message
             TTransaction::rollback(); // undo all pending operations
         }
-    }
-
-    public static function onComplete($param)
-    {
-        $userid = TSession::getValue('userid');
-        // refresh photo_frame
-        $path = PATH."/tmp/{$userid}/{$param['image']}";
-        TScript::create("$('#image_frame').html('')");
-        TScript::create("$('#image_frame').append(\"<img style='width:100%' src='$path'>\");");
     }
 }

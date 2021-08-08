@@ -1,10 +1,9 @@
 <?php
-
 /**
- * ProductList Listing
+ * OfficeList Listing
  * @author  <your name here>
  */
-class ProductList extends TPage
+class OfficeList extends TPage
 {
     private $form; // form
     private $datagrid; // listing
@@ -22,89 +21,58 @@ class ProductList extends TPage
         parent::__construct();
         
         // creates the form
-        $this->form = new BootstrapFormBuilder('form_search_Product');
-        $this->form->setFormTitle('LISTAGEM DE PRODUTOS');
+        $this->form = new BootstrapFormBuilder('form_search_Office');
+        $this->form->setFormTitle('LISTAGEM DE SERVIÇOS');
         $this->form->setFieldSizes('100%');
-        
+        $this->form->setProperty('style', 'margin-bottom:0;box-shadow:none');
 
         // create the form fields
         $id = new THidden('id');
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
-        $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
-        $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'name', null, $criteria);
-        $product_id->setMinLength(1);
-        $product_id->setMask('(SKU: {sku}) {name} ');
-        $sku = new TEntry('sku');
-        $name = new TEntry('name');
-        $alias = new TEntry('alias');
-        $status = new TCombo('status');
-        $status->addItems(
-            [
-                '1' => 'ATIVO',
-                '0' => 'INATIVO'
-            ]
-        );
-        $status->setDefaultOption(false);
+        $office_type_id = new TDBUniqueSearch('office_type_id', 'app', 'OfficeType', 'id', 'name');
+        $office_type_id->setMinLength(1);
+        $description = new TEntry('description');
+        $price = new TEntry('price');
+        $price->setNumericMask(2, '.', ',', true);
         $created_at = new TDate('created_at');
         $updated_at = new TDate('updated_at');
 
 
         // add the fields
         $this->form->addFields( [ $id ] );
-        $row = $this->form->addFields( [ new TLabel('Sku'), $sku ],
-                                [ new TLabel('Nome'), $product_id ],
-                                [ new TLabel('Status'), $status ],
-                                [ new TLabel('Criado em'), $created_at ],
-                                [ new TLabel('até'), $updated_at ]);
+        $row = $this->form->addFields( [ new TLabel('Tipo De Serviço'), $office_type_id ],
+                                [ new TLabel('Descrição'), $description ],
+                                [ new TLabel('Preço'), $price ],
+                                [ new TLabel('Criado Em'), $created_at ],
+                                [ new TLabel('Até'), $updated_at ] );
 
-        $row->layout = ['col-sm-2','col-sm-4','col-sm-2','col-sm-2','col-sm-2',];
+$row->layout = ['col-sm-2','col-sm-4','col-sm-2','col-sm-2','col-sm-2'];
         // keep the form filled during navigation with session data
         $this->form->setData( TSession::getValue(__CLASS__ . '_filter_data') );
         
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['ProductForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink(_t('New'), new TAction(['OfficeForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
         $this->datagrid->style = 'width: 100%';
         $this->datagrid->datatable = 'true';
-        $this->datagrid->enablePopover('Produto', "<img style='max-height: 300px' src='tmp/".TSession::getvalue('userid')."/{image}'>");
+        // $this->datagrid->enablePopover('Popover', 'Hi <b> {name} </b>');
+        
 
         // creates the datagrid columns
-        $column_id = new TDataGridColumn('id', 'Id', 'right');
-        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'right');
-        $column_sku = new TDataGridColumn('sku', 'SKU', 'left');
-        $column_name = new TDataGridColumn('name', 'NAME', 'left');
-        $column_alias = new TDataGridColumn('alias', 'ALIAS', 'left');
-        $column_status = new TDataGridColumn('status', 'STATUS', 'left');
-        $column_created_at = new TDataGridColumn('created_at', 'CREATED At', 'left');
-        $column_updated_at = new TDataGridColumn('Ultima atualização', 'ULTIMA ATUALIZAÇÃO', 'left');
+        $column_id = new TDataGridColumn('id', 'Id', 'left');
+        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'left');
+        $column_office_type_id = new TDataGridColumn('office_type->name', 'TIPO DE SERVIÇO', 'left');
+        $column_description = new TDataGridColumn('description', 'DESCRIÇÃO', 'left');
+        $column_price = new TDataGridColumn('price', 'PREÇO', 'left');
+        $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
+        $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
 
-        $column_status->setTransformer(function($value){
-            switch ($value) {
-                case 0:
-                    $class = 'danger';
-                    $label = 'INATIVO';
-                    break;
-                case 1:
-                    $class = 'success';
-                    $label = 'ATIVO';
-                    break;
-                
-                default:
-                    $class = 'secondary';
-                    $label = 'Não definido';
-                    break;
-            }
-
-            $div = new TElement('span');
-            $div->class = "btn btn-{$class}";
-            $div->style = "text-shadow:none; font-size:12px; font-weight:bold;width:80px;";
-            $div->add($label);
-            return $div;
+        $column_price->setTransformer(function($value){
+            return Convert::toMonetario($value);
         });
 
         $column_updated_at->setTransformer(function($value){
@@ -114,15 +82,14 @@ class ProductList extends TPage
         // add the columns to the DataGrid
         // $this->datagrid->addColumn($column_id);
         // $this->datagrid->addColumn($column_system_user_id);
-        $this->datagrid->addColumn($column_sku);
-        $this->datagrid->addColumn($column_name);
-        $this->datagrid->addColumn($column_alias);
-        $this->datagrid->addColumn($column_status);
+        $this->datagrid->addColumn($column_office_type_id);
+        $this->datagrid->addColumn($column_description);
+        $this->datagrid->addColumn($column_price);
         // $this->datagrid->addColumn($column_created_at);
         $this->datagrid->addColumn($column_updated_at);
 
 
-        $action1 = new TDataGridAction(['ProductForm', 'onEdit'], ['id'=>'{id}']);
+        $action1 = new TDataGridAction(['OfficeForm', 'onEdit'], ['id'=>'{id}']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
@@ -163,7 +130,7 @@ class ProductList extends TPage
             $value = $param['value'];
             
             TTransaction::open('app'); // open a transaction with database
-            $object = new Product($key); // instantiates the Active Record
+            $object = new Office($key); // instantiates the Active Record
             $object->{$field} = $value;
             $object->store(); // update the object in the database
             TTransaction::close(); // close the transaction
@@ -188,10 +155,12 @@ class ProductList extends TPage
         
         // clear session filters
         TSession::setValue(__CLASS__.'_filter_id',   NULL);
-        TSession::setValue(__CLASS__.'_filter_sku',   NULL);
-        TSession::setValue(__CLASS__.'_filter_name',   NULL);
-        TSession::setValue(__CLASS__.'_filter_status',   NULL);
+        TSession::setValue(__CLASS__.'_filter_system_user_id',   NULL);
+        TSession::setValue(__CLASS__.'_filter_description',   NULL);
+        TSession::setValue(__CLASS__.'_filter_price',   NULL);
         TSession::setValue(__CLASS__.'_filter_created_at',   NULL);
+        TSession::setValue(__CLASS__.'_filter_updated_at',   NULL);
+        TSession::setValue(__CLASS__.'_filter_office_type_id',   NULL);
 
         if (isset($data->id) AND ($data->id)) {
             $filter = new TFilter('id', '=', $data->id); // create the filter
@@ -199,21 +168,21 @@ class ProductList extends TPage
         }
 
 
-        if (isset($data->sku) AND ($data->sku)) {
-            $filter = new TFilter('sku', 'like', "%{$data->sku}%"); // create the filter
-            TSession::setValue(__CLASS__.'_filter_sku',   $filter); // stores the filter in the session
+        if (isset($data->description) AND ($data->description)) {
+            $filter = new TFilter('description', 'like', "%{$data->description}%"); // create the filter
+            TSession::setValue(__CLASS__.'_filter_description',   $filter); // stores the filter in the session
         }
 
 
-        if (isset($data->name) AND ($data->name)) {
-            $filter = new TFilter('name', 'like', "%{$data->name}%"); // create the filter
-            TSession::setValue(__CLASS__.'_filter_name',   $filter); // stores the filter in the session
+        if (isset($data->price) AND ($data->price)) {
+            $filter = new TFilter('price', 'like', "%{$data->price}%"); // create the filter
+            TSession::setValue(__CLASS__.'_filter_price',   $filter); // stores the filter in the session
         }
 
 
-        if (isset($data->status) AND ($data->status)) {
-            $filter = new TFilter('status', 'like', "%{$data->status}%"); // create the filter
-            TSession::setValue(__CLASS__.'_filter_status',   $filter); // stores the filter in the session
+        if (isset($data->created_at) AND ($data->created_at)) {
+            $filter = new TFilter('created_at', 'like', "%{$data->created_at}%"); // create the filter
+            TSession::setValue(__CLASS__.'_filter_created_at',   $filter); // stores the filter in the session
         }
 
         if ((isset($data->created_at) AND ($data->created_at)) AND (isset($data->updated_at) AND ($data->updated_at))) {
@@ -221,6 +190,7 @@ class ProductList extends TPage
             TSession::setValue(__CLASS__.'_filter_created_at',   $filter); // stores the filter in the session
         }
 
+        
         // fill the form with data again
         $this->form->setData($data);
         
@@ -243,8 +213,8 @@ class ProductList extends TPage
             // open a transaction with database 'app'
             TTransaction::open('app');
             
-            // creates a repository for Product
-            $repository = new TRepository('Product');
+            // creates a repository for Office
+            $repository = new TRepository('Office');
             $limit = 10;
             // creates a criteria
             $criteria = new TCriteria;
@@ -263,19 +233,13 @@ class ProductList extends TPage
                 $criteria->add(TSession::getValue(__CLASS__.'_filter_id')); // add the session filter
             }
 
-
-            if (TSession::getValue(__CLASS__.'_filter_sku')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_sku')); // add the session filter
+            if (TSession::getValue(__CLASS__.'_filter_description')) {
+                $criteria->add(TSession::getValue(__CLASS__.'_filter_description')); // add the session filter
             }
 
 
-            if (TSession::getValue(__CLASS__.'_filter_name')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_name')); // add the session filter
-            }
-
-
-            if (TSession::getValue(__CLASS__.'_filter_status')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_status')); // add the session filter
+            if (TSession::getValue(__CLASS__.'_filter_price')) {
+                $criteria->add(TSession::getValue(__CLASS__.'_filter_price')); // add the session filter
             }
 
 
@@ -283,9 +247,12 @@ class ProductList extends TPage
                 $criteria->add(TSession::getValue(__CLASS__.'_filter_created_at')); // add the session filter
             }
 
-            // citerios especificos
-            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid'))); 
-            
+
+            if (TSession::getValue(__CLASS__.'_filter_office_type_id')) {
+                $criteria->add(TSession::getValue(__CLASS__.'_filter_office_type_id')); // add the session filter
+            }
+
+            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
             
@@ -346,7 +313,7 @@ class ProductList extends TPage
         {
             $key=$param['key']; // get the parameter $key
             TTransaction::open('app'); // open a transaction with database
-            $object = new Product($key, FALSE); // instantiates the Active Record
+            $object = new Office($key, FALSE); // instantiates the Active Record
             $object->delete(); // deletes the object from the database
             TTransaction::close(); // close the transaction
             

@@ -7,10 +7,6 @@
         <action>SaleList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
-      <menuitem label="Devoluções">
-        <action>ProductList</action>
-        <icon>fas:arrow-alt-circle-right fa-fw</icon>
-      </menuitem>
     </menu>
   </menuitem>
   <menuitem label="Cadastro">
@@ -22,6 +18,19 @@
       </menuitem>
       <menuitem label="Estoque">
         <action>InventoryList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+      <menuitem label="Serviços">
+        <action>OfficeList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+    </menu>
+  </menuitem>
+  <menuitem label="Extras">
+    <icon>fas:folder-plus fa-fw</icon>
+    <menu>
+      <menuitem label="Tipos de serviço">
+        <action>OfficeTypeFormList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
     </menu>

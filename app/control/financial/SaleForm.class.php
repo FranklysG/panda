@@ -123,14 +123,24 @@ class SaleForm extends TPage
             
             $this->form->validate(); // validate form data
             $data = $this->form->getData(); // get form data as array
-            
+
+            $discount = $data->discount;
+            if(empty($discount))
+                $discount = 0;
             $object = new Sale;  // create an empty object
             $object->system_user_id = TSession::getValue('userid');
             $object->fromArray( (array) $data); // load the object with data
             $object->price = $data->price;
-            $object->discount = $data->discount;
+            $object->discount = $discount;
             $object->store(); // save the object
             
+            $object = Inventory::where('product_id', '=', $data->product_id)->where('amount', '>=', $data->quantity)->first();
+            if(!empty($object)){
+                $object->amount -= $data->quantity;
+                $object->store();
+            }else{
+                throw new Exception("Quantidade indisponivel no estoque", 001);  
+            }
             // get the generated id
             $data->id = $object->id;
             
@@ -141,7 +151,14 @@ class SaleForm extends TPage
         }
         catch (Exception $e) // in case of exception
         {
-            new TMessage('error', $e->getMessage()); // shows the exception error message
+            switch ($e->getCode()) {
+                case '001':
+                    new TMessage('warning', $e->getMessage()); // shows the exception error message
+                    break;
+                default:
+                    new TMessage('error', $e->getMessage()); // shows the exception error message
+                    break;
+            }
             $this->form->setData( $this->form->getData() ); // keep form data
             TTransaction::rollback(); // undo all pending operations
         }

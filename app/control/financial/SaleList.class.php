@@ -77,6 +77,10 @@ class SaleList extends TPage
         $column_discount->setTransformer(function($value){
             return Convert::toMonetario($value);
         });
+
+        $column_total->setTransformer(function($value){
+            return Convert::toMonetario($value);
+        });
         
         $column_updated_at->setTransformer(function($value){
             return Convert::toDate($value, 'd / m / Y');
@@ -96,7 +100,7 @@ class SaleList extends TPage
 
 
         $action1 = new TDataGridAction(['SaleForm', 'onEdit'], ['id'=>'{id}']);
-        $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
+        $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}', 'product_id' => '{product_id}', 'quantity' => '{quantity}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
         $this->datagrid->addAction($action2 ,_t('Delete'), 'far:trash-alt red');
@@ -318,10 +322,14 @@ class SaleList extends TPage
     {
         try
         {
-            $key=$param['key']; // get the parameter $key
+            $key = $param['key']; // get the parameter $key
             TTransaction::open('app'); // open a transaction with database
             $object = new Sale($key, FALSE); // instantiates the Active Record
             $object->delete(); // deletes the object from the database
+
+            $object = Inventory::where('product_id', '=', $param['product_id'])->first();
+            $object->amount += $param['quantity'];
+            $object->store();
             TTransaction::close(); // close the transaction
             
             $pos_action = new TAction([__CLASS__, 'onReload']);
