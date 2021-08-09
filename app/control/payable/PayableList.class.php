@@ -1,9 +1,9 @@
 <?php
 /**
- * OfficeList Listing
+ * PayableList Listing
  * @author  <your name here>
  */
-class OfficeList extends TPage
+class PayableList extends TPage
 {
     private $form; // form
     private $datagrid; // listing
@@ -21,39 +21,44 @@ class OfficeList extends TPage
         parent::__construct();
         
         // creates the form
-        $this->form = new BootstrapFormBuilder('form_search_Office');
-        $this->form->setFormTitle('<strong>LISTAGEM DE SERVIÇOS</strong>');
-        $this->form->setFieldSizes('100%');
-        $this->form->setProperty('style', 'margin-bottom:0;box-shadow:none');
+        $this->form = new BootstrapFormBuilder('form_search_Payable');
+        $this->form->setFormTitle('Payable');
+        
 
         // create the form fields
-        $id = new THidden('id');
+        $id = new TEntry('id');
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
-        $office_type_id = new TDBUniqueSearch('office_type_id', 'app', 'OfficeType', 'id', 'name');
-        $office_type_id->setMinLength(1);
-        $description = new TEntry('description');
+        $name = new TEntry('name');
         $price = new TEntry('price');
-        $price->setNumericMask(2, '.', ',', true);
-        $created_at = new TDate('created_at');
-        $updated_at = new TDate('updated_at');
+        $created_at = new TEntry('created_at');
+        $updated_at = new TEntry('updated_at');
 
 
         // add the fields
-        $this->form->addFields( [ $id ] );
-        $row = $this->form->addFields( [ new TLabel('Tipo De Serviço'), $office_type_id ],
-                                [ new TLabel('Descrição'), $description ],
-                                [ new TLabel('Preço'), $price ],
-                                [ new TLabel('Criado Em'), $created_at ],
-                                [ new TLabel('Até'), $updated_at ] );
+        $this->form->addFields( [ new TLabel('Id') ], [ $id ] );
+        $this->form->addFields( [ new TLabel('System User Id') ], [ $system_user_id ] );
+        $this->form->addFields( [ new TLabel('Name') ], [ $name ] );
+        $this->form->addFields( [ new TLabel('Price') ], [ $price ] );
+        $this->form->addFields( [ new TLabel('Created At') ], [ $created_at ] );
+        $this->form->addFields( [ new TLabel('Updated At') ], [ $updated_at ] );
 
-        $row->layout = ['col-sm-2','col-sm-4','col-sm-2','col-sm-2','col-sm-2'];
+
+        // set sizes
+        $id->setSize('100%');
+        $system_user_id->setSize('100%');
+        $name->setSize('100%');
+        $price->setSize('100%');
+        $created_at->setSize('100%');
+        $updated_at->setSize('100%');
+
+        
         // keep the form filled during navigation with session data
         $this->form->setData( TSession::getValue(__CLASS__ . '_filter_data') );
         
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['OfficeForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink(_t('New'), new TAction(['PayableForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
@@ -63,33 +68,24 @@ class OfficeList extends TPage
         
 
         // creates the datagrid columns
-        $column_id = new TDataGridColumn('id', 'Id', 'left');
-        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'left');
-        $column_office_type_id = new TDataGridColumn('office_type->name', 'TIPO DE SERVIÇO', 'left');
-        $column_description = new TDataGridColumn('description', 'DESCRIÇÃO', 'left');
-        $column_price = new TDataGridColumn('price', 'PREÇO', 'left');
+        $column_id = new TDataGridColumn('id', 'Id', 'right');
+        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'right');
+        $column_name = new TDataGridColumn('name', 'Name', 'left');
+        $column_price = new TDataGridColumn('price', 'Price', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
-        $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
+        $column_updated_at = new TDataGridColumn('updated_at', 'Updated At', 'left');
 
-        $column_price->setTransformer(function($value){
-            return Convert::toMonetario($value);
-        });
-
-        $column_updated_at->setTransformer(function($value){
-            return Convert::toDate($value, 'd / m / Y');
-        });
 
         // add the columns to the DataGrid
-        // $this->datagrid->addColumn($column_id);
-        // $this->datagrid->addColumn($column_system_user_id);
-        $this->datagrid->addColumn($column_office_type_id);
-        $this->datagrid->addColumn($column_description);
+        $this->datagrid->addColumn($column_id);
+        $this->datagrid->addColumn($column_system_user_id);
+        $this->datagrid->addColumn($column_name);
         $this->datagrid->addColumn($column_price);
-        // $this->datagrid->addColumn($column_created_at);
+        $this->datagrid->addColumn($column_created_at);
         $this->datagrid->addColumn($column_updated_at);
 
 
-        $action1 = new TDataGridAction(['OfficeForm', 'onEdit'], ['id'=>'{id}']);
+        $action1 = new TDataGridAction(['PayableForm', 'onEdit'], ['id'=>'{id}']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
@@ -130,7 +126,7 @@ class OfficeList extends TPage
             $value = $param['value'];
             
             TTransaction::open('app'); // open a transaction with database
-            $object = new Office($key); // instantiates the Active Record
+            $object = new Payable($key); // instantiates the Active Record
             $object->{$field} = $value;
             $object->store(); // update the object in the database
             TTransaction::close(); // close the transaction
@@ -156,11 +152,10 @@ class OfficeList extends TPage
         // clear session filters
         TSession::setValue(__CLASS__.'_filter_id',   NULL);
         TSession::setValue(__CLASS__.'_filter_system_user_id',   NULL);
-        TSession::setValue(__CLASS__.'_filter_description',   NULL);
+        TSession::setValue(__CLASS__.'_filter_name',   NULL);
         TSession::setValue(__CLASS__.'_filter_price',   NULL);
         TSession::setValue(__CLASS__.'_filter_created_at',   NULL);
         TSession::setValue(__CLASS__.'_filter_updated_at',   NULL);
-        TSession::setValue(__CLASS__.'_filter_office_type_id',   NULL);
 
         if (isset($data->id) AND ($data->id)) {
             $filter = new TFilter('id', '=', $data->id); // create the filter
@@ -168,9 +163,15 @@ class OfficeList extends TPage
         }
 
 
-        if (isset($data->description) AND ($data->description)) {
-            $filter = new TFilter('description', 'like', "%{$data->description}%"); // create the filter
-            TSession::setValue(__CLASS__.'_filter_description',   $filter); // stores the filter in the session
+        if (isset($data->system_user_id) AND ($data->system_user_id)) {
+            $filter = new TFilter('system_user_id', '=', $data->system_user_id); // create the filter
+            TSession::setValue(__CLASS__.'_filter_system_user_id',   $filter); // stores the filter in the session
+        }
+
+
+        if (isset($data->name) AND ($data->name)) {
+            $filter = new TFilter('name', 'like', "%{$data->name}%"); // create the filter
+            TSession::setValue(__CLASS__.'_filter_name',   $filter); // stores the filter in the session
         }
 
 
@@ -185,9 +186,10 @@ class OfficeList extends TPage
             TSession::setValue(__CLASS__.'_filter_created_at',   $filter); // stores the filter in the session
         }
 
-        if ((isset($data->created_at) AND ($data->created_at)) AND (isset($data->updated_at) AND ($data->updated_at))) {
-            $filter = new TFilter('created_at', 'between', "{$data->created_at}", "{$data->updated_at}"); // create the filter
-            TSession::setValue(__CLASS__.'_filter_created_at',   $filter); // stores the filter in the session
+
+        if (isset($data->updated_at) AND ($data->updated_at)) {
+            $filter = new TFilter('updated_at', 'like', "%{$data->updated_at}%"); // create the filter
+            TSession::setValue(__CLASS__.'_filter_updated_at',   $filter); // stores the filter in the session
         }
 
         
@@ -213,15 +215,8 @@ class OfficeList extends TPage
             // open a transaction with database 'app'
             TTransaction::open('app');
             
-            // veridicando se existe algum no estoque
-            $verifyOfficeType = OfficeType::where('system_user_id', '=', TSession::getValue('userid'))->first();
-            if(empty($verifyOfficeType)){
-                $pos_action = new TAction(['OfficeTypeFormList', 'onReload']);
-                new TMessage('warning', 'Você precisa cadastrar alguns tipos de serviços antes antes', $pos_action);
-            }
-
-            // creates a repository for Office
-            $repository = new TRepository('Office');
+            // creates a repository for Payable
+            $repository = new TRepository('Payable');
             $limit = 10;
             // creates a criteria
             $criteria = new TCriteria;
@@ -240,8 +235,14 @@ class OfficeList extends TPage
                 $criteria->add(TSession::getValue(__CLASS__.'_filter_id')); // add the session filter
             }
 
-            if (TSession::getValue(__CLASS__.'_filter_description')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_description')); // add the session filter
+
+            if (TSession::getValue(__CLASS__.'_filter_system_user_id')) {
+                $criteria->add(TSession::getValue(__CLASS__.'_filter_system_user_id')); // add the session filter
+            }
+
+
+            if (TSession::getValue(__CLASS__.'_filter_name')) {
+                $criteria->add(TSession::getValue(__CLASS__.'_filter_name')); // add the session filter
             }
 
 
@@ -255,11 +256,11 @@ class OfficeList extends TPage
             }
 
 
-            if (TSession::getValue(__CLASS__.'_filter_office_type_id')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_office_type_id')); // add the session filter
+            if (TSession::getValue(__CLASS__.'_filter_updated_at')) {
+                $criteria->add(TSession::getValue(__CLASS__.'_filter_updated_at')); // add the session filter
             }
 
-            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+            
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
             
@@ -320,7 +321,7 @@ class OfficeList extends TPage
         {
             $key=$param['key']; // get the parameter $key
             TTransaction::open('app'); // open a transaction with database
-            $object = new Office($key, FALSE); // instantiates the Active Record
+            $object = new Payable($key, FALSE); // instantiates the Active Record
             $object->delete(); // deletes the object from the database
             TTransaction::close(); // close the transaction
             

@@ -103,9 +103,12 @@ class SystemRequestPasswordResetForm extends TPage
                     $replaces['link'] = $url;
                     $html = new THtmlRenderer('app/resources/system_reset_password.html');
                     $html->enableSection('main', $replaces);
-                    
-                    MailService::send( $user->email, _t('Password reset'), $html->getContents(), 'html' );
-                    new TMessage('info', _t('Message sent successfully'));
+                    if(isset($user->email)){
+                        MailService::send( $user->email, _t('Password reset'), $html->getContents(), 'html' );
+                        new TMessage('info', _t('Message sent successfully'), new TAction(['LoginForm', 'onLoad']));
+                    }else{
+                        throw new Exception('Dados do servidor de email não configurados');
+                    }
                 }
             }
             else
@@ -115,7 +118,7 @@ class SystemRequestPasswordResetForm extends TPage
         }
         catch (Exception $e)
         {
-            new TMessage('error',$e->getMessage());
+            new TMessage('error',$e->getMessage(), new TAction(['LoginForm', 'onLoad']));
             TTransaction::rollback();
         }
     }

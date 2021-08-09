@@ -20,7 +20,7 @@ class OfficeTypeFormList extends TPage
         
         
         $this->form = new BootstrapFormBuilder('form_OfficeType');
-         $this->form->setFormTitle('ADICIONE NOVOS TIPOS DE SERVIÇOS');
+         $this->form->setFormTitle('<strong>ADICIONE NOVOS TIPOS DE SERVIÇOS</strong>');
          $this->form->setFieldSizes('100%');
  
 
@@ -175,6 +175,7 @@ class OfficeTypeFormList extends TPage
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
             
+            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
             

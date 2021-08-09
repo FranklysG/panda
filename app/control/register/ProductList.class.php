@@ -23,7 +23,7 @@ class ProductList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Product');
-        $this->form->setFormTitle('LISTAGEM DE PRODUTOS');
+        $this->form->setFormTitle('<strong>LISTAGEM DE PRODUTOS</strong>');
         $this->form->setFieldSizes('100%');
         
 

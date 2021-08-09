@@ -22,7 +22,7 @@ class InventoryList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Product');
-        $this->form->setFormTitle('LISTAGEM DE PRODUTOS NO ESTOQUE');
+        $this->form->setFormTitle('<strong>LISTAGEM DE PRODUTOS NO ESTOQUE</strong>');
         $this->form->setFieldSizes('100%');
          
 
@@ -228,6 +228,13 @@ class InventoryList extends TPage
             // open a transaction with database 'app'
             TTransaction::open('app');
             
+            // veridicando se existe algum no estoque
+            $verifyProduct = Product::where('system_user_id', '=', TSession::getValue('userid'))->first();
+            if(empty($verifyProduct)){
+                $pos_action = new TAction(['ProductList', 'onReload']);
+                new TMessage('warning', 'Você precisa cadastrar alguns produtos e adicionalos ao estoque antes', $pos_action);
+            }
+
             // creates a repository for Inventory
             $repository = new TRepository('ViewInventory');
             $limit = 10;

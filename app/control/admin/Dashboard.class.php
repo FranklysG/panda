@@ -19,6 +19,17 @@ class Dashboard extends TPage
         
         try
         {
+            // veridicando se existe algum no estoque
+            if(!isset($_GET['debugTunele'])){
+                $pos_action = new TAction(['ProductList', 'onReload']);
+                new TMessage('warning', 'Estamos cuidando do desenvolvimento, foque na sua area de vendas por enquanto', $pos_action);
+            }
+
+            TTransaction::open('app');
+            // mapa_reservas semanais
+            $repositoy = new TRepository('ViewFinancial');
+            $objects = $repositoy->load();
+
             $html = new THtmlRenderer('app/resources/system_user_dashboard.html');
             
             TTransaction::open('permission');
@@ -29,21 +40,24 @@ class Dashboard extends TPage
             $indicator5 = new THtmlRenderer('app/resources/info-box.html');
             $indicator6 = new THtmlRenderer('app/resources/info-box.html');
             $indicator7 = new THtmlRenderer('app/resources/info-box.html');
+            $indicator8 = new THtmlRenderer('app/resources/info-box.html');
             
-            $indicator1->enableSection('main', ['title' => 'Faturamento dia',    'icon' => 'user',       'background' => 'orange', 'value' => SystemUser::count()]);
-            $indicator2->enableSection('main', ['title' => 'Faturamento mês',   'icon' => 'users',      'background' => 'blue',   'value' => SystemGroup::count()]);
-            $indicator3->enableSection('main', ['title' => 'Faturamento ano',    'icon' => 'university', 'background' => 'purple', 'value' => SystemUnit::count()]);
-            $indicator4->enableSection('main', ['title' => 'Contas a pagar', 'icon' => 'code',       'background' => 'green',  'value' => SystemProgram::count()]);
-            $indicator5->enableSection('main', ['title' => 'Contas a pagar', 'icon' => 'code',       'background' => 'green',  'value' => SystemProgram::count()]);
-            $indicator6->enableSection('main', ['title' => 'Contas a pagar', 'icon' => 'code',       'background' => 'green',  'value' => SystemProgram::count()]);
-            $indicator7->enableSection('main', ['title' => 'Contas a pagar', 'icon' => 'code',       'background' => 'green',  'value' => SystemProgram::count()]);
-            
+            foreach ($objects as $object) {
+                $indicator1->enableSection('main', ['title' => 'Vendas hoje',    'icon' => 'cart-arrow-down',       'background' => 'orange', 'value' => $object->sale_today]);
+                $indicator2->enableSection('main', ['title' => 'Faturamento Hoje',   'icon' => 'money-bill',      'background' => 'blue',   'value' => Convert::toMonetario($object->sale_cash_today)]);
+                $indicator3->enableSection('main', ['title' => 'Faturamento Mês',   'icon' => 'money-bill-wave',      'background' => 'yellow',   'value' => Convert::toMonetario($object->sale_cash_month)]);
+                $indicator4->enableSection('main', ['title' => 'Faturamento ano',    'icon' => 'wallet', 'background' => 'purple', 'value' => Convert::toMonetario($object->sale_cash_year)]);
+                $indicator5->enableSection('main', ['title' => 'Contas a pagar', 'icon' => 'code',       'background' => 'red',  'value' => SystemProgram::count()]);
+                $indicator6->enableSection('main', ['title' => 'Contas a pagar', 'icon' => 'code',       'background' => 'red',  'value' => SystemProgram::count()]);
+                $indicator7->enableSection('main', ['title' => 'Contas a pagar', 'icon' => 'code',       'background' => 'red',  'value' => SystemProgram::count()]);
+                $indicator8->enableSection('main', ['title' => 'Contas a pagar', 'icon' => 'code',       'background' => 'red',  'value' => SystemProgram::count()]);
+            }
             $chart = new THtmlRenderer('app/resources/google_column_chart.html');
             $data[] = [ 'Mês', 'Vendas'];
         
             // média de ocupação mensal
             $meses = AppUtil::calendario();
-            $objects = Inventory::getObjects();
+            $objects = Sale::getObjects();
             $data_count = [];
             if($objects){
                 foreach ($objects as $key => $value) {
@@ -75,6 +89,7 @@ class Dashboard extends TPage
                                           'indicator5' => $indicator5,
                                           'indicator6' => $indicator6,
                                           'indicator7' => $indicator7,
+                                          'indicator8' => $indicator8,
                                           'chart'     => $chart] );
             
             $container = new TVBox;

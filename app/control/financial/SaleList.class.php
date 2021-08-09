@@ -22,7 +22,7 @@ class SaleList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Sale');
-        $this->form->setFormTitle('LISTAGEM DE VENDAS');
+        $this->form->setFormTitle('<strong>LISTAGEM DE VENDAS</strong>');
         $this->form->setFieldSizes('100%');
         $this->form->setProperty('style', 'margin-bottom:0;box-shadow:none');
 
@@ -220,6 +220,17 @@ class SaleList extends TPage
         {
             // open a transaction with database 'app'
             TTransaction::open('app');
+            
+            // veridicando se existe algum no estoque
+            $verifyProduct = Product::where('system_user_id', '=', TSession::getValue('userid'))->first();
+            $verifyInventory = Inventory::where('system_user_id', '=', TSession::getValue('userid'))->first();
+            if(empty($verifyProduct)){
+                $pos_action = new TAction(['ProductList', 'onReload']);
+                new TMessage('warning', 'Você precisa cadastrar alguns produtos e adicionalos ao estoque antes', $pos_action);
+            }else if(empty($verifyInventory)){
+                $pos_action = new TAction(['InventoryList', 'onReload']);
+                new TMessage('warning', 'Você precisa adicionar alguns produtos ao estoque antes', $pos_action);
+            }
             
             // creates a repository for Sale
             $repository = new TRepository('Sale');
