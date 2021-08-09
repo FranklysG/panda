@@ -27,8 +27,10 @@ class Dashboard extends TPage
 
             TTransaction::open('app');
             // mapa_reservas semanais
+            $criteria = new TCriteria;
+            $criteria->add(new TFilter('id', '=', TSession::getValue('userid')));
             $repositoy = new TRepository('ViewFinancial');
-            $objects = $repositoy->load();
+            $objects = $repositoy->load($criteria);
 
             $html = new THtmlRenderer('app/resources/system_user_dashboard.html');
             
@@ -47,11 +49,12 @@ class Dashboard extends TPage
                 $indicator2->enableSection('main', ['title' => 'Faturamento Hoje',   'icon' => 'money-bill',      'background' => 'blue',   'value' => Convert::toMonetario($object->sale_cash_today)]);
                 $indicator3->enableSection('main', ['title' => 'Faturamento Mês',   'icon' => 'money-bill-wave',      'background' => 'yellow',   'value' => Convert::toMonetario($object->sale_cash_month)]);
                 $indicator4->enableSection('main', ['title' => 'Faturamento ano',    'icon' => 'wallet', 'background' => 'purple', 'value' => Convert::toMonetario($object->sale_cash_year)]);
-                $indicator5->enableSection('main', ['title' => 'Contas a pagar', 'icon' => 'code',       'background' => 'red',  'value' => SystemProgram::count()]);
-                $indicator6->enableSection('main', ['title' => 'Contas a pagar', 'icon' => 'code',       'background' => 'red',  'value' => SystemProgram::count()]);
-                $indicator7->enableSection('main', ['title' => 'Contas a pagar', 'icon' => 'code',       'background' => 'red',  'value' => SystemProgram::count()]);
-                $indicator8->enableSection('main', ['title' => 'Contas a pagar', 'icon' => 'code',       'background' => 'red',  'value' => SystemProgram::count()]);
+                $indicator5->enableSection('main', ['title' => 'Contas a pagar Mês', 'icon' => 'handshake',       'background' => 'red',  'value' => Convert::toMonetario($object->payable_cash_month)]);
+                $indicator6->enableSection('main', ['title' => 'Contas a pagar Ano', 'icon' => 'handshake',       'background' => 'red',  'value' => Convert::toMonetario($object->payable_cash_year)]);
+                $indicator7->enableSection('main', ['title' => 'Lucro esperado Mês', 'icon' => 'wallet',       'background' => 'green',  'value' => Convert::toMonetario($object->sale_cash_month-$object->payable_cash_month)]);
+                $indicator8->enableSection('main', ['title' => 'Lucro esperado Ano', 'icon' => 'cash-register',       'background' => 'green',  'value' => Convert::toMonetario($object->sale_cash_year-$object->payable_cash_year)]);
             }
+            
             $chart = new THtmlRenderer('app/resources/google_column_chart.html');
             $data[] = [ 'Mês', 'Vendas'];
         

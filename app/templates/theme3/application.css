@@ -996,6 +996,15 @@ table.tfieldlist.dashed .tfield:focus {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
 }
 
+.info-box-icon{
+    width: 60px !important;
+    font-size: 30px !important;
+}
+
+.info-box-content{
+    padding: 7px !important;
+    margin-left: 65px !important;
+}
 /* Navbar no login */
 .main-header.navbar .navbar-brand {
     border-bottom: 1px solid #e7e7e7;

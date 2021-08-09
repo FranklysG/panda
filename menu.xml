@@ -15,6 +15,10 @@
         <action>PayableList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
+      <menuitem label="Despesas">
+        <action>ExesList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
     </menu>
   </menuitem>
   <menuitem label="Cadastro">
@@ -26,6 +30,10 @@
       </menuitem>
       <menuitem label="Estoque">
         <action>InventoryList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+      <menuitem label="Funcionario">
+        <action>EmployeeList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
     </menu>

@@ -1,16 +1,16 @@
 <?php
 /**
- * Payable Active Record
+ * Exes Active Record
  * @author  <your-name-here>
  */
-class Payable extends TRecord
+class Exes extends TRecord
 {
-    const TABLENAME = 'payable';
+    const TABLENAME = 'exes';
     const PRIMARYKEY= 'id';
     const IDPOLICY =  'max'; // {max, serial}
     
     
-    private $payable;
+    private $system_user;
 
     /**
      * Constructor method
@@ -21,36 +21,35 @@ class Payable extends TRecord
         parent::addAttribute('system_user_id');
         parent::addAttribute('description');
         parent::addAttribute('price');
-        parent::addAttribute('status');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');
     }
 
     
     /**
-     * Method set_payable
-     * Sample of usage: $payable->payable = $object;
-     * @param $object Instance of Payable
+     * Method set_system_user
+     * Sample of usage: $exes->system_user = $object;
+     * @param $object Instance of SystemUser
      */
-    public function set_payable(Payable $object)
+    public function set_system_user(SystemUser $object)
     {
-        $this->payable = $object;
-        $this->payable_id = $object->id;
+        $this->system_user = $object;
+        $this->system_user_id = $object->id;
     }
     
     /**
-     * Method get_payable
-     * Sample of usage: $payable->payable->attribute;
-     * @returns Payable instance
+     * Method get_system_user
+     * Sample of usage: $exes->system_user->attribute;
+     * @returns SystemUser instance
      */
-    public function get_payable()
+    public function get_system_user()
     {
         // loads the associated object
-        if (empty($this->payable))
-            $this->payable = new Payable($this->payable_id);
+        if (empty($this->system_user))
+            $this->system_user = new SystemUser($this->system_user_id);
     
         // returns the associated object
-        return $this->payable;
+        return $this->system_user;
     }
     
 

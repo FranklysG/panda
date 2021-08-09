@@ -1,9 +1,9 @@
 <?php
 /**
- * PayableList Listing
+ * EmployeeList Listing
  * @author  <your name here>
  */
-class PayableList extends TPage
+class EmployeeList extends TPage
 {
     private $form; // form
     private $datagrid; // listing
@@ -21,45 +21,41 @@ class PayableList extends TPage
         parent::__construct();
         
         // creates the form
-        $this->form = new BootstrapFormBuilder('form_search_Payable');
-        $this->form->setFormTitle('<strong>LISTAGEM DE CONTAS A PAGAR</strong>');
+        $this->form = new BootstrapFormBuilder('form_search_Employee');
+        $this->form->setFormTitle('<strong>LISTAGEM DE FUNCIONÁRIOS</strong>');
         $this->form->setFieldSizes('100%');
-        
 
         // create the form fields
         $id = new THidden('id');
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
         $name = new TEntry('name');
-        $price = new TEntry('price');
-        $status = new TCombo('status');
-        $status->addItems(
-            [
-                '0' => 'AGUARADANDO PAGAMENTO',
-                '1' => 'PAGO'
-            ]
-        );
-        $status->setDefaultOption(false);
+        $name->forceUpperCase();
+        $name->setMask('S!');
+        $document = new TEntry('document');
+        $document->setMask('999.999.999-99');
+        $contact = new TEntry('contact');
+        $contact->setMask('(99) 99999-9999');
+        $salary = new TEntry('salary');
+        $salary->setNumericMask(2, '.', ',', true);
         $created_at = new TDate('created_at');
         $updated_at = new TDate('updated_at');
 
 
         // add the fields
         $this->form->addFields( [ $id ] );
-        $row = $this->form->addFields( [ new TLabel('Descrição'), $name ],
-                                [ new TLabel('Preço'), $price ],
-                                [ new TLabel('Status'), $status ],
-                                [ new TLabel('Criado em'), $created_at ],
+        $row = $this->form->addFields( [ new TLabel('Nome'), $name ],
+                                [ new TLabel('Documento'), $document ],
+                                [ new TLabel('Reginstrado em'), $created_at ],
                                 [ new TLabel('Até'), $updated_at ] );
 
-        $row->layout = ['col-sm-4','col-sm-2','col-sm-2','col-sm-2','col-sm-2'];
-
+        $row->layout = ['col-sm-4','col-sm-4','col-sm-2','col-sm-2'];
         // keep the form filled during navigation with session data
         $this->form->setData( TSession::getValue(__CLASS__ . '_filter_data') );
         
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['PayableForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink(_t('New'), new TAction(['EmployeeForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
@@ -69,36 +65,21 @@ class PayableList extends TPage
         
 
         // creates the datagrid columns
-        $column_id = new TDataGridColumn('id', 'Id', 'left');
-        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'left');
-        $column_name = new TDataGridColumn('description', 'DESCRIÇÃO', 'left');
-        $column_price = new TDataGridColumn('price', 'PREÇO', 'left');
-        $column_status = new TDataGridColumn('status', 'STATUS', 'left');
+        $column_id = new TDataGridColumn('id', 'Id', 'right');
+        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'right');
+        $column_name = new TDataGridColumn('name', 'Name', 'left');
+        $column_document = new TDataGridColumn('document', 'Document', 'left');
+        $column_contact = new TDataGridColumn('contact', 'Contact', 'left');
+        $column_salary = new TDataGridColumn('salary', 'Salary', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
-        $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
+        $column_updated_at = new TDataGridColumn('updated_at', 'Updated At', 'left');
 
-        $column_status->setTransformer(function($value){
-            switch ($value) {
-                case 0:
-                    $class = 'danger';
-                    $label = 'AGUARDANDO PAGAMENTO';
-                    break;
-                case 1:
-                    $class = 'success';
-                    $label = 'PAGO';
-                    break;
-                
-                default:
-                    $class = 'secondary';
-                    $label = 'Não definido';
-                    break;
-            }
-
-            $div = new TElement('span');
-            $div->class = "btn btn-{$class}";
-            $div->style = "text-shadow:none; font-size:12px; font-weight:bold;width:auto;";
-            $div->add($label);
-            return $div;
+        $column_salary->setTransformer(function($value){
+            return Convert::toMonetario($value);
+        });
+        
+        $column_document->setTransformer(function($value){
+            return Convert::toCPF_CNPJ($value);
         });
 
         $column_updated_at->setTransformer(function($value){
@@ -109,13 +90,14 @@ class PayableList extends TPage
         // $this->datagrid->addColumn($column_id);
         // $this->datagrid->addColumn($column_system_user_id);
         $this->datagrid->addColumn($column_name);
-        $this->datagrid->addColumn($column_price);
-        $this->datagrid->addColumn($column_status);
+        $this->datagrid->addColumn($column_document);
+        $this->datagrid->addColumn($column_contact);
+        $this->datagrid->addColumn($column_salary);
         // $this->datagrid->addColumn($column_created_at);
         $this->datagrid->addColumn($column_updated_at);
 
 
-        $action1 = new TDataGridAction(['PayableForm', 'onEdit'], ['id'=>'{id}']);
+        $action1 = new TDataGridAction(['EmployeeForm', 'onEdit'], ['id'=>'{id}']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
@@ -156,7 +138,7 @@ class PayableList extends TPage
             $value = $param['value'];
             
             TTransaction::open('app'); // open a transaction with database
-            $object = new Payable($key); // instantiates the Active Record
+            $object = new Employee($key); // instantiates the Active Record
             $object->{$field} = $value;
             $object->store(); // update the object in the database
             TTransaction::close(); // close the transaction
@@ -183,7 +165,9 @@ class PayableList extends TPage
         TSession::setValue(__CLASS__.'_filter_id',   NULL);
         TSession::setValue(__CLASS__.'_filter_system_user_id',   NULL);
         TSession::setValue(__CLASS__.'_filter_name',   NULL);
-        TSession::setValue(__CLASS__.'_filter_price',   NULL);
+        TSession::setValue(__CLASS__.'_filter_document',   NULL);
+        TSession::setValue(__CLASS__.'_filter_contact',   NULL);
+        TSession::setValue(__CLASS__.'_filter_salary',   NULL);
         TSession::setValue(__CLASS__.'_filter_created_at',   NULL);
         TSession::setValue(__CLASS__.'_filter_updated_at',   NULL);
 
@@ -205,10 +189,23 @@ class PayableList extends TPage
         }
 
 
-        if (isset($data->price) AND ($data->price)) {
-            $filter = new TFilter('price', 'like', "%{$data->price}%"); // create the filter
-            TSession::setValue(__CLASS__.'_filter_price',   $filter); // stores the filter in the session
+        if (isset($data->document) AND ($data->document)) {
+            $filter = new TFilter('document', 'like', "%{$data->document}%"); // create the filter
+            TSession::setValue(__CLASS__.'_filter_document',   $filter); // stores the filter in the session
         }
+
+
+        if (isset($data->contact) AND ($data->contact)) {
+            $filter = new TFilter('contact', 'like', "%{$data->contact}%"); // create the filter
+            TSession::setValue(__CLASS__.'_filter_contact',   $filter); // stores the filter in the session
+        }
+
+
+        if (isset($data->salary) AND ($data->salary)) {
+            $filter = new TFilter('salary', 'like', "%{$data->salary}%"); // create the filter
+            TSession::setValue(__CLASS__.'_filter_salary',   $filter); // stores the filter in the session
+        }
+
 
         if ((isset($data->created_at) AND ($data->created_at)) AND (isset($data->updated_at) AND ($data->updated_at))) {
             $filter = new TFilter('created_at', 'between', "{$data->created_at}", "{$data->updated_at}"); // create the filter
@@ -237,8 +234,8 @@ class PayableList extends TPage
             // open a transaction with database 'app'
             TTransaction::open('app');
             
-            // creates a repository for Payable
-            $repository = new TRepository('Payable');
+            // creates a repository for Employee
+            $repository = new TRepository('Employee');
             $limit = 10;
             // creates a criteria
             $criteria = new TCriteria;
@@ -268,8 +265,18 @@ class PayableList extends TPage
             }
 
 
-            if (TSession::getValue(__CLASS__.'_filter_price')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_price')); // add the session filter
+            if (TSession::getValue(__CLASS__.'_filter_document')) {
+                $criteria->add(TSession::getValue(__CLASS__.'_filter_document')); // add the session filter
+            }
+
+
+            if (TSession::getValue(__CLASS__.'_filter_contact')) {
+                $criteria->add(TSession::getValue(__CLASS__.'_filter_contact')); // add the session filter
+            }
+
+
+            if (TSession::getValue(__CLASS__.'_filter_salary')) {
+                $criteria->add(TSession::getValue(__CLASS__.'_filter_salary')); // add the session filter
             }
 
 
@@ -340,7 +347,7 @@ class PayableList extends TPage
         {
             $key=$param['key']; // get the parameter $key
             TTransaction::open('app'); // open a transaction with database
-            $object = new Payable($key, FALSE); // instantiates the Active Record
+            $object = new Employee($key, FALSE); // instantiates the Active Record
             $object->delete(); // deletes the object from the database
             TTransaction::close(); // close the transaction
             

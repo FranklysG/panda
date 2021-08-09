@@ -1,9 +1,9 @@
 <?php
 /**
- * PayableForm Form
+ * EmployeeForm Form
  * @author  <your name here>
  */
-class PayableForm extends TPage
+class EmployeeForm extends TPage
 {
     protected $form; // form
     
@@ -18,50 +18,49 @@ class PayableForm extends TPage
         parent::setTargetContainer('adianti_right_panel');
 
         // creates the form
-        $this->form = new BootstrapFormBuilder('form_Payable');
-        $this->form->setFormTitle('CADASTRO DE CONTAS A PAGAR');
+        $this->form = new BootstrapFormBuilder('form_Employee');
+        $this->form->setFormTitle('CADASTRO DE FUNCIONARIO');
         $this->form->setFieldSizes('100%');
         $this->form->setProperty('style', 'margin-bottom:0;box-shadow:none');
-        
+
 
         // create the form fields
         $id = new THidden('id');
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
-        $name = new TEntry('description');
+        $name = new TEntry('name');
         $name->forceUpperCase();
+        $name->setMask('S!');
         $name->addValidation('Nome do produto', new TRequiredValidator);
-        $price = new TEntry('price');
-        $price->setNumericMask(2, ',', '.', true);
-        $price->addValidation('Preço', new TRequiredValidator);
-        $status = new TCombo('status');
-        $status->addItems(
-            [
-                '0' => 'AGUARADANDO PAGAMENTO',
-                '1' => 'PAGO'
-            ]
-        );
-        $status->setDefaultOption(false);
+        $document = new TEntry('document');
+        $document->setMask('999.999.999-99');
+        $document->addValidation('Nome do produto', new TRequiredValidator);
+        $contact = new TEntry('contact');
+        $contact->setMask('(99) 99999-9999');
+        $salary = new TEntry('salary');
+        $salary->setNumericMask(2, '.', ',', true);
+        $salary->addValidation('Preço do produto', new TRequiredValidator);
         $created_at = new TDate('created_at');
         $updated_at = new TEntry('updated_at');
 
 
         // add the fields
         $this->form->addFields( [ $id ] );
-        $this->form->addFields( [ new TLabel('Descrição'), $name ] );
-        $this->form->addFields( [ new TLabel('Preço'), $price ] );
-        $this->form->addFields( [ new TLabel('Status'), $status ] );
-        $this->form->addFields( [ new TLabel('Data Vencimento'), $created_at ] );
-
+        $this->form->addFields( [ new TLabel('Nome'), $name ] );
+        $this->form->addFields( [ new TLabel('<br />CPF <sup>(somente numeros)</sup>'), $document ] );
+        $this->form->addFields( [ new TLabel('<br />Contato <sup>(whatsapp) </sup>'), $contact ] );
+        $this->form->addFields( [ new TLabel('<br />Salario'), $salary ] );
+        $this->form->addFields( [ new TLabel('<br />Data de inicio'), $created_at ] );
 
         if (!empty($id))
         {
             $id->setEditable(FALSE);
         }
-        
+       
+         
         // create the form actions
         $btn = $this->form->addAction(_t('Save'), new TAction([$this, 'onSave']), 'fa:save');
         $btn->class = 'btn btn-sm btn-primary';
-        // $this->form->addActionLink(_t('Back'),  new TAction(['ProductList', 'onReload']), 'fa:arrow-circle-left red');
+        // $this->form->addActionLink(_t('New'),  new TAction([$this, 'onEdit']), 'fa:eraser red');
         $this->form->addHeaderActionLink( _t('Close'), new TAction(array($this, 'onClose')), 'fa:times red');
 
         // vertical box container
@@ -78,7 +77,6 @@ class PayableForm extends TPage
         TScript::create("Template.closeRightPanel()");
     }
 
-
     /**
      * Save form data
      * @param $param Request
@@ -92,7 +90,7 @@ class PayableForm extends TPage
             $this->form->validate(); // validate form data
             $data = $this->form->getData(); // get form data as array
             
-            $object = new Payable;  // create an empty object
+            $object = new Employee;  // create an empty object
             $object->fromArray( (array) $data); // load the object with data
             $object->system_user_id = TSession::getValue('userid');
             $object->store(); // save the object
@@ -103,7 +101,7 @@ class PayableForm extends TPage
             $this->form->setData($data); // fill form data
             TTransaction::close(); // close the transaction
             
-            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['PayableList', 'onReload']));
+            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['EmployeeList', 'onReload']));
         }
         catch (Exception $e) // in case of exception
         {
@@ -134,7 +132,7 @@ class PayableForm extends TPage
             {
                 $key = $param['key'];  // get the parameter $key
                 TTransaction::open('app'); // open a transaction
-                $object = new Payable($key); // instantiates the Active Record
+                $object = new Employee($key); // instantiates the Active Record
                 $this->form->setData($object); // fill the form
                 TTransaction::close(); // close the transaction
             }
