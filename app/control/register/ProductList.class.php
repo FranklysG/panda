@@ -77,8 +77,8 @@ class ProductList extends TPage
         $column_id = new TDataGridColumn('id', 'Id', 'right');
         $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'right');
         $column_sku = new TDataGridColumn('sku', 'SKU', 'left');
-        $column_name = new TDataGridColumn('name', 'NAME', 'left');
-        $column_alias = new TDataGridColumn('alias', 'ALIAS', 'left');
+        $column_name = new TDataGridColumn('name', 'NOME', 'left');
+        $column_alias = new TDataGridColumn('alias', 'APELIDO', 'left');
         $column_status = new TDataGridColumn('status', 'STATUS', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'CREATED At', 'left');
         $column_updated_at = new TDataGridColumn('Ultima atualização', 'ULTIMA ATUALIZAÇÃO', 'left');

@@ -58,9 +58,9 @@ class ProductForm extends TPage
         $this->form->addFields( [ $id ] );
         $row = $this->form->addFields( 
                                 [ new TLabel('Sku'), $sku ],
-                                [ new TLabel('<br />Name'), $name ],
-                                [ new TLabel('<br />Alias'), $alias ],
-                                [ new TLabel('<br />Escudo'), $image ],
+                                [ new TLabel('<br />Nome'), $name ],
+                                [ new TLabel('<br />Apelido'), $alias ],
+                                [ new TLabel('<br />Imagem do produto'), $image ],
                                 [ new TLabel('<br />'), $this->frame ],
                                 [ new TLabel('<br />Status'), $status ]);
 
