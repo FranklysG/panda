@@ -12,6 +12,7 @@ class Product extends TRecord
     
     private $system_user;
     private $inventorys;
+    private $brand;
     private $sales;
 
     /**
@@ -21,6 +22,7 @@ class Product extends TRecord
     {
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('system_user_id');
+        parent::addAttribute('brand_id');
         parent::addAttribute('sku');
         parent::addAttribute('name');
         parent::addAttribute('alias');
@@ -55,6 +57,33 @@ class Product extends TRecord
     
         // returns the associated object
         return $this->system_user;
+    }
+    
+    
+    /**
+     * Method set_brand
+     * Sample of usage: $product->brand = $object;
+     * @param $object Instance of Brand
+     */
+    public function set_brand(Brand $object)
+    {
+        $this->brand = $object;
+        $this->brand_id = $object->id;
+    }
+    
+    /**
+     * Method get_brand
+     * Sample of usage: $product->brand->attribute;
+     * @returns Brand instance
+     */
+    public function get_brand()
+    {
+        // loads the associated object
+        if (empty($this->brand))
+            $this->brand = new Brand($this->brand_id);
+    
+        // returns the associated object
+        return $this->brand;
     }
     
     

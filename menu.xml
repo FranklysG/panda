@@ -28,6 +28,10 @@
         <action>ProductList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
+      <menuitem label="Marcas">
+        <action>BrandList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
       <menuitem label="Estoque">
         <action>InventoryList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
