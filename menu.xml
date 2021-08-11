@@ -4,19 +4,19 @@
     <icon>fas:cash-register fa-fw</icon>
     <menu>
       <menuitem label="Vendas">
-        <action>SaleList</action>
+        <action>AssistenceSaleList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Serviços">
-        <action>OfficeList</action>
+        <action>AssistenceOfficeList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Contas a pagar">
-        <action>PayableList</action>
+        <action>AssistencePayableList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Despesas">
-        <action>ExesList</action>
+        <action>AssistenceExesList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
     </menu>
@@ -25,19 +25,19 @@
     <icon>fas:address-book fa-fw</icon>
     <menu>
       <menuitem label="Produtos">
-        <action>ProductList</action>
+        <action>AssistenceProductList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Marcas">
-        <action>BrandList</action>
+        <action>AssistenceBrandList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Estoque">
-        <action>InventoryList</action>
+        <action>AssistenceInventoryList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Funcionario">
-        <action>EmployeeList</action>
+        <action>AssistenceEmployeeList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
     </menu>
@@ -46,7 +46,11 @@
     <icon>fas:folder-plus fa-fw</icon>
     <menu>
       <menuitem label="Tipos de serviço">
-        <action>OfficeTypeFormList</action>
+        <action>AssistenceOfficeTypeFormList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+      <menuitem label="Formas de pagamento">
+        <action>AssistenceSaleTypeFormList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
     </menu>
@@ -55,7 +59,7 @@
     <icon>fas:home fa-fw</icon>
     <menu>
       <menuitem label="Dashboard">
-        <action>Dashboard</action>
+        <action>AssistenceDashboard</action>
         <icon>fas:tachometer-alt fa-fw</icon>
       </menuitem>
       <menuitem label="Admin Dashboard">

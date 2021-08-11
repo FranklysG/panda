@@ -223,7 +223,7 @@ class SystemProgramForm extends TStandardForm
             
             TTransaction::close();
             
-            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'));
+            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['SystemProgramForm','onEdit']));
             
             return $object;
         }
