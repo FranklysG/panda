@@ -63,7 +63,6 @@ class AssistenceEmployeeList extends TPage
         $this->datagrid->datatable = 'true';
         // $this->datagrid->enablePopover('Popover', 'Hi <b> {name} </b>');
         
-
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'Id', 'left');
         $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'left');
