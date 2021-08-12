@@ -65,14 +65,14 @@ class AssistenceEmployeeList extends TPage
         
 
         // creates the datagrid columns
-        $column_id = new TDataGridColumn('id', 'Id', 'right');
-        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'right');
-        $column_name = new TDataGridColumn('name', 'Name', 'left');
-        $column_document = new TDataGridColumn('document', 'Document', 'left');
-        $column_contact = new TDataGridColumn('contact', 'Contact', 'left');
-        $column_salary = new TDataGridColumn('salary', 'Salary', 'left');
+        $column_id = new TDataGridColumn('id', 'Id', 'left');
+        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'left');
+        $column_name = new TDataGridColumn('name', 'NOME', 'left');
+        $column_document = new TDataGridColumn('document', 'DOCUMENTO', 'left');
+        $column_contact = new TDataGridColumn('contact', 'CONTATO', 'left');
+        $column_salary = new TDataGridColumn('salary', 'SALARIO', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
-        $column_updated_at = new TDataGridColumn('updated_at', 'Updated At', 'left');
+        $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
 
         $column_salary->setTransformer(function($value){
             return Convert::toMonetario($value);
