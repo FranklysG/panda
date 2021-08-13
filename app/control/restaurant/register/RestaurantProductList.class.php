@@ -249,7 +249,7 @@ class RestaurantProductList extends TPage
             // veridicando se existe algum no estoque
             $verifyBrand = Brand::where('system_user_id', '=', TSession::getValue('userid'))->first();
             if(empty($verifyBrand)){
-                $pos_action = new TAction(['BrandList', 'onReload']);
+                $pos_action = new TAction(['RestaurantBrandList', 'onReload']);
                 new TMessage('warning', 'Você precisa cadastrar algumas marcas antes', $pos_action);
             }
 
