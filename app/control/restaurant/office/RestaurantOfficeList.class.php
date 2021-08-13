@@ -70,7 +70,7 @@ class RestaurantOfficeList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['OfficeForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink(_t('New'), new TAction(['RestaurantOfficeForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
@@ -106,7 +106,7 @@ class RestaurantOfficeList extends TPage
         $this->datagrid->addColumn($column_updated_at);
 
 
-        $action1 = new TDataGridAction(['OfficeForm', 'onEdit'], ['id'=>'{id}']);
+        $action1 = new TDataGridAction(['RestaurantOfficeForm', 'onEdit'], ['id'=>'{id}']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
@@ -234,7 +234,7 @@ class RestaurantOfficeList extends TPage
             // veridicando se existe algum no estoque
             $verifyOfficeType = OfficeType::where('system_user_id', '=', TSession::getValue('userid'))->first();
             if(empty($verifyOfficeType)){
-                $pos_action = new TAction(['OfficeTypeFormList', 'onReload']);
+                $pos_action = new TAction(['RestaurantOfficeTypeFormList', 'onReload']);
                 new TMessage('warning', 'Você precisa cadastrar alguns tipos de serviços antes antes', $pos_action);
             }
 

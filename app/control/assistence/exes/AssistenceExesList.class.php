@@ -261,7 +261,7 @@ class AssistenceExesList extends TPage
                 $criteria->add(TSession::getValue(__CLASS__.'_filter_updated_at')); // add the session filter
             }
 
-            
+            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
             

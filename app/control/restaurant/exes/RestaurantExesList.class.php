@@ -52,7 +52,7 @@ class RestaurantExesList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['ExesForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink(_t('New'), new TAction(['RestaurantExesForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
@@ -86,7 +86,7 @@ class RestaurantExesList extends TPage
         $this->datagrid->addColumn($column_updated_at);
 
 
-        $action1 = new TDataGridAction(['ExesForm', 'onEdit'], ['id'=>'{id}']);
+        $action1 = new TDataGridAction(['RestaurantExesForm', 'onEdit'], ['id'=>'{id}']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
@@ -261,7 +261,7 @@ class RestaurantExesList extends TPage
                 $criteria->add(TSession::getValue(__CLASS__.'_filter_updated_at')); // add the session filter
             }
 
-            
+            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
             

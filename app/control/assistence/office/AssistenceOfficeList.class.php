@@ -234,7 +234,7 @@ class AssistenceOfficeList extends TPage
             // veridicando se existe algum no estoque
             $verifyOfficeType = OfficeType::where('system_user_id', '=', TSession::getValue('userid'))->first();
             if(empty($verifyOfficeType)){
-                $pos_action = new TAction(['OfficeTypeFormList', 'onReload']);
+                $pos_action = new TAction(['AssistenceOfficeTypeFormList', 'onReload']);
                 new TMessage('warning', 'Você precisa cadastrar alguns tipos de serviços antes antes', $pos_action);
             }
 

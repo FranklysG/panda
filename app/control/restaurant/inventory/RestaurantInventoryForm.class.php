@@ -107,7 +107,7 @@ class RestaurantInventoryForm extends TPage
             $this->form->setData($data); // fill form data
             TTransaction::close(); // close the transaction
             
-            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['InventoryList', 'onReload']));
+            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['RestaurantInventoryList', 'onReload']));
         }
         catch (Exception $e) // in case of exception
         {

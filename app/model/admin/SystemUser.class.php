@@ -126,7 +126,7 @@ class SystemUser extends TRecord
         $object->system_user_id = $this->id;
         $object->store();
     }
-    
+
     /**
      * Add a Unit to the user
      * @param $object Instance of SystemUnit

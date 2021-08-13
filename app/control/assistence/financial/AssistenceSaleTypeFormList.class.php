@@ -278,7 +278,8 @@ class AssistenceSaleTypeFormList extends TPage
             $this->form->setData($data); // fill form data
             TTransaction::close(); // close the transaction
             
-            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction([$this, 'onReload'])); // success message
+            $pos_action = new TAction([__CLASS__, 'onReload']);
+            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), $pos_action); // success message
             $this->onReload(); // reload the listing
         }
         catch (Exception $e) // in case of exception

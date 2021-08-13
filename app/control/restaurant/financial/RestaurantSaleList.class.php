@@ -50,13 +50,13 @@ class RestaurantSaleList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['SaleForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink(_t('New'), new TAction(['RestaurantSaleForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
         $this->datagrid->style = 'width: 100%';
         $this->datagrid->datatable = 'true';
-        $this->datagrid->enablePopover('Produto', "<img style='max-height: 300px' src='tmp/".TSession::getvalue('userid')."/{product->image}'>");       
+        // $this->datagrid->enablePopover('Produto', "<img style='max-height: 300px' src='tmp/".TSession::getvalue('userid')."/{product->image}'>");       
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'id', 'left');
@@ -93,13 +93,13 @@ class RestaurantSaleList extends TPage
         $this->datagrid->addColumn($column_product_id);
         $this->datagrid->addColumn($column_quantity);
         $this->datagrid->addColumn($column_price);
-        $this->datagrid->addColumn($column_discount);
-        $this->datagrid->addColumn($column_total);
+        // $this->datagrid->addColumn($column_discount);
+        // $this->datagrid->addColumn($column_total);
         // $this->datagrid->addColumn($column_created_at);
         $this->datagrid->addColumn($column_updated_at);
 
 
-        $action1 = new TDataGridAction(['SaleForm', 'onEdit'], ['id'=>'{id}']);
+        $action1 = new TDataGridAction(['RestaurantSaleForm', 'onEdit'], ['id'=>'{id}']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}', 'product_id' => '{product_id}', 'quantity' => '{quantity}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
@@ -226,13 +226,13 @@ class RestaurantSaleList extends TPage
             $verifyInventory = Inventory::where('system_user_id', '=', TSession::getValue('userid'))->first();
             $verifySale = SaleType::where('system_user_id', '=', TSession::getValue('userid'))->first();
             if(empty($verifyProduct)){
-                $pos_action = new TAction(['ProductList', 'onReload']);
+                $pos_action = new TAction(['RestaurantProductList', 'onReload']);
                 new TMessage('warning', 'Você precisa cadastrar alguns produtos e adicionalos ao estoque antes', $pos_action);
             }else if(empty($verifyInventory)){
-                $pos_action = new TAction(['InventoryList', 'onReload']);
+                $pos_action = new TAction(['RestaurantInventoryList', 'onReload']);
                 new TMessage('warning', 'Você precisa adicionar alguns produtos ao estoque antes', $pos_action);
             }else if(empty($verifySale)){
-                $pos_action = new TAction(['SaleTypeFormList', 'onReload']);
+                $pos_action = new TAction(['RestaurantSaleTypeFormList', 'onReload']);
                 new TMessage('warning', 'Você precisa adicionar algumas formas de pagamentos antes', $pos_action);
             }
             

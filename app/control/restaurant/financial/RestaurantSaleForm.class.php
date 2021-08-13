@@ -55,18 +55,15 @@ class RestaurantSaleForm extends TPage
         $this->form->addFields( [ $id ] );
         $row = $this->form->addFields(
                                 [ new TLabel('<br />Buscar produto'), $product_id ],
-                                [ new TLabel('<br />'), $this->frame ],
                                 [ new TLabel('<br />Preço produto'), $price ],
                                 [ new TLabel('<br />Quantidade'), $quantity],
-                                [ new TLabel('<br />Desconto na venda'), $discount ],
                                 [ new TLabel('<br />Forma de pagamento'), $sale_type_id ]
                             );
-        $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
+        $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
 
         if (!empty($id))
         {
             $id->setEditable(FALSE);
-            $price->setEditable(FALSE);
         }
         
         // create the form actions
@@ -129,14 +126,14 @@ class RestaurantSaleForm extends TPage
             $this->form->validate(); // validate form data
             $data = $this->form->getData(); // get form data as array
 
-            $discount = $data->discount;
-            if(empty($discount))
-                $discount = 0;
+            // $discount = $data->discount;
+            // if(empty($discount))
+            //     $discount = 0;
             $object = new Sale;  // create an empty object
             $object->system_user_id = TSession::getValue('userid');
             $object->fromArray( (array) $data); // load the object with data
             $object->price = $data->price;
-            $object->discount = $discount;
+            // $object->discount = $discount;
             $object->store(); // save the object
             
             $object = Inventory::where('product_id', '=', $data->product_id)->where('amount', '>=', $data->quantity)->first();
@@ -152,7 +149,7 @@ class RestaurantSaleForm extends TPage
             $this->form->setData($data); // fill form data
             TTransaction::close(); // close the transaction
             
-            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['SaleList', 'onReload']));
+            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['RestaurantSaleList', 'onReload']));
         }
         catch (Exception $e) // in case of exception
         {

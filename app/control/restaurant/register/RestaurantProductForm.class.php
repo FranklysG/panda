@@ -29,7 +29,7 @@ class RestaurantProductForm extends TPage
         $criteria = new TCriteria;
         $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
         $brand_id = new TDBUniqueSearch('brand_id', 'app', 'Brand', 'id', 'name', null, $criteria);
-        $brand_id->setMinLength(1);
+        $brand_id->setMinLength(0);
         $brand_id->addValidation('Marca', new TRequiredValidator);
         $sku = new TEntry('sku');
         $name = new TEntry('name');
@@ -66,11 +66,9 @@ class RestaurantProductForm extends TPage
                                 [ new TLabel('<br />Marca'), $brand_id ],
                                 [ new TLabel('<br />Nome'), $name ],
                                 [ new TLabel('<br />Apelido'), $alias ],
-                                [ new TLabel('<br />Imagem do produto'), $image ],
-                                [ new TLabel('<br />'), $this->frame ],
                                 [ new TLabel('<br />Status'), $status ]);
 
-        $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
+        $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
         
         if (!empty($id))
         {
@@ -81,7 +79,7 @@ class RestaurantProductForm extends TPage
         // create the form actions
         $btn = $this->form->addAction(_t('Save'), new TAction([$this, 'onSave']), 'fa:save');
         $btn->class = 'btn btn-sm btn-primary';
-        // $this->form->addActionLink(_t('Back'),  new TAction(['ProductList', 'onReload']), 'fa:arrow-circle-left red');
+        // $this->form->addActionLink(_t('Back'),  new TAction(['RestaurantProductList', 'onReload']), 'fa:arrow-circle-left red');
         $this->form->addHeaderActionLink( _t('Close'), new TAction(array($this, 'onClose')), 'fa:times red');
 
         // vertical box container
@@ -124,7 +122,7 @@ class RestaurantProductForm extends TPage
             $this->form->setData($data); // fill form data
             TTransaction::close(); // close the transaction
             
-            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['ProductList', 'onReload']));
+            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['RestaurantProductList', 'onReload']));
         }
         catch (Exception $e) // in case of exception
         {

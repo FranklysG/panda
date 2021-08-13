@@ -101,7 +101,7 @@ class RestaurantEmployeeForm extends TPage
             $this->form->setData($data); // fill form data
             TTransaction::close(); // close the transaction
             
-            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['EmployeeList', 'onReload']));
+            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['RestaurantEmployeeList', 'onReload']));
         }
         catch (Exception $e) // in case of exception
         {

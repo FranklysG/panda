@@ -59,7 +59,7 @@ class RestaurantPayableList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['PayableForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink(_t('New'), new TAction(['RestaurantPayableForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
@@ -115,7 +115,7 @@ class RestaurantPayableList extends TPage
         $this->datagrid->addColumn($column_updated_at);
 
 
-        $action1 = new TDataGridAction(['PayableForm', 'onEdit'], ['id'=>'{id}']);
+        $action1 = new TDataGridAction(['RestaurantPayableForm', 'onEdit'], ['id'=>'{id}']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');

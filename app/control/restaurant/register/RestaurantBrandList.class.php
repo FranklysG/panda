@@ -47,7 +47,7 @@ class RestaurantBrandList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['BrandForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink(_t('New'), new TAction(['RestaurantBrandForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
@@ -101,7 +101,7 @@ class RestaurantBrandList extends TPage
         $this->datagrid->addColumn($column_updated_at);
 
 
-        $action1 = new TDataGridAction(['BrandForm', 'onEdit'], ['id'=>'{id}']);
+        $action1 = new TDataGridAction(['RestaurantBrandForm', 'onEdit'], ['id'=>'{id}']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');

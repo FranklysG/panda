@@ -55,7 +55,7 @@ class RestaurantEmployeeList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['EmployeeForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink(_t('New'), new TAction(['RestaurantEmployeeForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
@@ -63,16 +63,15 @@ class RestaurantEmployeeList extends TPage
         $this->datagrid->datatable = 'true';
         // $this->datagrid->enablePopover('Popover', 'Hi <b> {name} </b>');
         
-
         // creates the datagrid columns
-        $column_id = new TDataGridColumn('id', 'Id', 'right');
-        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'right');
-        $column_name = new TDataGridColumn('name', 'Name', 'left');
-        $column_document = new TDataGridColumn('document', 'Document', 'left');
-        $column_contact = new TDataGridColumn('contact', 'Contact', 'left');
-        $column_salary = new TDataGridColumn('salary', 'Salary', 'left');
+        $column_id = new TDataGridColumn('id', 'Id', 'left');
+        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'left');
+        $column_name = new TDataGridColumn('name', 'NOME', 'left');
+        $column_document = new TDataGridColumn('document', 'DOCUMENTO', 'left');
+        $column_contact = new TDataGridColumn('contact', 'CONTATO', 'left');
+        $column_salary = new TDataGridColumn('salary', 'SALARIO', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
-        $column_updated_at = new TDataGridColumn('updated_at', 'Updated At', 'left');
+        $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
 
         $column_salary->setTransformer(function($value){
             return Convert::toMonetario($value);
@@ -97,7 +96,7 @@ class RestaurantEmployeeList extends TPage
         $this->datagrid->addColumn($column_updated_at);
 
 
-        $action1 = new TDataGridAction(['EmployeeForm', 'onEdit'], ['id'=>'{id}']);
+        $action1 = new TDataGridAction(['RestaurantEmployeeForm', 'onEdit'], ['id'=>'{id}']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');

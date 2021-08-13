@@ -65,13 +65,13 @@ class RestaurantProductList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['ProductForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink(_t('New'), new TAction(['RestaurantProductForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
         $this->datagrid->style = 'width: 100%';
         $this->datagrid->datatable = 'true';
-        $this->datagrid->enablePopover('Produto', "<img style='max-height: 300px' src='tmp/".TSession::getvalue('userid')."/{image}'>");
+        // $this->datagrid->enablePopover('Produto', "<img style='max-height: 300px' src='tmp/".TSession::getvalue('userid')."/{image}'>");
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'Id', 'right');
@@ -124,7 +124,7 @@ class RestaurantProductList extends TPage
         $this->datagrid->addColumn($column_updated_at);
 
 
-        $action1 = new TDataGridAction(['ProductForm', 'onEdit'], ['id'=>'{id}']);
+        $action1 = new TDataGridAction(['RestaurantProductForm', 'onEdit'], ['id'=>'{id}']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');

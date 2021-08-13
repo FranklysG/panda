@@ -102,7 +102,7 @@ class RestaurantBrandForm extends TPage
             $this->form->setData($data); // fill form data
             TTransaction::close(); // close the transaction
             
-            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['BrandList', 'onReload']));
+            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['RestaurantBrandList', 'onReload']));
         }
         catch (Exception $e) // in case of exception
         {

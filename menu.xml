@@ -7,6 +7,10 @@
         <action>AssistenceSaleList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
+      <menuitem label="Vendas">
+        <action>RestaurantSaleList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
       <menuitem label="Serviços">
         <action>AssistenceOfficeList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
@@ -15,8 +19,16 @@
         <action>AssistencePayableList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
+      <menuitem label="Contas a pagar">
+        <action>RestaurantPayableList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
       <menuitem label="Despesas">
         <action>AssistenceExesList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+      <menuitem label="Despesas">
+        <action>RestaurantExesList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
     </menu>
@@ -28,16 +40,32 @@
         <action>AssistenceProductList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
+      <menuitem label="Produtos">
+        <action>RestaurantProductList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
       <menuitem label="Marcas">
         <action>AssistenceBrandList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+      <menuitem label="Marcas">
+        <action>RestaurantBrandList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Estoque">
         <action>AssistenceInventoryList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
+      <menuitem label="Estoque">
+        <action>RestaurantInventoryList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
       <menuitem label="Funcionario">
         <action>AssistenceEmployeeList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+      <menuitem label="Funcionario">
+        <action>RestaurantEmployeeList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
     </menu>
@@ -53,6 +81,10 @@
         <action>AssistenceSaleTypeFormList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
+      <menuitem label="Formas de pagamento">
+        <action>RestaurantSaleTypeFormList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
     </menu>
   </menuitem>
   <menuitem label="_t{Administration}">
@@ -60,6 +92,10 @@
     <menu>
       <menuitem label="Dashboard">
         <action>AssistenceDashboard</action>
+        <icon>fas:tachometer-alt fa-fw</icon>
+      </menuitem>
+      <menuitem label="Dashboard">
+        <action>RestaurantDashboard</action>
         <icon>fas:tachometer-alt fa-fw</icon>
       </menuitem>
       <menuitem label="Admin Dashboard">

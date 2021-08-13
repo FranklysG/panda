@@ -24,7 +24,7 @@ class SystemRegistrationForm extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_registration');
-        $this->form->setFormTitle( _t('User registration') );
+        $this->form->setFormTitle( '<strong>REGISTRE SUA EMPRESA</strong>');
         
         // create the form fields
         $login      = new TEntry('login');
@@ -32,7 +32,19 @@ class SystemRegistrationForm extends TPage
         $email      = new TEntry('email');
         $password   = new TPassword('password');
         $repassword = new TPassword('repassword');
+        $criteria   = new TCriteria;
+        $criteria->add(new TFilter('id', '>', 1));
+        $groups     = new TDBRadioGroup('groups','permission','SystemGroup','id','name', null, $criteria);
         
+        $groups->setLayout('horizontal');
+        if ($groups->getLabels())
+        {
+            foreach ($groups->getLabels() as $label)
+            {
+                $label->setSize(200);
+            }
+        }
+
         $this->form->addAction( _t('Save'),  new TAction([$this, 'onSave']), 'far:save')->{'class'} = 'btn btn-sm btn-primary';
         $this->form->addAction( _t('Clear'), new TAction([$this, 'onClear']), 'fa:eraser red' );
         $this->form->addActionLink( _t('Back'),  new TAction(['LoginForm','onLoad']), 'far:arrow-alt-circle-left blue' );
@@ -42,6 +54,7 @@ class SystemRegistrationForm extends TPage
         $email->addValidation( _t('Email'), new TRequiredValidator);
         $password->addValidation( _t('Password'), new TRequiredValidator);
         $repassword->addValidation( _t('Password confirmation'), new TRequiredValidator);
+        $repassword->addValidation( _t('Tipo de empresa'), new TRequiredValidator);
         
         // define the sizes
         $name->setSize('100%');
@@ -49,13 +62,15 @@ class SystemRegistrationForm extends TPage
         $password->setSize('100%');
         $repassword->setSize('100%');
         $email->setSize('100%');
+        $groups->setSize('100%');
         
-        $this->form->addFields( [new TLabel(_t('Login'), 'red')],    [$login] );
-        $this->form->addFields( [new TLabel(_t('Name'), 'red')],     [$name] );
-        $this->form->addFields( [new TLabel(_t('Email'), 'red')],    [$email] );
-        $this->form->addFields( [new TLabel(_t('Password'), 'red')], [$password] );
-        $this->form->addFields( [new TLabel(_t('Password confirmation'), 'red')], [$repassword] );
-        
+        $row = $this->form->addFields( [new TLabel(_t('Login'), 'red'), $login],   
+                                [new TLabel(_t('Name'), 'red'), $name],    
+                                [new TLabel(_t('Email'), 'red'), $email],   
+                                [new TLabel(_t('Password'), 'red'), $password],    
+                                [new TLabel(_t('Password confirmation'), 'red'), $repassword],  
+                                [new TLabel('<br />Tipo de empresa', 'red'), $groups] );
+        $row->layout = ['col-sm-6','col-sm-6','col-sm-12','col-sm-6','col-sm-6','col-sm-12'];
         // add the container to the page
         $wrapper = new TElement('div');
         $wrapper->style = 'margin:auto; margin-top:100px;max-width:600px;';
@@ -138,27 +153,8 @@ class SystemRegistrationForm extends TPage
             $object->frontpage_id = $ini['permission']['default_screen'];
             $object->clearParts();
             $object->store();
-            
-            $default_groups = explode(',', $ini['permission']['default_groups']);
-            
-            if( count($default_groups) > 0 )
-            {
-                foreach( $default_groups as $group_id )
-                {
-                    $object->addSystemUserGroup( new SystemGroup($group_id) );
-                }
-            }
-            
-            $default_units = explode(',', $ini['permission']['default_units']);
-            
-            if( count($default_units) > 0 )
-            {
-                foreach( $default_units as $unit_id )
-                {
-                    $object->addSystemUserUnit( new SystemUnit($unit_id) );
-                }
-            }
-            
+            $object->addSystemUserGroup( new SystemGroup($param['groups']) );
+
             TTransaction::close(); // close the transaction
             $pos_action = new TAction(['LoginForm', 'onLoad']);
             new TMessage('info', _t('Account created'), $pos_action); // shows the success message
