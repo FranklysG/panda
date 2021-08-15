@@ -1,7 +1,7 @@
 <?php
 /**
  * AssistenceProviderList Listing
- * @author  <your name here>
+ * @author  Franklys Guimaraes
  */
 class AssistenceProviderList extends TPage
 {
@@ -22,30 +22,22 @@ class AssistenceProviderList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Provider');
-        $this->form->setFormTitle('Provider');
-        
+        $this->form->setFormTitle('<strong>LISTAGEM DE FORNECEDORES</strong>');
+        $this->form->setFieldSizes('100%');
 
         // create the form fields
         $name = new TEntry('name');
         $cnpj = new TEntry('cnpj');
-        $created_at = new TEntry('created_at');
-        $updated_at = new TEntry('updated_at');
+        $created_at = new TDate('created_at');
+        $updated_at = new TDate('updated_at');
 
 
         // add the fields
-        $this->form->addFields( [ new TLabel('Name') ], [ $name ] );
-        $this->form->addFields( [ new TLabel('Cnpj') ], [ $cnpj ] );
-        $this->form->addFields( [ new TLabel('Created At') ], [ $created_at ] );
-        $this->form->addFields( [ new TLabel('Updated At') ], [ $updated_at ] );
+        $this->form->addFields( [ new TLabel('Nome'), $name ],
+                                [ new TLabel('Cnpj'), $cnpj ],
+                                [ new TLabel('Criado em'), $created_at ],
+                                [ new TLabel('Até'), $updated_at ] );
 
-
-        // set sizes
-        $name->setSize('100%');
-        $cnpj->setSize('100%');
-        $created_at->setSize('100%');
-        $updated_at->setSize('100%');
-
-        
         // keep the form filled during navigation with session data
         $this->form->setData( TSession::getValue(__CLASS__ . '_filter_data') );
         
@@ -64,20 +56,23 @@ class AssistenceProviderList extends TPage
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'Id', 'right');
         $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'right');
-        $column_name = new TDataGridColumn('name', 'Name', 'left');
-        $column_cnpj = new TDataGridColumn('cnpj', 'Cnpj', 'left');
-        $column_contact = new TDataGridColumn('contact', 'Contact', 'left');
+        $column_name = new TDataGridColumn('name', 'NOME', 'left');
+        $column_cnpj = new TDataGridColumn('cnpj', 'CNPJ', 'left');
+        $column_contact = new TDataGridColumn('contact', 'CONTATO', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
-        $column_updated_at = new TDataGridColumn('updated_at', 'Updated At', 'left');
+        $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
 
+        $column_updated_at->setTransformer(function($value){
+            return Convert::toDate($value, 'd / m / Y');
+        });
 
         // add the columns to the DataGrid
-        $this->datagrid->addColumn($column_id);
-        $this->datagrid->addColumn($column_system_user_id);
+        // $this->datagrid->addColumn($column_id);
+        // $this->datagrid->addColumn($column_system_user_id);
         $this->datagrid->addColumn($column_name);
         $this->datagrid->addColumn($column_cnpj);
         $this->datagrid->addColumn($column_contact);
-        $this->datagrid->addColumn($column_created_at);
+        // $this->datagrid->addColumn($column_created_at);
         $this->datagrid->addColumn($column_updated_at);
 
 
@@ -163,17 +158,10 @@ class AssistenceProviderList extends TPage
         }
 
 
-        if (isset($data->created_at) AND ($data->created_at)) {
-            $filter = new TFilter('created_at', 'like', "%{$data->created_at}%"); // create the filter
+        if ((isset($data->created_at) AND ($data->created_at)) AND (isset($data->updated_at) AND ($data->updated_at))) {
+            $filter = new TFilter('created_at', 'between', "{$data->created_at}", "{$data->updated_at}"); // create the filter
             TSession::setValue(__CLASS__.'_filter_created_at',   $filter); // stores the filter in the session
         }
-
-
-        if (isset($data->updated_at) AND ($data->updated_at)) {
-            $filter = new TFilter('updated_at', 'like', "%{$data->updated_at}%"); // create the filter
-            TSession::setValue(__CLASS__.'_filter_updated_at',   $filter); // stores the filter in the session
-        }
-
         
         // fill the form with data again
         $this->form->setData($data);
@@ -207,7 +195,7 @@ class AssistenceProviderList extends TPage
             if (empty($param['order']))
             {
                 $param['order'] = 'id';
-                $param['direction'] = 'asc';
+                $param['direction'] = 'desc';
             }
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
@@ -226,12 +214,9 @@ class AssistenceProviderList extends TPage
             if (TSession::getValue(__CLASS__.'_filter_created_at')) {
                 $criteria->add(TSession::getValue(__CLASS__.'_filter_created_at')); // add the session filter
             }
-
-
-            if (TSession::getValue(__CLASS__.'_filter_updated_at')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_updated_at')); // add the session filter
-            }
-
+            
+            // citerios especificos
+            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid'))); 
             
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);

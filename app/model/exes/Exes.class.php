@@ -21,7 +21,6 @@ class Exes extends TRecord
         parent::addAttribute('system_user_id');
         parent::addAttribute('description');
         parent::addAttribute('price');
-        parent::addAttribute('status');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');
     }
