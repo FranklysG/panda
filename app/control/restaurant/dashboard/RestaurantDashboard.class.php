@@ -59,7 +59,13 @@ class RestaurantDashboard extends TPage
         
             // média de ocupação mensal
             $meses = AppUtil::calendario();
-            $objects = Sale::getObjects();
+            $criteria = new TCriteria;
+            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+            $criteria->add(new TFilter('date(created_at)', 'BETWEEN', date('Y-m-d', strtotime('-1 week')), date('Y-m-d')));
+            
+            $repositoy = new TRepository('Sale');
+            $objects = $repositoy->load($criteria, false);
+
             $data_count = [];
             if($objects){
                 foreach ($objects as $key => $value) {
@@ -70,7 +76,7 @@ class RestaurantDashboard extends TPage
                     }
                 }
             }
-
+            
             foreach($data_count as $key => $value){
                 $day = explode('/',$key)[0];
                 $month = explode('/',$key)[1];
