@@ -1,9 +1,9 @@
 <?php
 /**
- * AssistenceProviderForm Form
+ * RestaurantProviderForm Form
  * @author  Franklys Guimaraes
  */
-class AssistenceProviderForm extends TPage
+class RestaurantProviderForm extends TPage
 {
     protected $form; // form
     
@@ -101,7 +101,7 @@ class AssistenceProviderForm extends TPage
             $this->form->setData($data); // fill form data
             TTransaction::close(); // close the transaction
             
-            $pos_action = new TAction(['AssistenceProviderList', 'onReload']);
+            $pos_action = new TAction(['RestaurantProviderList', 'onReload']);
             new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), $pos_action);
         }
         catch (Exception $e) // in case of exception
