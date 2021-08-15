@@ -1,9 +1,9 @@
 <?php
 /**
- * RestaurantProductForm Form
+ * RestaurantProviderForm Form
  * @author  Franklys Guimaraes
  */
-class RestaurantProductForm extends TPage
+class RestaurantProviderForm extends TPage
 {
     protected $form; // form
     
@@ -14,72 +14,53 @@ class RestaurantProductForm extends TPage
     public function __construct( $param )
     {
         parent::__construct();
-        parent::setTargetContainer('adianti_right_panel');
         
+        parent::setTargetContainer('adianti_right_panel');
+
         // creates the form
-        $this->form = new BootstrapFormBuilder('form_Product');
-        $this->form->setFormTitle('CADASTRO DE PRODUTO');
+        $this->form = new BootstrapFormBuilder('form_Provider');
+        $this->form->setFormTitle('CADASTRO DE FORNECEDOR');
         $this->form->setFieldSizes('100%');
         $this->form->setProperty('style', 'margin-bottom:0;box-shadow:none');
-        
+
 
         // create the form fields
         $id = new THidden('id');
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
-        $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
-        $brand_id = new TDBUniqueSearch('brand_id', 'app', 'Brand', 'id', 'name', null, $criteria);
-        $brand_id->setMinLength(0);
-        $brand_id->addValidation('Marca', new TRequiredValidator);
-        $sku = new TEntry('sku');
         $name = new TEntry('name');
-        $name->forceUpperCase();
-        $name->addValidation('Nome do produto', new TRequiredValidator);
-        $alias = new TEntry('alias');
-        $alias->forceUpperCase();
-        $alias->addValidation('Apelido do produto', new TRequiredValidator);
-        $image = new TFile('image', TSession::getValue('userid'));
-        $image->setAllowedExtensions( ['png', 'jpg', 'jpeg'] );
-        $image->addValidation('Imagem do produto', new TRequiredValidator);
-        $status = new TCombo('status');
-        $status->addItems(
-            [
-                '1' => 'ATIVO',
-                '0' => 'INATIVO'
-            ]
-        );
-        $status->setDefaultOption(false);
-
-        $status->addValidation('Status', new TRequiredValidator);
+        $name->addValidation('Nome fornecedor', new TRequiredValidator);
+        $cnpj = new TEntry('cnpj');
+        $cnpj->setMask('99.999.999/9999-99');;
+        $cnpj->addValidation('CNPJ', new TRequiredValidator);
+        $contact = new TEntry('contact');
+        $contact->setMask('(99)99999-999');
+        $contact->addValidation('Contato', new TRequiredValidator);
         $created_at = new TEntry('created_at');
         $updated_at = new TEntry('updated_at');
-
-        $this->frame = new TElement('div');
-        $this->frame->id = 'image_frame';
-        $this->frame->style = 'width:100px;height:auto;;border:1px solid gray;padding:4px;';
 
 
         // add the fields
         $this->form->addFields( [ $id ] );
-        $row = $this->form->addFields( 
-                                [ new TLabel('Sku'), $sku ],
-                                [ new TLabel('<br />Marca'), $brand_id ],
-                                [ new TLabel('<br />Nome'), $name ],
-                                [ new TLabel('<br />Apelido'), $alias ],
-                                [ new TLabel('<br />Status'), $status ]);
+        $this->form->addFields( [ new TLabel('<br /> Nome'), $name ] );
+        $this->form->addFields( [ new TLabel('<br /> Cnpj'), $cnpj ] );
+        $this->form->addFields( [ new TLabel('<br /> Contato'), $contact ] );
+        // $this->form->addFields( [ new TLabel('Created At'), $created_at ] );
+        // $this->form->addFields( [ new TLabel('Updated At'), $updated_at ] );
 
-        $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
-        
         if (!empty($id))
         {
             $id->setEditable(FALSE);
-            $sku->setEditable(FALSE);
         }
-
+        
+        /** samples
+         $fieldX->addValidation( 'Field X', new TRequiredValidator ); // add validation
+         $fieldX->setSize( '100%' ); // set size
+         **/
+         
         // create the form actions
         $btn = $this->form->addAction(_t('Save'), new TAction([$this, 'onSave']), 'fa:save');
         $btn->class = 'btn btn-sm btn-primary';
-        // $this->form->addActionLink(_t('Back'),  new TAction(['RestaurantProductList', 'onReload']), 'fa:arrow-circle-left red');
+        // $this->form->addActionLink(_t('New'),  new TAction([$this, 'onEdit']), 'fa:eraser red');
         $this->form->addHeaderActionLink( _t('Close'), new TAction(array($this, 'onClose')), 'fa:times red');
 
         // vertical box container
@@ -108,21 +89,20 @@ class RestaurantProductForm extends TPage
             
             $this->form->validate(); // validate form data
             $data = $this->form->getData(); // get form data as array
-            $object = new Product;  // create an empty object
+            
+            $object = new Provider;  // create an empty object
+            $object->system_user_id = TSession::getValue('userid'); // load the object with data
             $object->fromArray( (array) $data); // load the object with data
-            if(!Product::where('sku','=',$data->sku)->load()){
-                $object->sku = AppUtil::hash(8);
-            }
-            $object->system_user_id = TSession::getValue('userid');
             $object->store(); // save the object
-
+            
             // get the generated id
             $data->id = $object->id;
             
             $this->form->setData($data); // fill form data
             TTransaction::close(); // close the transaction
             
-            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['RestaurantProductList', 'onReload']));
+            $pos_action = new TAction(['RestaurantProviderList', 'onReload']);
+            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), $pos_action);
         }
         catch (Exception $e) // in case of exception
         {
@@ -151,16 +131,9 @@ class RestaurantProductForm extends TPage
         {
             if (isset($param['key']))
             {
-                $userid = TSession::getValue('userid');
                 $key = $param['key'];  // get the parameter $key
                 TTransaction::open('app'); // open a transaction
-               
-                $object = new Product($key); // instantiates the Active Record
-                if (isset($object->image)) {
-                    $image = new TImage("tmp/{$userid}/{$object->image}");
-                    $image->style = 'width: 100%';
-                    $this->frame->add($image);
-                }
+                $object = new Provider($key); // instantiates the Active Record
                 $this->form->setData($object); // fill the form
                 TTransaction::close(); // close the transaction
             }
@@ -174,14 +147,5 @@ class RestaurantProductForm extends TPage
             new TMessage('error', $e->getMessage()); // shows the exception error message
             TTransaction::rollback(); // undo all pending operations
         }
-    }
-
-    public static function onComplete($param)
-    {
-        $userid = TSession::getValue('userid');
-        // refresh photo_frame
-        $path = PATH."/tmp/{$userid}/{$param['image']}";
-        TScript::create("$('#image_frame').html('')");
-        TScript::create("$('#image_frame').append(\"<img style='width:100%' src='$path'>\");");
     }
 }

@@ -1,9 +1,9 @@
 <?php
 /**
- * AssistenceInventoryList Listing
+ * RestaurantProviderList Listing
  * @author  Franklys Guimaraes
  */
-class AssistenceInventoryList extends TPage
+class RestaurantProviderList extends TPage
 {
     private $form; // form
     private $datagrid; // listing
@@ -21,34 +21,22 @@ class AssistenceInventoryList extends TPage
         parent::__construct();
         
         // creates the form
-        $this->form = new BootstrapFormBuilder('form_search_Product');
-        $this->form->setFormTitle('<strong>LISTAGEM DE PRODUTOS NO ESTOQUE</strong>');
+        $this->form = new BootstrapFormBuilder('form_search_Provider');
+        $this->form->setFormTitle('<strong>LISTAGEM DE FORNECEDORES</strong>');
         $this->form->setFieldSizes('100%');
-         
 
         // create the form fields
-        $id = new THidden('id');
-        $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
-        $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'product_id', 'product_name', null, $criteria);
-        $product_id->setMinLength(1);
-        $product_id->setMask('{product_name}');
-        $amount = new TEntry('amount');
-        $price = new TEntry('price');
-        $final_price = new TEntry('final_price');
-        $created_at = new TEntry('created_at');
-        $updated_at = new TEntry('updated_at');
+        $name = new TEntry('name');
+        $cnpj = new TEntry('cnpj');
+        $created_at = new TDate('created_at');
+        $updated_at = new TDate('updated_at');
 
 
         // add the fields
-        $this->form->addFields( [ $id ]);
-        $this->form->addFields( 
-                                [ new TLabel('Nome do Produto'), $product_id ] ,
-                                [ new TLabel('Preço de venda'), $final_price ] ,
-                                [ new TLabel('Criado em'), $created_at ] ,
-                                [ new TLabel('até'), $updated_at ] 
-                            );
-
+        $this->form->addFields( [ new TLabel('Nome'), $name ],
+                                [ new TLabel('Cnpj'), $cnpj ],
+                                [ new TLabel('Criado em'), $created_at ],
+                                [ new TLabel('Até'), $updated_at ] );
 
         // keep the form filled during navigation with session data
         $this->form->setData( TSession::getValue(__CLASS__ . '_filter_data') );
@@ -56,7 +44,7 @@ class AssistenceInventoryList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['AssistenceInventoryForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink(_t('New'), new TAction(['RestaurantProviderForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
@@ -66,39 +54,29 @@ class AssistenceInventoryList extends TPage
         
 
         // creates the datagrid columns
-        $column_id = new TDataGridColumn('id', 'Id', 'left');
-        $column_product_name = new TDataGridColumn('product_name', 'PRODUTO', 'left');
-        $column_product_sku = new TDataGridColumn('product_sku', 'SKU', 'left');
-        $column_amount = new TDataGridColumn('amount', 'QUANTIDADE DISPONIVEL', 'left');
-        $column_price = new TDataGridColumn('price', 'PREÇO MEDIO', 'left');
-        $column_final_price = new TDataGridColumn('final_price', 'PREÇO DE VENDA', 'left');
+        $column_id = new TDataGridColumn('id', 'Id', 'right');
+        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'right');
+        $column_name = new TDataGridColumn('name', 'NOME', 'left');
+        $column_cnpj = new TDataGridColumn('cnpj', 'CNPJ', 'left');
+        $column_contact = new TDataGridColumn('contact', 'CONTATO', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
-        $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA MODIFICAZAÇÃO', 'right');
+        $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
 
-        $column_price->setTransformer(function($value){
-            return Convert::toMonetario($value);
-        });
-
-        $column_final_price->setTransformer(function($value){
-            return Convert::toMonetario($value);
-        });
-        
         $column_updated_at->setTransformer(function($value){
             return Convert::toDate($value, 'd / m / Y');
         });
 
         // add the columns to the DataGrid
         // $this->datagrid->addColumn($column_id);
-        $this->datagrid->addColumn($column_product_sku);
-        $this->datagrid->addColumn($column_product_name);
-        $this->datagrid->addColumn($column_amount);
-        $this->datagrid->addColumn($column_price);
-        $this->datagrid->addColumn($column_final_price);
+        // $this->datagrid->addColumn($column_system_user_id);
+        $this->datagrid->addColumn($column_name);
+        $this->datagrid->addColumn($column_cnpj);
+        $this->datagrid->addColumn($column_contact);
         // $this->datagrid->addColumn($column_created_at);
         $this->datagrid->addColumn($column_updated_at);
 
 
-        $action1 = new TDataGridAction(['AssistenceInventoryForm', 'onEdit'], ['id'=>'{id}']);
+        $action1 = new TDataGridAction(['RestaurantProviderForm', 'onEdit'], ['id'=>'{id}']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
@@ -139,7 +117,7 @@ class AssistenceInventoryList extends TPage
             $value = $param['value'];
             
             TTransaction::open('app'); // open a transaction with database
-            $object = new Inventory($key); // instantiates the Active Record
+            $object = new Provider($key); // instantiates the Active Record
             $object->{$field} = $value;
             $object->store(); // update the object in the database
             TTransaction::close(); // close the transaction
@@ -163,46 +141,32 @@ class AssistenceInventoryList extends TPage
         $data = $this->form->getData();
         
         // clear session filters
-        TSession::setValue(__CLASS__.'_filter_id',   NULL);
-        TSession::setValue(__CLASS__.'_filter_product_id',   NULL);
-        TSession::setValue(__CLASS__.'_filter_amount',   NULL);
-        TSession::setValue(__CLASS__.'_filter_price',   NULL);
-        TSession::setValue(__CLASS__.'_filter_final_price',   NULL);
+        TSession::setValue(__CLASS__.'_filter_name',   NULL);
+        TSession::setValue(__CLASS__.'_filter_cnpj',   NULL);
         TSession::setValue(__CLASS__.'_filter_created_at',   NULL);
         TSession::setValue(__CLASS__.'_filter_updated_at',   NULL);
 
-        if (isset($data->id) AND ($data->id)) {
-            $filter = new TFilter('id', '=', $data->id); // create the filter
-            TSession::setValue(__CLASS__.'_filter_id',   $filter); // stores the filter in the session
+        if (isset($data->name) AND ($data->name)) {
+            $filter = new TFilter('name', 'like', "%{$data->name}%"); // create the filter
+            TSession::setValue(__CLASS__.'_filter_name',   $filter); // stores the filter in the session
         }
 
 
-        if (isset($data->product_id) AND ($data->product_id)) {
-            $filter = new TFilter('product_id', '=', $data->product_id); // create the filter
-            TSession::setValue(__CLASS__.'_filter_product_id',   $filter); // stores the filter in the session
+        if (isset($data->cnpj) AND ($data->cnpj)) {
+            $filter = new TFilter('cnpj', 'like', "%{$data->cnpj}%"); // create the filter
+            TSession::setValue(__CLASS__.'_filter_cnpj',   $filter); // stores the filter in the session
         }
 
 
-        if (isset($data->amount) AND ($data->amount)) {
-            $filter = new TFilter('amount', 'like', "%{$data->amount}%"); // create the filter
-            TSession::setValue(__CLASS__.'_filter_amount',   $filter); // stores the filter in the session
-        }
-
-
-        if (isset($data->price) AND ($data->price)) {
-            $filter = new TFilter('price', 'like', "%{$data->price}%"); // create the filter
-            TSession::setValue(__CLASS__.'_filter_price',   $filter); // stores the filter in the session
-        }
-
-
-        if (isset($data->final_price) AND ($data->final_price)) {
-            $filter = new TFilter('final_price', 'like', "%{$data->final_price}%"); // create the filter
-            TSession::setValue(__CLASS__.'_filter_final_price',   $filter); // stores the filter in the session
-        }
-
-        if ((isset($data->created_at) AND ($data->created_at)) AND (isset($data->updated_at) AND ($data->updated_at))) {
-            $filter = new TFilter('created_at', 'between', "{$data->created_at}", "{$data->updated_at}"); // create the filter
+        if (isset($data->created_at) AND ($data->created_at)) {
+            $filter = new TFilter('created_at', 'like', "%{$data->created_at}%"); // create the filter
             TSession::setValue(__CLASS__.'_filter_created_at',   $filter); // stores the filter in the session
+        }
+
+
+        if (isset($data->updated_at) AND ($data->updated_at)) {
+            $filter = new TFilter('updated_at', 'like', "%{$data->updated_at}%"); // create the filter
+            TSession::setValue(__CLASS__.'_filter_updated_at',   $filter); // stores the filter in the session
         }
 
         
@@ -228,15 +192,8 @@ class AssistenceInventoryList extends TPage
             // open a transaction with database 'app'
             TTransaction::open('app');
             
-            // veridicando se existe algum no estoque
-            $verifyProduct = Product::where('system_user_id', '=', TSession::getValue('userid'))->first();
-            if(empty($verifyProduct)){
-                $pos_action = new TAction(['AssistenceProductList', 'onReload']);
-                new TMessage('warning', 'Você precisa cadastrar alguns produtos e adicionalos ao estoque antes', $pos_action);
-            }
-
-            // creates a repository for Inventory
-            $repository = new TRepository('ViewInventory');
+            // creates a repository for Provider
+            $repository = new TRepository('Provider');
             $limit = 10;
             // creates a criteria
             $criteria = new TCriteria;
@@ -245,35 +202,19 @@ class AssistenceInventoryList extends TPage
             if (empty($param['order']))
             {
                 $param['order'] = 'id';
-                $param['direction'] = 'desc';
+                $param['direction'] = 'asc';
             }
-
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
             
 
-            if (TSession::getValue(__CLASS__.'_filter_id')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_id')); // add the session filter
+            if (TSession::getValue(__CLASS__.'_filter_name')) {
+                $criteria->add(TSession::getValue(__CLASS__.'_filter_name')); // add the session filter
             }
 
 
-            if (TSession::getValue(__CLASS__.'_filter_product_id')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_product_id')); // add the session filter
-            }
-
-
-            if (TSession::getValue(__CLASS__.'_filter_amount')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_amount')); // add the session filter
-            }
-
-
-            if (TSession::getValue(__CLASS__.'_filter_price')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_price')); // add the session filter
-            }
-
-
-            if (TSession::getValue(__CLASS__.'_filter_final_price')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_final_price')); // add the session filter
+            if (TSession::getValue(__CLASS__.'_filter_cnpj')) {
+                $criteria->add(TSession::getValue(__CLASS__.'_filter_cnpj')); // add the session filter
             }
 
 
@@ -286,9 +227,7 @@ class AssistenceInventoryList extends TPage
                 $criteria->add(TSession::getValue(__CLASS__.'_filter_updated_at')); // add the session filter
             }
 
-            // citerios especificos
-            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid'))); 
-
+            
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
             
@@ -301,8 +240,6 @@ class AssistenceInventoryList extends TPage
             if ($objects)
             {
                 // iterate the collection of active records
-                $product_id = null;
-                $dados = null;
                 foreach ($objects as $object)
                 {
                     // add the object inside the datagrid
@@ -351,7 +288,7 @@ class AssistenceInventoryList extends TPage
         {
             $key=$param['key']; // get the parameter $key
             TTransaction::open('app'); // open a transaction with database
-            $object = new Inventory($key, FALSE); // instantiates the Active Record
+            $object = new Provider($key, FALSE); // instantiates the Active Record
             $object->delete(); // deletes the object from the database
             TTransaction::close(); // close the transaction
             

@@ -24,7 +24,6 @@ class RestaurantSaleList extends TPage
         $this->form = new BootstrapFormBuilder('form_search_Sale');
         $this->form->setFormTitle('<strong>LISTAGEM DE VENDAS</strong>');
         $this->form->setFieldSizes('100%');
-        $this->form->setProperty('style', 'margin-bottom:0;box-shadow:none');
 
         // create the form fields
         $id = new THidden('id');
@@ -94,7 +93,7 @@ class RestaurantSaleList extends TPage
         $this->datagrid->addColumn($column_quantity);
         $this->datagrid->addColumn($column_price);
         // $this->datagrid->addColumn($column_discount);
-        // $this->datagrid->addColumn($column_total);
+        $this->datagrid->addColumn($column_total);
         // $this->datagrid->addColumn($column_created_at);
         $this->datagrid->addColumn($column_updated_at);
 
@@ -246,7 +245,7 @@ class RestaurantSaleList extends TPage
             if (empty($param['order']))
             {
                 $param['order'] = 'id';
-                $param['direction'] = 'asc';
+                $param['direction'] = 'desc';
             }
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);

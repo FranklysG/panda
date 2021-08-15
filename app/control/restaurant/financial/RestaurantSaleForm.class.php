@@ -27,7 +27,7 @@ class RestaurantSaleForm extends TPage
         $criteria = new TCriteria;
         $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
         $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'product_id', 'product_name', null, $criteria);
-        $product_id->setMinLength(1);
+        $product_id->setMinLength(0);
         $product_id->setMask('{product_name}');
         $product_id->addValidation('Nome do produto', new TRequiredValidator);
         $sale_type_id = new TDBUniqueSearch('sale_type_id', 'app', 'SaleType', 'id', 'name', null, $criteria);
@@ -40,8 +40,8 @@ class RestaurantSaleForm extends TPage
         $quantity->setvalue(1);
         $discount = new TEntry('discount');
         $discount->setNumericMask(2, '.', ',', true);
-        $created_at = new TEntry('created_at');
-        $updated_at = new TEntry('updated_at');
+        $created_at = new TDate('created_at');
+        $updated_at = new TDate('updated_at');
 
         // set exit action for input_exit
         $change_action = new TAction(array($this, 'onChangeAction'));
@@ -57,7 +57,8 @@ class RestaurantSaleForm extends TPage
                                 [ new TLabel('<br />Buscar produto'), $product_id ],
                                 [ new TLabel('<br />Preço produto'), $price ],
                                 [ new TLabel('<br />Quantidade'), $quantity],
-                                [ new TLabel('<br />Forma de pagamento'), $sale_type_id ]
+                                [ new TLabel('<br />Forma de pagamento'), $sale_type_id ],
+                                [ new TLabel('<br />Data da venda'), $created_at ]
                             );
         $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
 
@@ -125,14 +126,17 @@ class RestaurantSaleForm extends TPage
             
             $this->form->validate(); // validate form data
             $data = $this->form->getData(); // get form data as array
-
             // $discount = $data->discount;
             // if(empty($discount))
             //     $discount = 0;
             $object = new Sale;  // create an empty object
             $object->system_user_id = TSession::getValue('userid');
             $object->fromArray( (array) $data); // load the object with data
+            if($data->price <= 0){
+                throw new Exception("Valor da venda não pode ser R$ 0.00", 002); 
+            }
             $object->price = $data->price;
+            $object->created_at = (!empty($data->created_at))? $data->created_at.date(' H:i:s') : date('Y-m-d H:i:s');
             // $object->discount = $discount;
             $object->store(); // save the object
             
@@ -155,6 +159,9 @@ class RestaurantSaleForm extends TPage
         {
             switch ($e->getCode()) {
                 case '001':
+                    new TMessage('warning', $e->getMessage()); // shows the exception error message
+                    break; 
+                case '002':
                     new TMessage('warning', $e->getMessage()); // shows the exception error message
                     break;
                 default:

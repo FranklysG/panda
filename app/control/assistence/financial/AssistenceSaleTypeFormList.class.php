@@ -20,8 +20,8 @@ class AssistenceSaleTypeFormList extends TPage
         
         
         $this->form = new BootstrapFormBuilder('form_SaleType');
-         $this->form->setFormTitle('<strong>ADICIONE NOVOS TIPOS DE PAGAMENTOS</strong>');
-         $this->form->setFieldSizes('100%');
+        $this->form->setFormTitle('<strong>ADICIONE NOVOS TIPOS DE PAGAMENTOS</strong>');
+        $this->form->setFieldSizes('100%');
  
 
         // create the form fields
@@ -170,7 +170,7 @@ class AssistenceSaleTypeFormList extends TPage
             if (empty($param['order']))
             {
                 $param['order'] = 'id';
-                $param['direction'] = 'asc';
+                $param['direction'] = 'desc';
             }
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
