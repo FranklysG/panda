@@ -22,6 +22,8 @@ class ViewFinancial extends TRecord
         parent::addAttribute('sale_cash_year');
         parent::addAttribute('payable_cash_month');
         parent::addAttribute('payable_cash_year');
+        parent::addAttribute('exes_cash_month');
+        parent::addAttribute('exes_cash_year');
         parent::addAttribute('employee_salary');
     }
 
