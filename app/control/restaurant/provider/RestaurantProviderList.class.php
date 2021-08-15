@@ -158,17 +158,10 @@ class RestaurantProviderList extends TPage
         }
 
 
-        if (isset($data->created_at) AND ($data->created_at)) {
-            $filter = new TFilter('created_at', 'like', "%{$data->created_at}%"); // create the filter
+        if ((isset($data->created_at) AND ($data->created_at)) AND (isset($data->updated_at) AND ($data->updated_at))) {
+            $filter = new TFilter('created_at', 'between', "{$data->created_at}", "{$data->updated_at}"); // create the filter
             TSession::setValue(__CLASS__.'_filter_created_at',   $filter); // stores the filter in the session
         }
-
-
-        if (isset($data->updated_at) AND ($data->updated_at)) {
-            $filter = new TFilter('updated_at', 'like', "%{$data->updated_at}%"); // create the filter
-            TSession::setValue(__CLASS__.'_filter_updated_at',   $filter); // stores the filter in the session
-        }
-
         
         // fill the form with data again
         $this->form->setData($data);
@@ -221,12 +214,9 @@ class RestaurantProviderList extends TPage
             if (TSession::getValue(__CLASS__.'_filter_created_at')) {
                 $criteria->add(TSession::getValue(__CLASS__.'_filter_created_at')); // add the session filter
             }
-
-
-            if (TSession::getValue(__CLASS__.'_filter_updated_at')) {
-                $criteria->add(TSession::getValue(__CLASS__.'_filter_updated_at')); // add the session filter
-            }
-
+            
+            // citerios especificos
+            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid'))); 
             
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
