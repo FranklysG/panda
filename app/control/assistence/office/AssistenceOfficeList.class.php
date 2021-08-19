@@ -22,7 +22,7 @@ class AssistenceOfficeList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Office');
-        $this->form->setFormTitle('<strong>LISTAGEM DE SERVIÇOS</strong>');
+        $this->form->setFormTitle('<strong> BUSQUE SEUS SERVIÇOS</strong>');
         $this->form->setFieldSizes('100%');
 
         // create the form fields
@@ -70,7 +70,7 @@ class AssistenceOfficeList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['AssistenceOfficeForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink('Cadastrar novo', new TAction(['AssistenceOfficeForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);

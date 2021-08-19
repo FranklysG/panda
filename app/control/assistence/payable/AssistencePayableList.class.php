@@ -22,7 +22,7 @@ class AssistencePayableList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Payable');
-        $this->form->setFormTitle('<strong>LISTAGEM DE CONTAS A PAGAR</strong>');
+        $this->form->setFormTitle('<strong> BUSQUE SUAS CONTAS A PAGAR</strong>');
         $this->form->setFieldSizes('100%');
         
 
@@ -59,7 +59,7 @@ class AssistencePayableList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['AssistencePayableForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink('Cadastrar novo', new TAction(['AssistencePayableForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);

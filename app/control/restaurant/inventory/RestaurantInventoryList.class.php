@@ -22,7 +22,7 @@ class RestaurantInventoryList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Product');
-        $this->form->setFormTitle('<strong>LISTAGEM DE PRODUTOS NO ESTOQUE</strong>');
+        $this->form->setFormTitle('<strong> BUSQUE SEUS PRODUTOS NO ESTOQUE</strong>');
         $this->form->setFieldSizes('100%');
          
 
@@ -56,7 +56,7 @@ class RestaurantInventoryList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['RestaurantInventoryForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink('Cadastrar novo', new TAction(['RestaurantInventoryForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);

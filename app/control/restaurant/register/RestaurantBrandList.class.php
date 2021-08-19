@@ -22,7 +22,7 @@ class RestaurantBrandList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Brand');
-        $this->form->setFormTitle('<strong>LISTAGEM DE MARCAS</strong>');
+        $this->form->setFormTitle('<strong> BUSQUE SUAS MARCAS</strong>');
         $this->form->setFieldSizes('100%');
         
 
@@ -47,7 +47,7 @@ class RestaurantBrandList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['RestaurantBrandForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink('Cadastrar novo', new TAction(['RestaurantBrandForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);

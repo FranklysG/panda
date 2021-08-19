@@ -49,7 +49,7 @@ class SystemDocumentList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction(array($this, 'onSearch')), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addAction(_t('New'),  new TAction(array('SystemDocumentUploadForm', 'onNew')), 'fa:plus green');
+        $this->form->addAction('Cadastrar novo',  new TAction(array('SystemDocumentUploadForm', 'onNew')), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);

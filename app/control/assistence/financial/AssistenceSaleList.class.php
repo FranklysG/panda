@@ -22,7 +22,7 @@ class AssistenceSaleList extends TPage
         
         // creates the form
         $this->form = new BootstrapFormBuilder('form_search_Sale');
-        $this->form->setFormTitle('<strong>LISTAGEM DE VENDAS</strong>');
+        $this->form->setFormTitle('<strong> BUSQUE SUAS VENDAS</strong>');
         $this->form->setFieldSizes('100%');
         $this->form->setProperty('style', 'margin-bottom:0;box-shadow:none');
 
@@ -50,7 +50,7 @@ class AssistenceSaleList extends TPage
         // add the search form actions
         $btn = $this->form->addAction(_t('Find'), new TAction([$this, 'onSearch']), 'fa:search');
         $btn->class = 'btn btn-sm btn-primary';
-        $this->form->addActionLink(_t('New'), new TAction(['AssistenceSaleForm', 'onEdit']), 'fa:plus green');
+        $this->form->addActionLink('Cadastrar novo', new TAction(['AssistenceSaleForm', 'onEdit']), 'fa:plus green');
         
         // creates a Datagrid
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
