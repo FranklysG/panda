@@ -58,6 +58,33 @@ class Sale extends TRecord
     
     
     /**
+     * Method set_sale_type
+     * Sample of usage: $sale->sale_type = $object;
+     * @param $object Instance of SaleType
+     */
+    public function set_sale_type(SaleType $object)
+    {
+        $this->sale_type = $object;
+        $this->sale_type_id = $object->id;
+    }
+    
+    /**
+     * Method get_sale_type
+     * Sample of usage: $sale->sale_type->attribute;
+     * @returns SaleType instance
+     */
+    public function get_sale_type()
+    {
+        // loads the associated object
+        if (empty($this->sale_type))
+            $this->sale_type = new SaleType($this->sale_type_id);
+    
+        // returns the associated object
+        return $this->sale_type;
+    }
+    
+    
+    /**
      * Method set_product
      * Sample of usage: $sale->product = $object;
      * @param $object Instance of Product

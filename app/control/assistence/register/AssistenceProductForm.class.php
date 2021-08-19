@@ -29,7 +29,7 @@ class AssistenceProductForm extends TPage
         $criteria = new TCriteria;
         $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
         $brand_id = new TDBUniqueSearch('brand_id', 'app', 'Brand', 'id', 'name', null, $criteria);
-        $brand_id->setMinLength(1);
+        $brand_id->setMinLength(0);
         $brand_id->addValidation('Marca', new TRequiredValidator);
         $sku = new TEntry('sku');
         $name = new TEntry('name');
@@ -112,6 +112,7 @@ class AssistenceProductForm extends TPage
             $data = $this->form->getData(); // get form data as array
             $object = new Product;  // create an empty object
             $object->fromArray( (array) $data); // load the object with data
+            $object->image = date('Y').'/'.date('m').'/'.$data->image;
             if(empty($data->sku) and Product::where('sku','!=',$data->sku)->load()){
                 $object->sku = AppUtil::hash(8);
             }
