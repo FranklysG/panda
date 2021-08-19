@@ -71,7 +71,7 @@ class AssistenceProductList extends TPage
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
         $this->datagrid->style = 'width: 100%';
         $this->datagrid->datatable = 'true';
-        $this->datagrid->enablePopover('Produto', "<img style='max-height: 300px' src='tmp/".TSession::getvalue('userid')."/{image}'>");
+        // $this->datagrid->enablePopover('Produto', "<img style='max-height: 300px' src='tmp/".TSession::getvalue('userid')."/{image}'>");
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'Id', 'right');

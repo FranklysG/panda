@@ -66,8 +66,8 @@ class AssistenceProductForm extends TPage
                                 [ new TLabel('<br />Marca'), $brand_id ],
                                 [ new TLabel('<br />Nome'), $name ],
                                 [ new TLabel('<br />Apelido'), $alias ],
-                                [ new TLabel('<br />Imagem do produto'), $image ],
-                                [ new TLabel('<br />'), $this->frame ],
+                                // [ new TLabel('<br />Imagem do produto'), $image ],
+                                // [ new TLabel('<br />'), $this->frame ],
                                 [ new TLabel('<br />Status'), $status ]);
 
         $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
@@ -112,7 +112,9 @@ class AssistenceProductForm extends TPage
             $data = $this->form->getData(); // get form data as array
             $object = new Product;  // create an empty object
             $object->fromArray( (array) $data); // load the object with data
-            $object->image = date('Y').'/'.date('m').'/'.$data->image;
+            if(!empty($data->image)){
+                $object->image = date('Y').'/'.date('m').'/'.$data->image;
+            }
             if(empty($data->sku) and Product::where('sku','!=',$data->sku)->load()){
                 $object->sku = AppUtil::hash(8);
             }
