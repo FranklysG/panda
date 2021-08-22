@@ -1,100 +1,174 @@
 <?php
 /**
- * AssistenceSaleForm Form
+ * AssistenceSaleForm Master/Detail
  * @author  Franklys Guimaraes
  */
 class AssistenceSaleForm extends TPage
 {
     protected $form; // form
+    protected $detail_list;
     
     /**
-     * Form constructor
-     * @param $param Request
+     * Page constructor
      */
-    public function __construct( $param )
+    public function __construct()
     {
         parent::__construct();
+        
         parent::setTargetContainer('adianti_right_panel');
 
         // creates the form
-        $this->form = new BootstrapFormBuilder('form_Inventory');
-        $this->form->setFormTitle('REALIZAR NOVA VENDA');
+        $this->form = new BootstrapFormBuilder('form_Sale');
+        $this->form->setFormTitle('REGISTRO DE VENDAS');
         $this->form->setFieldSizes('100%');
         $this->form->setProperty('style', 'margin-bottom:0;box-shadow:none');
 
-        // create the form fields
+        // master fields
         $id = new THidden('id');
-        $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
-        $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'product_id', 'product_name', null, $criteria);
-        $product_id->setMinLength(1);
-        $product_id->setMask('{product_name}');
-        $product_id->addValidation('Nome do produto', new TRequiredValidator);
-        $sale_type_id = new TDBUniqueSearch('sale_type_id', 'app', 'SaleType', 'id', 'name', null, $criteria);
+        $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
+        $sale_type_id = new TDBUniqueSearch('sale_type_id', 'app', 'SaleType', 'id', 'name');
         $sale_type_id->setMinLength(0);
-        $sale_type_id->addValidation('Tipo de pagamento', new TRequiredValidator);
+        $sale_type_id->addValidation('Forma de pagamento', new TRequiredValidator);
+        $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'system_user_id');
+        $product_id->addValidation('Nome do produto', new TRequiredValidator);
         $price = new TEntry('price');
         $price->setNumericMask(2, '.', ',', true);
-        $price->addValidation('Preço do produto', new TRequiredValidator);
-        $quantity = new TEntry('quantity');
-        $quantity->setvalue(1);
         $discount = new TEntry('discount');
         $discount->setNumericMask(2, '.', ',', true);
+        $quantity = new TEntry('quantity');
         $created_at = new TEntry('created_at');
         $updated_at = new TEntry('updated_at');
 
-        // set exit action for input_exit
+        // detail fields
+        $detail_uniqid = new THidden('detail_uniqid');
+        $detail_id = new THidden('detail_id');
+        $detail_system_user_id = new TDBUniqueSearch('detail_system_user_id', 'app', 'SystemUser', 'id', 'name');
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+        $criteria->add(new TFilter('amount', '>=', 0));
+        $detail_inventory_id = new TDBUniqueSearch('detail_inventory_id', 'app', 'Inventory', 'id', 'product_id',null, $criteria);
+        $detail_inventory_id->setMinLength(0);
+        $detail_inventory_id->setMask('{product->name}');
         $change_action = new TAction(array($this, 'onChangeAction'));
-        $product_id->setChangeAction($change_action);
+        $detail_inventory_id->setChangeAction($change_action);
+        $detail_amount = new TEntry('detail_amount');
+        $detail_amount->setValue('1');
+        $detail_discount = new TEntry('detail_discount');
+        $detail_discount->setValue(0);
+        $detail_discount->setNumericMask(2, '.', ',', true);
+        $detail_price = new TEntry('detail_price');
+        $detail_price->setNumericMask(2, '.', ',', true);
+        $detail_final_price = new TEntry('detail_final_price');
+        $detail_created_at = new TEntry('detail_created_at');
+        $detail_updated_at = new TEntry('detail_updated_at');
+        
+        // master fields
+        $this->form->addFields( [$id] );
+        $this->form->addFields( [new TLabel('TIPO DE PAGAMENTO') ,$sale_type_id] );
+       
+        
+        // detail fields
+        // $this->form->addContent( ['<h4>PRODUTOS</h4><hr>'] );
+        $this->form->addFields( [$detail_uniqid] );
+        $this->form->addFields( [$detail_id] );
+        
+        $this->form->addFields( [new TLabel('PRODUTO'), $detail_inventory_id] );
+        $row = $this->form->addFields( [new TLabel('QUANTIDADE'), $detail_amount], [new TLabel('PREÇO'), $detail_price] );
+        $row->layout = ['col-sm-4', 'col-sm-8'];
+        $this->form->addFields( [new TLabel('DESCONTO'), $detail_discount] );
 
-        $this->frame = new TElement('div');
-        $this->frame->id = 'image_frame';
-        $this->frame->style = 'width:100%;height:auto;;border:1px solid gray;padding:4px;';
+        $add = TButton::create('add', [$this, 'onDetailAdd'], 'Adicionar produto', 'fa:plus-circle green');
+        $add->getAction()->setParameter('static','1');
+        
+        $this->detail_list = new BootstrapDatagridWrapper(new TDataGrid);
+        $this->detail_list->setId('sale_inventory_list');
+        $this->detail_list->generateHiddenFields();
+        $this->detail_list->style = "width:100%;margin-bottom: 10px";
+        
+        $detail_grid_id = new TDataGridColumn('id', 'Id', 'center');
+        $detail_grid_uniqid = new TDataGridColumn('uniqid', 'Uniqid', 'center');
+        $detail_grid_system_id = new TDataGridColumn('system_user_id', 'System User Id', 'left');
+        $detail_grid_inventory_id = new TDataGridColumn('inventory_id', 'Product Id', 'left');
+        $detail_grid_product_name = new TDataGridColumn('product_name', 'PRODUTO', 'left');
+        $detail_grid_amount = new TDataGridColumn('amount', 'QTD', 'left');
+        $detail_grid_price = new TDataGridColumn('price', 'PREÇO', 'left');
+        $detail_grid_discount = new TDataGridColumn('discount', 'DESCONTO', 'left');
+        $detail_grid_total = new TDataGridColumn('= {amount} * ({price} - {discount})', 'TOTAL', 'left');
 
-        // add the fields
-        $this->form->addFields( [ $id ] );
-        $row = $this->form->addFields(
-                                [ new TLabel('<br />Buscar produto'), $product_id ],
-                                [ new TLabel('<br />'), $this->frame ],
-                                [ new TLabel('<br />Preço produto'), $price ],
-                                [ new TLabel('<br />Quantidade'), $quantity],
-                                [ new TLabel('<br />Desconto na venda'), $discount ],
-                                [ new TLabel('<br />Forma de pagamento'), $sale_type_id ]
-                            );
-        $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
+        $detail_grid_price->setTransformer(function($value){
+            return Convert::toMonetario($value);
+        });
 
-        if (!empty($id))
+        $detail_grid_discount->setTransformer(function($value){
+            return Convert::toMonetario($value);
+        });
+
+        $detail_grid_total->setTransformer(function($value){
+            return Convert::toMonetario($value);
+        });
+
+        // items
+        $this->detail_list->addColumn( $detail_grid_uniqid )->setVisibility(false);
+        $this->detail_list->addColumn( $detail_grid_id )->setVisibility(false);
+        $this->detail_list->addColumn( $detail_grid_inventory_id )->setVisibility(false);
+        $this->detail_list->addColumn( $detail_grid_product_name );
+        $this->detail_list->addColumn( $detail_grid_amount );
+        $this->detail_list->addColumn( $detail_grid_price );
+        $this->detail_list->addColumn( $detail_grid_discount );
+        // $this->detail_list->addColumn( $detail_grid_total );
+
+        // detail actions
+        $action1 = new TDataGridAction([$this, 'onDetailEdit'] );
+        $action1->setFields( ['uniqid', '*'] );
+        
+        $action2 = new TDataGridAction([$this, 'onDetailDelete']);
+        $action2->setField('uniqid');
+        
+        if (empty($_GET['id']))
         {
             $id->setEditable(FALSE);
-            $price->setEditable(FALSE);
+            $detail_price->setEditable(FALSE);
+            $this->form->addFields( [$add] );
+            $this->form->addAction( 'Salvar',  new TAction([$this, 'onSave'], ['static'=>'1']), 'fa:save blue');
+            // $this->detail_list->addAction($action1, _t('Edit'), 'fa:edit blue');
+            $this->detail_list->addAction($action2, _t('Delete'), 'far:trash-alt red');
         }
+
+        $this->detail_list->createModel();
         
-        // create the form actions
-        $btn = $this->form->addAction(_t('Save'), new TAction([$this, 'onSave']), 'fa:save');
-        $btn->class = 'btn btn-sm btn-primary';
-        // $this->form->addActionLink('Cadastrar novo',  new TAction([$this, 'onEdit']), 'fa:eraser red');
+        $panel = new TPanelGroup;
+        $panel->add($this->detail_list);
+        $panel->getBody()->style = 'overflow-x:auto';
+        $this->form->addContent( [$panel] );
+        
+         // $this->form->addActionLink('Cadastrar novo',  new TAction([$this, 'onEdit']), 'fa:eraser red');
         $this->form->addHeaderActionLink( _t('Close'), new TAction(array($this, 'onClose')), 'fa:times red');
 
-        // vertical box container
+        // create the page container
         $container = new TVBox;
         $container->style = 'width: 100%';
         // $container->add(new TXMLBreadCrumb('menu.xml', __CLASS__));
         $container->add($this->form);
-        
         parent::add($container);
     }
+    
+    
+    public static function onClose($param)
+    {
+        TScript::create("Template.closeRightPanel()");
+    }
 
-   /**
+    /**
      * Action to be executed when the user changes the combo_change field
      */
     public static function onChangeAction($param)
     {
         try {
             TTransaction::open('app');
-            $product_id = $param['product_id'];
-            $object = ViewInventory::where('product_id', '=', $product_id)->first();
+            $inventory_id = $param['detail_inventory_id'];
+            $object = Inventory::where('id', '=', $inventory_id)->first();
             $obj = new stdClass;
-            $obj->price = $object->final_price;
+            $obj->detail_price = $object->price;
             if (isset($object->product_image)) {
                 $userid = TSession::getValue('userid');
                 $path = "tmp/{$userid}/{$object->product_image}";
@@ -102,7 +176,7 @@ class AssistenceSaleForm extends TPage
                 TScript::create("$('#image_frame').append(\"<img style='max-height: 300px' src='$path'>\");");
             }
             
-            TForm::sendData('form_Inventory', $obj);
+            TForm::sendData('form_Sale', $obj);
             TTransaction::close();
         }catch (Exception $e) // in case of exception
         {
@@ -111,88 +185,137 @@ class AssistenceSaleForm extends TPage
         }
     }
 
-    public static function onClose($param)
-    {
-        TScript::create("Template.closeRightPanel()");
-    }
-
     /**
-     * Save form data
-     * @param $param Request
+     * Clear form
+     * @param $param URL parameters
      */
-    public function onSave( $param )
-    {
-        try
-        {
-            TTransaction::open('app'); // open a transaction
-            
-            $this->form->validate(); // validate form data
-            $data = $this->form->getData(); // get form data as array
-
-            $discount = $data->discount;
-            if(empty($discount))
-                $discount = 0;
-            $object = new Sale;  // create an empty object
-            $object->system_user_id = TSession::getValue('userid');
-            $object->fromArray( (array) $data); // load the object with data
-            $object->price = $data->price;
-            $object->discount = $discount;
-            $object->store(); // save the object
-            
-            $object = Inventory::where('product_id', '=', $data->product_id)->where('amount', '>=', $data->quantity)->first();
-            if(!empty($object)){
-                $object->amount -= $data->quantity;
-                $object->store();
-            }else{
-                throw new Exception("Quantidade indisponivel no estoque", 001);  
-            }
-            // get the generated id
-            $data->id = $object->id;
-            
-            $this->form->setData($data); // fill form data
-            TTransaction::close(); // close the transaction
-            
-            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['AssistenceSaleList', 'onReload']));
-        }
-        catch (Exception $e) // in case of exception
-        {
-            switch ($e->getCode()) {
-                case '001':
-                    new TMessage('warning', $e->getMessage()); // shows the exception error message
-                    break;
-                default:
-                    new TMessage('error', $e->getMessage()); // shows the exception error message
-                    break;
-            }
-            $this->form->setData( $this->form->getData() ); // keep form data
-            TTransaction::rollback(); // undo all pending operations
-        }
-    }
-    
-    /**
-     * Clear form data
-     * @param $param Request
-     */
-    public function onClear( $param )
+    public function onClear($param)
     {
         $this->form->clear(TRUE);
     }
     
     /**
-     * Load object to form data
-     * @param $param Request
+     * Add detail item
+     * @param $param URL parameters
      */
-    public function onEdit( $param )
+    public function onDetailAdd( $param )
     {
         try
         {
+            $this->form->validate();
+            $data = $this->form->getData();
+            
+            $uniqid = !empty($data->detail_uniqid) ? $data->detail_uniqid : uniqid();
+            TTransaction::open('app');
+            $grid_data = [];
+            $grid_data['uniqid'] = $uniqid;
+            $grid_data['id'] = $data->detail_id;
+            $grid_data['inventory_id'] = $data->detail_inventory_id;
+            $grid_data['product_name'] = Inventory::find($data->detail_inventory_id)->product->name;
+            $grid_data['amount'] = $data->detail_amount;
+            $grid_data['price'] = (!empty($data->detail_price))? $data->detail_price : Inventory::find($data->detail_inventory_id)->price;
+            $grid_data['discount'] = $data->detail_discount;
+            // $grid_data['final_price'] = $data->detail_final_price;
+            // $grid_data['created_at'] = $data->detail_created_at;
+            // $grid_data['updated_at'] = $data->detail_updated_at;
+            TTransaction::close();
+            // insert row dynamically
+            $row = $this->detail_list->addItem( (object) $grid_data );
+            $row->id = $uniqid;
+            
+            TDataGrid::replaceRowById('sale_inventory_list', $uniqid, $row);
+            
+            // clear detail form fields
+            $data->detail_uniqid = '';
+            $data->detail_id = '';
+            // $data->detail_system_user_id = '';
+            $data->detail_inventory_id = '';
+            // $data->detail_amount = '';
+            $data->detail_price = '';
+            // $data->detail_discount = '';
+            // $data->detail_created_at = '';
+            // $data->detail_updated_at = '';
+            
+            // send data, do not fire change/exit events
+            TForm::sendData( 'form_Sale', $data, false, false );
+        }
+        catch (Exception $e)
+        {
+            $this->form->setData( $this->form->getData());
+            new TMessage('error', $e->getMessage());
+        }
+    }
+    
+    /**
+     * Edit detail item
+     * @param $param URL parameters
+     */
+    public static function onDetailEdit( $param )
+    {
+        $data = new stdClass;
+        $data->detail_uniqid = $param['uniqid'];
+        $data->detail_id = $param['id'];
+        $data->detail_system_user_id = $param['system_user_id'];
+        $data->detail_product_id = $param['product_id'];
+        $data->detail_amount = $param['amount'];
+        $data->detail_price = $param['price'];
+        $data->detail_final_price = $param['final_price'];
+        $data->detail_created_at = $param['created_at'];
+        $data->detail_updated_at = $param['updated_at'];
+        
+        // send data, do not fire change/exit events
+        TForm::sendData( 'form_Sale', $data, false, false );
+    }
+    
+    /**
+     * Delete detail item
+     * @param $param URL parameters
+     */
+    public static function onDetailDelete( $param )
+    {
+        // clear detail form fields
+        $data = new stdClass;
+        $data->detail_uniqid = '';
+        $data->detail_id = '';
+        $data->detail_system_user_id = '';
+        $data->detail_product_id = '';
+        $data->detail_amount = '';
+        $data->detail_price = '';
+        $data->detail_final_price = '';
+        $data->detail_created_at = '';
+        $data->detail_updated_at = '';
+        
+        // send data, do not fire change/exit events
+        TForm::sendData( 'form_Sale', $data, false, false );
+        
+        // remove row
+        TDataGrid::removeRowById('sale_inventory_list', $param['uniqid']);
+    }
+    
+    /**
+     * Load Master/Detail data from database to form
+     */
+    public function onEdit($param)
+    {
+        try
+        {
+            TTransaction::open('app');
+            
             if (isset($param['key']))
             {
-                $key = $param['key'];  // get the parameter $key
-                TTransaction::open('app'); // open a transaction
-                $object = new Sale($key); // instantiates the Active Record
-                $this->form->setData($object); // fill the form
-                TTransaction::close(); // close the transaction
+                $key = $param['key'];
+                
+                $object = new Sale($key);
+                $items  = SaleInventory::where('sale_id', '=', $key)->where('system_user_id', '=', TSession::getValue('userid'))->load();
+                foreach( $items as $item )
+                {
+                    $item->uniqid = uniqid();
+                    $item->product_name = $item->inventory->product->name;
+                    $row = $this->detail_list->addItem( $item );
+                    $row->id = $item->uniqid;
+                }
+                $this->form->setData($object);
+                TTransaction::close();
             }
             else
             {
@@ -201,8 +324,63 @@ class AssistenceSaleForm extends TPage
         }
         catch (Exception $e) // in case of exception
         {
-            new TMessage('error', $e->getMessage()); // shows the exception error message
-            TTransaction::rollback(); // undo all pending operations
+            new TMessage('error', $e->getMessage());
+            TTransaction::rollback();
+        }
+    }
+    
+    /**
+     * Save the Master/Detail data from form to database
+     */
+    public function onSave($param)
+    {
+        try
+        {
+            // open a transaction with database
+            TTransaction::open('app');
+            $data = $this->form->getData();
+            $this->form->validate();
+            
+            $master = new Sale;
+            $master->fromArray( (array) $data);
+            $master->system_user_id  = TSession::getValue('userid');
+            $master->store();
+            
+            SaleInventory::where('sale_id', '=', $master->id)->delete();
+            if(isset($param['sale_inventory_list_uniqid']))
+            {
+                foreach( $param['sale_inventory_list_uniqid'] as $key => $item_id )
+                {
+                    $detail = new SaleInventory;
+                    $detail->system_user_id  = TSession::getValue('userid');
+                    $detail->inventory_id  = $param['sale_inventory_list_inventory_id'][$key];
+                    $detail->price  = $param['sale_inventory_list_price'][$key];
+                    $detail->amount  = $param['sale_inventory_list_amount'][$key];
+                    $detail->discount  = $param['sale_inventory_list_discount'][$key];
+                    $detail->sale_id = $master->id;
+                    $detail->store();
+
+                    $object = Inventory::where('id', '=', $detail->inventory_id)->where('amount', '>=', $detail->amount)->first();
+                    if(!empty($object)){
+                        $object->amount -= $detail->amount;
+                        $object->store();
+                    }else{
+                        throw new Exception("Quantidade indisponivel no estoque", 001);  
+                    }
+                }
+            }
+            TTransaction::close(); // close the transaction
+            
+            TForm::sendData('form_Sale', (object) ['id' => $master->id]);
+            
+            $pos_action = new TAction(['AssistenceSaleList', 'onReload']);
+            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), $pos_action);
+        }
+        catch (Exception $e) // in case of exception
+        {
+            new TMessage('error', $e->getMessage());
+            $this->form->setData( $this->form->getData() ); // keep form data
+            TTransaction::rollback();
         }
     }
 }

@@ -46,7 +46,7 @@ class AssistenceOfficeTypeFormList extends TPage
 
         // add the fields
         $this->form->addFields( [ $id ] );
-        $row = $this->form->addFields( [ new TLabel('Name'), $name ] ,
+        $row = $this->form->addFields( [ new TLabel('Nome <sup> (Ex. Manutenção)<sup>'), $name ] ,
                                 [ new TLabel('Status'), $status ] );
 
         $row->layout = ['col-sm-5', 'col-sm-2'];

@@ -52,8 +52,13 @@ class AssistenceOfficeList extends TPage
 
         $html = new THtmlRenderer('app/resources/system_office_dashboard.html');
         $indicator = new THtmlRenderer('app/resources/info-box.html');
-        $indicator->enableSection('main', ['title' => 'Serviços Mẽs',    'icon' => 'cart-arrow-down',       'background' => 'orange', 'value' => Convert::toMonetario($office_price)]);
-        $html->enableSection('main', ['indicator' => $indicator] );
+        $indicator1 = new THtmlRenderer('app/resources/info-box.html');
+        $indicator->enableSection('main', ['title' => 'Serviços Mês',    'icon' => 'cart-arrow-down',       'background' => 'orange', 'value' => Convert::toMonetario($office_price)]);
+        $indicator1->enableSection('main', ['title' => 'Comissão',    'icon' => 'cart-arrow-down',       'background' => 'green', 'value' => Convert::toMonetario($office_price*0.2)]);
+        $html->enableSection('main', [
+            'indicator' => $indicator,
+            'indicator1' => $indicator1,
+        ] );
         
         // add the fields
         $this->form->addFields( [ $id ] );

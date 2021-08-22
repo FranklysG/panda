@@ -24,7 +24,6 @@ class AssistenceSaleList extends TPage
         $this->form = new BootstrapFormBuilder('form_search_Sale');
         $this->form->setFormTitle('<strong> BUSQUE SUAS VENDAS</strong>');
         $this->form->setFieldSizes('100%');
-        $this->form->setProperty('style', 'margin-bottom:0;box-shadow:none');
 
         // create the form fields
         $id = new THidden('id');
@@ -61,14 +60,26 @@ class AssistenceSaleList extends TPage
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'id', 'left');
         $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'left');
-        $column_product_sku = new TDataGridColumn('product->sku', 'SKU', 'left');
-        $column_product_id = new TDataGridColumn('product->name', 'PRODUTO', 'left');
-        $column_quantity = new TDataGridColumn('quantity', 'QUANTIDADE', 'left');
+        $column_sale_type_id = new TDataGridColumn('sale_type_id', 'FORMA DE PAGAMENTO', 'left');
+        $column_product_id = new TDataGridColumn('inventory->product->name', 'PRODUTO', 'left');
+        $column_quantity = new TDataGridColumn('amount', 'QUANTIDADE', 'left');
         $column_price = new TDataGridColumn('price', 'PREÇO', 'left');
         $column_discount = new TDataGridColumn('discount', 'DESCONTO', 'left');
-        $column_total = new TDataGridColumn('= {quantity} * ({price} - {discount})', 'TOTAL', 'left');
+        $column_total = new TDataGridColumn('= {amount} * ({price} - {discount})', 'TOTAL', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
-        $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA MODIFICAÇÃO', 'right');
+        $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
+        
+        $column_sale_type_id->setTransformer(function($value){
+            $class = 'success';
+            $label = SaleType::find($value);
+            if(!empty($label))
+                $label = $label->name;
+            $div = new TElement('span');
+            $div->class = "btn btn-{$class}";
+            $div->style = "text-shadow:none; font-size:12px; font-weight:bold;width:auto;";
+            $div->add($label);
+            return $div;
+        });
 
         $column_price->setTransformer(function($value){
             return Convert::toMonetario($value);
@@ -89,18 +100,17 @@ class AssistenceSaleList extends TPage
         // add the columns to the DataGrid
         // $this->datagrid->addColumn($column_id);
         // $this->datagrid->addColumn($column_system_user_id);
-        $this->datagrid->addColumn($column_product_sku);
-        $this->datagrid->addColumn($column_product_id);
-        $this->datagrid->addColumn($column_quantity);
         $this->datagrid->addColumn($column_price);
-        $this->datagrid->addColumn($column_discount);
-        $this->datagrid->addColumn($column_total);
-        // $this->datagrid->addColumn($column_created_at);
+        $this->datagrid->addColumn($column_sale_type_id);
         $this->datagrid->addColumn($column_updated_at);
+        // $this->datagrid->addColumn($column_product_id);
+        // $this->datagrid->addColumn($column_quantity);
+        // $this->datagrid->addColumn($column_discount);
+        // $this->datagrid->addColumn($column_created_at);
 
 
         $action1 = new TDataGridAction(['AssistenceSaleForm', 'onEdit'], ['id'=>'{id}']);
-        $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}', 'product_id' => '{product_id}', 'quantity' => '{quantity}']);
+        $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
         $this->datagrid->addAction($action2 ,_t('Delete'), 'far:trash-alt red');
@@ -293,7 +303,13 @@ class AssistenceSaleList extends TPage
                 // iterate the collection of active records
                 foreach ($objects as $object)
                 {
-                    // add the object inside the datagrid
+                    $object->price = null;
+                    $sale_inventory = SaleInventory::where('sale_id', '=', $object->id)->where('system_user_id', '=', TSession::getValue('userid'))->load();
+                    if(!empty($sale_inventory)){
+                        foreach ($sale_inventory as $value) {
+                            $object->price += ($value->amount)*(($value->price)-($value->discount)); 
+                        }
+                    }
                     $this->datagrid->addItem($object);
                 }
             }
@@ -339,12 +355,29 @@ class AssistenceSaleList extends TPage
         {
             $key = $param['key']; // get the parameter $key
             TTransaction::open('app'); // open a transaction with database
+            
+            // creates a repository for Sale
+            $repository = new TRepository('SaleInventory');
+            $criteria = new TCriteria;
+            $criteria->add(new TFilter('sale_id', '=', $key)); 
+            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid'))); 
+            $objects = $repository->load($criteria, FALSE);
+            
+            if ($objects)
+            {
+                // iterate the collection of active records
+                foreach ($objects as $object)
+                {
+                    $inventory = Inventory::where('id', '=', $object->inventory_id)->first();
+                    $inventory->amount += $object->amount;
+                    $inventory->store(); 
+                    
+                    $sale_inventory = SaleInventory::where('sale_id','=',$object->sale_id)->where('inventory_id', '=', $object->inventory_id)->where('system_user_id', '=', TSession::getValue('userid'))->delete();
+                }
+            }       
+            
             $object = new Sale($key, FALSE); // instantiates the Active Record
             $object->delete(); // deletes the object from the database
-
-            $object = Inventory::where('product_id', '=', $param['product_id'])->first();
-            $object->amount += $param['quantity'];
-            $object->store();
             TTransaction::close(); // close the transaction
             
             $pos_action = new TAction([__CLASS__, 'onReload']);
