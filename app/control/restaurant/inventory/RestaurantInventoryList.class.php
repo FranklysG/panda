@@ -231,7 +231,7 @@ class RestaurantInventoryList extends TPage
             // veridicando se existe algum no estoque
             $verifyProduct = Product::where('system_user_id', '=', TSession::getValue('userid'))->first();
             if(empty($verifyProduct)){
-                $pos_action = new TAction(['ProductList', 'onReload']);
+                $pos_action = new TAction(['RestaurantProductList', 'onReload']);
                 new TMessage('warning', 'Você precisa cadastrar alguns produtos e adicionalos ao estoque antes', $pos_action);
             }
 
@@ -301,8 +301,8 @@ class RestaurantInventoryList extends TPage
             if ($objects)
             {
                 // iterate the collection of active records
-                $product_id = null;
-                $dados = null;
+                // $product_id = null;
+                // $dados = null;
                 foreach ($objects as $object)
                 {
                     // add the object inside the datagrid
