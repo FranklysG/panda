@@ -105,7 +105,7 @@ class AssistenceSaleTypeFormList extends TPage
 
 
         // add the columns to the DataGrid
-        $this->datagrid->addColumn($column_id);
+        // $this->datagrid->addColumn($column_id);
         // $this->datagrid->addColumn($column_system_user_id);
         $this->datagrid->addColumn($column_name);
         $this->datagrid->addColumn($column_status);
