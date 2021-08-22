@@ -44,7 +44,7 @@ class RestaurantBrandForm extends TPage
 
         // add the fields
         $this->form->addFields( [ $id ] );
-        $this->form->addFields( [ new TLabel('Nome'), $name ] );
+        $this->form->addFields( [ new TLabel('Nome <sup> (Ex. Coca-cola)</sup>'), $name ] );
         $this->form->addFields( [ new TLabel('Status'), $status ] );
 
 
