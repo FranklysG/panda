@@ -11,6 +11,10 @@
         <action>RestaurantSaleList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
+      <menuitem label="Vendas">
+        <action>RoostSaleList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
       <menuitem label="Serviços">
         <action>AssistenceOfficeList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
@@ -20,11 +24,19 @@
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Contas a pagar">
+        <action>RoostPayableList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+      <menuitem label="Contas a pagar">
         <action>RestaurantPayableList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Despesas">
         <action>AssistenceExesList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+      <menuitem label="Despesas">
+        <action>RoostExesList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Despesas">
@@ -41,11 +53,19 @@
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Produtos">
+        <action>RoostProductList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+      <menuitem label="Produtos">
         <action>RestaurantProductList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Marcas">
         <action>AssistenceBrandList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+      <menuitem label="Marcas">
+        <action>RoostBrandList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Marcas">
@@ -57,6 +77,10 @@
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Estoque">
+        <action>RoostInventoryList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+      <menuitem label="Estoque">
         <action>RestaurantInventoryList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
@@ -65,11 +89,19 @@
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Funcionario">
+        <action>RoostEmployeeList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+      <menuitem label="Funcionario">
         <action>RestaurantEmployeeList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Fornecedor">
         <action>AssistenceProviderList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+      <menuitem label="Fornecedor">
+        <action>RoostProviderList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Fornecedor">
@@ -90,6 +122,10 @@
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
       <menuitem label="Formas de pagamento">
+        <action>RoostSaleTypeFormList</action>
+        <icon>fas:arrow-alt-circle-right fa-fw</icon>
+      </menuitem>
+      <menuitem label="Formas de pagamento">
         <action>RestaurantSaleTypeFormList</action>
         <icon>fas:arrow-alt-circle-right fa-fw</icon>
       </menuitem>
@@ -104,6 +140,10 @@
       </menuitem>
       <menuitem label="Dashboard">
         <action>RestaurantDashboard</action>
+        <icon>fas:tachometer-alt fa-fw</icon>
+      </menuitem>
+      <menuitem label="Dashboard">
+        <action>RoostDashboard</action>
         <icon>fas:tachometer-alt fa-fw</icon>
       </menuitem>
       <menuitem label="Admin Dashboard">
