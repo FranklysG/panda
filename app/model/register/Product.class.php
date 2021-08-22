@@ -149,12 +149,6 @@ class Product extends TRecord
         $criteria->add(new TFilter('product_id', '=', $id));
         $this->inventorys = $repository->load($criteria);
     
-        // load the related Sale objects
-        $repository = new TRepository('Sale');
-        $criteria = new TCriteria;
-        $criteria->add(new TFilter('product_id', '=', $id));
-        $this->sales = $repository->load($criteria);
-    
         // load the object itself
         return parent::load($id);
     }
@@ -183,21 +177,7 @@ class Product extends TRecord
                 $inventory->store();
             }
         }
-        // delete the related Sale objects
-        $criteria = new TCriteria;
-        $criteria->add(new TFilter('product_id', '=', $this->id));
-        $repository = new TRepository('Sale');
-        $repository->load($criteria);
-        // store the related Sale objects
-        if ($this->sales)
-        {
-            foreach ($this->sales as $sale)
-            {
-                unset($sale->id);
-                $sale->product_id = $this->id;
-                $sale->store();
-            }
-        }
+        
     }
 
     /**
@@ -213,13 +193,6 @@ class Product extends TRecord
         $criteria->add(new TFilter('product_id', '=', $id));
         $repository->delete($criteria);
         
-        // delete the related Sale objects
-        $repository = new TRepository('Sale');
-        $criteria = new TCriteria;
-        $criteria->add(new TFilter('product_id', '=', $id));
-        $repository->delete($criteria);
-        
-    
         // delete the object itself
         parent::delete($id);
     }

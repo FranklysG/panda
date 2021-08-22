@@ -11,7 +11,6 @@ class Sale extends TRecord
     
     
     private $system_user;
-    private $product;
 
     /**
      * Constructor method
@@ -21,10 +20,6 @@ class Sale extends TRecord
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('system_user_id');
         parent::addAttribute('sale_type_id');
-        parent::addAttribute('product_id');
-        parent::addAttribute('price');
-        parent::addAttribute('discount');
-        parent::addAttribute('quantity');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');
     }
@@ -83,33 +78,4 @@ class Sale extends TRecord
         return $this->sale_type;
     }
     
-    
-    /**
-     * Method set_product
-     * Sample of usage: $sale->product = $object;
-     * @param $object Instance of Product
-     */
-    public function set_product(Product $object)
-    {
-        $this->product = $object;
-        $this->product_id = $object->id;
-    }
-    
-    /**
-     * Method get_product
-     * Sample of usage: $sale->product->attribute;
-     * @returns Product instance
-     */
-    public function get_product()
-    {
-        // loads the associated object
-        if (empty($this->product))
-            $this->product = new Product($this->product_id);
-    
-        // returns the associated object
-        return $this->product;
-    }
-    
-
-
 }
