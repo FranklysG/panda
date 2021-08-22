@@ -1,9 +1,9 @@
 <?php
 /**
- * RestaurantSaleForm Master/Detail
+ * RoostSaleForm Master/Detail
  * @author  <your name here>
  */
-class RestaurantSaleForm extends TPage
+class RoostSaleForm extends TPage
 {
     protected $form; // form
     protected $detail_list;
@@ -134,6 +134,7 @@ class RestaurantSaleForm extends TPage
             // $this->detail_list->addAction($action1, _t('Edit'), 'fa:edit blue');
             $this->detail_list->addAction($action2, _t('Delete'), 'far:trash-alt red');
         }
+        $detail_price->setEditable(FALSE);
 
         $this->detail_list->createModel();
         
@@ -374,7 +375,7 @@ class RestaurantSaleForm extends TPage
             
             TForm::sendData('form_Sale', (object) ['id' => $master->id]);
             
-            $pos_action = new TAction(['RestaurantSaleList', 'onReload']);
+            $pos_action = new TAction(['RoostSaleList', 'onReload']);
             new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), $pos_action);
         }
         catch (Exception $e) // in case of exception

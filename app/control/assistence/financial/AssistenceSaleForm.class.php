@@ -26,7 +26,9 @@ class AssistenceSaleForm extends TPage
         // master fields
         $id = new THidden('id');
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
-        $sale_type_id = new TDBUniqueSearch('sale_type_id', 'app', 'SaleType', 'id', 'name');
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+        $sale_type_id = new TDBUniqueSearch('sale_type_id', 'app', 'SaleType', 'id', 'name', null, $criteria);
         $sale_type_id->setMinLength(0);
         $sale_type_id->addValidation('Forma de pagamento', new TRequiredValidator);
         $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'system_user_id');
@@ -168,7 +170,7 @@ class AssistenceSaleForm extends TPage
             $inventory_id = $param['detail_inventory_id'];
             $object = Inventory::where('id', '=', $inventory_id)->first();
             $obj = new stdClass;
-            $obj->detail_price = $object->price;
+            $obj->detail_price = $object->final_price;
             if (isset($object->product_image)) {
                 $userid = TSession::getValue('userid');
                 $path = "tmp/{$userid}/{$object->product_image}";
