@@ -134,7 +134,6 @@ class RoostSaleForm extends TPage
             // $this->detail_list->addAction($action1, _t('Edit'), 'fa:edit blue');
             $this->detail_list->addAction($action2, _t('Delete'), 'far:trash-alt red');
         }
-        $detail_price->setEditable(FALSE);
 
         $this->detail_list->createModel();
         
