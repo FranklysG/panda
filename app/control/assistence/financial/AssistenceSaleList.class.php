@@ -66,7 +66,7 @@ class AssistenceSaleList extends TPage
         $column_price = new TDataGridColumn('price', 'PREÇO', 'left');
         $column_discount = new TDataGridColumn('discount', 'DESCONTO', 'left');
         $column_total = new TDataGridColumn('= {amount} * ({price} - {discount})', 'TOTAL', 'left');
-        $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
+        $column_created_at = new TDataGridColumn('created_at', 'DATA', 'left');
         $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
         
         $column_sale_type_id->setTransformer(function($value){
@@ -94,6 +94,10 @@ class AssistenceSaleList extends TPage
         });
         
         $column_updated_at->setTransformer(function($value){
+            return Convert::toDate($value, 'd / m / Y');
+        });
+
+        $column_created_at->setTransformer(function($value){
             return Convert::toDate($value, 'd / m / Y');
         });
 

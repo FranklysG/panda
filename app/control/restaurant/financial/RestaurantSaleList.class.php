@@ -66,7 +66,7 @@ class RestaurantSaleList extends TPage
         $column_price = new TDataGridColumn('price', 'PREÇO', 'left');
         $column_discount = new TDataGridColumn('discount', 'DESCONTO', 'left');
         $column_total = new TDataGridColumn('= {amount} * ({price} - {discount})', 'TOTAL', 'left');
-        $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
+        $column_created_at = new TDataGridColumn('created_at', 'DATA', 'left');
         $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
         
         $column_sale_type_id->setTransformer(function($value){
@@ -96,17 +96,21 @@ class RestaurantSaleList extends TPage
         $column_updated_at->setTransformer(function($value){
             return Convert::toDate($value, 'd / m / Y');
         });
+ 
+        $column_created_at->setTransformer(function($value){
+            return Convert::toDate($value, 'd / m / Y');
+        });
 
         // add the columns to the DataGrid
         // $this->datagrid->addColumn($column_id);
         // $this->datagrid->addColumn($column_system_user_id);
         $this->datagrid->addColumn($column_price);
         $this->datagrid->addColumn($column_sale_type_id);
-        $this->datagrid->addColumn($column_updated_at);
+        // $this->datagrid->addColumn($column_updated_at);
         // $this->datagrid->addColumn($column_product_id);
         // $this->datagrid->addColumn($column_quantity);
         // $this->datagrid->addColumn($column_discount);
-        // $this->datagrid->addColumn($column_created_at);
+        $this->datagrid->addColumn($column_created_at);
 
 
         $action1 = new TDataGridAction(['RestaurantSaleForm', 'onEdit'], ['id'=>'{id}']);
