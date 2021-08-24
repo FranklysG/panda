@@ -59,7 +59,7 @@ class AssistenceSaleList extends TPage
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'id', 'left');
-        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'left');
+        $column_system_user_id = new TDataGridColumn('system_user->name', 'RESPONSAVEL', 'left');
         $column_sale_type_id = new TDataGridColumn('sale_type_id', 'FORMA DE PAGAMENTO', 'left');
         $column_product_id = new TDataGridColumn('inventory->product->name', 'PRODUTO', 'left');
         $column_quantity = new TDataGridColumn('amount', 'QUANTIDADE', 'left');

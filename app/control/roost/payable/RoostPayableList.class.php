@@ -70,7 +70,7 @@ class RoostPayableList extends TPage
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'Id', 'left');
-        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'left');
+        $column_system_user_id = new TDataGridColumn('system_user->name', 'RESPONSAVEL', 'left');
         $column_name = new TDataGridColumn('description', 'DESCRIÇÃO', 'left');
         $column_price = new TDataGridColumn('price', 'PREÇO', 'left');
         $column_status = new TDataGridColumn('status', 'STATUS', 'left');

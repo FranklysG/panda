@@ -59,7 +59,7 @@ class RoostSaleList extends TPage
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'id', 'left');
-        $column_system_user_id = new TDataGridColumn('system_user_id', 'System User Id', 'left');
+        $column_system_user_id = new TDataGridColumn('system_user->name', 'RESPONSAVEL', 'left');
         $column_sale_type_id = new TDataGridColumn('sale_type_id', 'FORMA DE PAGAMENTO', 'left');
         $column_product_id = new TDataGridColumn('inventory->product->name', 'PRODUTO', 'left');
         $column_quantity = new TDataGridColumn('amount', 'QUANTIDADE', 'left');
@@ -99,7 +99,7 @@ class RoostSaleList extends TPage
 
         // add the columns to the DataGrid
         // $this->datagrid->addColumn($column_id);
-        // $this->datagrid->addColumn($column_system_user_id);
+        $this->datagrid->addColumn($column_system_user_id);
         $this->datagrid->addColumn($column_price);
         $this->datagrid->addColumn($column_sale_type_id);
         $this->datagrid->addColumn($column_updated_at);
