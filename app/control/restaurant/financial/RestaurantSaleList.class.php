@@ -287,7 +287,11 @@ class RestaurantSaleList extends TPage
             }
 
             // citerios especificos
-            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid'))); 
+            $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+            foreach ($system_user_unit as $value) {
+                $ids[] = $value->system_user_id;
+            }
+            $criteria->add(new TFilter('system_user_id','IN', $ids)); 
             
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
@@ -296,7 +300,7 @@ class RestaurantSaleList extends TPage
             {
                 call_user_func($this->transformCallback, $objects, $param);
             }
-            
+
             $this->datagrid->clear();
             if ($objects)
             {
@@ -304,7 +308,7 @@ class RestaurantSaleList extends TPage
                 foreach ($objects as $object)
                 {
                     $object->price = null;
-                    $sale_inventory = SaleInventory::where('sale_id', '=', $object->id)->where('system_user_id', '=', TSession::getValue('userid'))->load();
+                    $sale_inventory = SaleInventory::where('sale_id', '=', $object->id)->where('system_user_id', 'IN', $ids)->load();
                     if(!empty($sale_inventory)){
                         foreach ($sale_inventory as $value) {
                             $object->price += ($value->amount)*(($value->price)-($value->discount)); 
@@ -356,11 +360,17 @@ class RestaurantSaleList extends TPage
             $key = $param['key']; // get the parameter $key
             TTransaction::open('app'); // open a transaction with database
             
+            // citerios especificos
+            $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+            foreach ($system_user_unit as $value) {
+                $ids[] = $value->system_user_id;
+            }
+
             // creates a repository for Sale
             $repository = new TRepository('SaleInventory');
             $criteria = new TCriteria;
             $criteria->add(new TFilter('sale_id', '=', $key)); 
-            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid'))); 
+            $criteria->add(new TFilter('system_user_id','IN', $ids));
             $objects = $repository->load($criteria, FALSE);
             
             if ($objects)
@@ -372,7 +382,7 @@ class RestaurantSaleList extends TPage
                     $inventory->amount += $object->amount;
                     $inventory->store(); 
                     
-                    $sale_inventory = SaleInventory::where('sale_id','=',$object->sale_id)->where('inventory_id', '=', $object->inventory_id)->where('system_user_id', '=', TSession::getValue('userid'))->delete();
+                    $sale_inventory = SaleInventory::where('sale_id','=',$object->sale_id)->where('inventory_id', '=', $object->inventory_id)->delete();
                 }
             }       
             

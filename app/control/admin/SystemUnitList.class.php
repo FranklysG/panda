@@ -61,7 +61,7 @@ class SystemUnitList extends TStandardList
         $this->datagrid->setHeight(320);
         
         // creates the datagrid columns
-        $column_id = new TDataGridColumn('id', 'Id', 'center', 50);
+        $column_id = new TDataGridColumn('id', 'System User id', 'left', 100);
         $column_name = new TDataGridColumn('name', _t('Name'), 'left');
 
 

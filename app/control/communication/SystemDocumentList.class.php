@@ -274,7 +274,7 @@ class SystemDocumentList extends TPage
             
             if (TSession::getValue('login') !== 'admin')
             {
-                $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+                $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
             }
             
             if (TSession::getValue('SystemDocumentList_filter_title')) {

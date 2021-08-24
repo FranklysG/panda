@@ -33,9 +33,20 @@ class SystemUnitForm extends TStandardForm
         // create the form fields
         $id = new TEntry('id');
         $name = new TEntry('name');
+        $ids = array();
+        TTransaction::open('permission');
+        foreach (SystemUnit::get() as $value) {
+            $ids[] = $value->id;
+        }
+        TTransaction::close();
+        $criteria = new TCriteria();
+        $criteria->add(new TFilter('type','=', '1'));
+        $criteria->add(new TFilter('id','NOT IN', $ids));
+        $system_user_id = new TDBUniqueSearch('id', 'app', 'SystemUser', 'id', 'name', null, $criteria);
+        $system_user_id->setMinLength(0);
         
         // add the fields
-        $this->form->addFields( [new TLabel('Id')], [$id] );
+        $this->form->addFields( [new TLabel('System user id')], [$system_user_id] );
         $this->form->addFields( [new TLabel(_t('Name'))], [$name] );
         
         if (!empty($ini['general']['multi_database']) and $ini['general']['multi_database'] == '1')

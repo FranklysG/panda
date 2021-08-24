@@ -29,7 +29,7 @@ class AssistenceInventoryList extends TPage
         // create the form fields
         $id = new THidden('id');
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
         $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'product_id', 'product_name', null, $criteria);
         $product_id->setMinLength(1);
         $product_id->setMask('{product_name}');
@@ -229,7 +229,7 @@ class AssistenceInventoryList extends TPage
             TTransaction::open('app');
             
             // veridicando se existe algum no estoque
-            $verifyProduct = Product::where('system_user_id', '=', TSession::getValue('userid'))->first();
+            $verifyProduct = Product::where('system_user_id', '=', TSession::getValue('userunitid'))->first();
             if(empty($verifyProduct)){
                 $pos_action = new TAction(['AssistenceProductList', 'onReload']);
                 new TMessage('warning', 'Você precisa cadastrar alguns produtos e adicionalos ao estoque antes', $pos_action);
@@ -287,7 +287,11 @@ class AssistenceInventoryList extends TPage
             }
 
             // citerios especificos
-            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid'))); 
+            $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+            foreach ($system_user_unit as $value) {
+                $ids[] = $value->system_user_id;
+            }
+            $criteria->add(new TFilter('system_user_id','IN', $ids));
 
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);

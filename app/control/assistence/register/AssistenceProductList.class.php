@@ -31,7 +31,7 @@ class AssistenceProductList extends TPage
         $id = new THidden('id');
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
         $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'name', null, $criteria);
         $product_id->setMinLength(1);
         $product_id->setMask('(SKU: {sku}) {name} ');
@@ -247,7 +247,7 @@ class AssistenceProductList extends TPage
             
              
             // veridicando se existe algum no estoque
-            $verifyBrand = Brand::where('system_user_id', '=', TSession::getValue('userid'))->first();
+            $verifyBrand = Brand::where('system_user_id', '=', TSession::getValue('userunitid'))->first();
             if(empty($verifyBrand)){
                 $pos_action = new TAction(['AssistenceBrandList', 'onReload']);
                 new TMessage('warning', 'Você precisa cadastrar algumas marcas antes', $pos_action);
@@ -294,7 +294,11 @@ class AssistenceProductList extends TPage
             }
 
             // citerios especificos
-            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid'))); 
+            $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+            foreach ($system_user_unit as $value) {
+                $ids[] = $value->system_user_id;
+            }
+            $criteria->add(new TFilter('system_user_id','IN', $ids));
             
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);

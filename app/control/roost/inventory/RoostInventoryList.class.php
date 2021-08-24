@@ -29,7 +29,7 @@ class RoostInventoryList extends TPage
         // create the form fields
         $id = new THidden('id');
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
         $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'product_id', 'product_name', null, $criteria);
         $product_id->setMinLength(1);
         $product_id->setMask('{product_name}');
@@ -229,7 +229,7 @@ class RoostInventoryList extends TPage
             TTransaction::open('app');
             
             // veridicando se existe algum no estoque
-            $verifyProduct = Product::where('system_user_id', '=', TSession::getValue('userid'))->first();
+            $verifyProduct = Product::where('system_user_id', '=', TSession::getValue('userunitid'))->first();
             if(empty($verifyProduct)){
                 $pos_action = new TAction(['RoostProductList', 'onReload']);
                 new TMessage('warning', 'Você precisa cadastrar alguns produtos e adicionalos ao estoque antes', $pos_action);
@@ -287,7 +287,11 @@ class RoostInventoryList extends TPage
             }
 
             // citerios especificos
-            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid'))); 
+            $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+            foreach ($system_user_unit as $value) {
+                $ids[] = $value->system_user_id;
+            }
+            $criteria->add(new TFilter('system_user_id','IN', $ids));
 
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
@@ -349,9 +353,29 @@ class RoostInventoryList extends TPage
     {
         try
         {
-            $key=$param['key']; // get the parameter $key
+            $key = $param['key']; // get the parameter $key
             TTransaction::open('app'); // open a transaction with database
-            $object = new Inventory($key, FALSE); // instantiates the Active Record
+            
+            // creates a repository for Sale
+            $repository = new TRepository('SaleInventory');
+            $criteria = new TCriteria;
+            $criteria->add(new TFilter('sale_id', '=', $key));  
+            $objects = $repository->load($criteria, FALSE);
+            
+            if ($objects)
+            {
+                // iterate the collection of active records
+                foreach ($objects as $object)
+                {
+                    $inventory = Inventory::where('id', '=', $object->inventory_id)->first();
+                    $inventory->amount += $object->amount;
+                    $inventory->store(); 
+                    
+                    $sale_inventory = SaleInventory::where('sale_id','=',$object->sale_id)->where('inventory_id', '=', $object->inventory_id)->where('system_user_id', '=', TSession::getValue('userunitid'))->delete();
+                }
+            }       
+            
+            $object = new Sale($key, FALSE); // instantiates the Active Record
             $object->delete(); // deletes the object from the database
             TTransaction::close(); // close the transaction
             

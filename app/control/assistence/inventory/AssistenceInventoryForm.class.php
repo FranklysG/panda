@@ -27,7 +27,7 @@ class AssistenceInventoryForm extends TPage
         // create the form fields
         $id = new THidden('id');
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
         $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'name', null, $criteria);
         $product_id->setMinLength(1);
         $product_id->addValidation('Nome do produto', new TRequiredValidator);

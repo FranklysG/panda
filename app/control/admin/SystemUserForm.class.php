@@ -33,6 +33,13 @@ class SystemUserForm extends TPage
         $password      = new TPassword('password');
         $repassword    = new TPassword('repassword');
         $email         = new TEntry('email');
+        $type          = new TCombo('type');
+        $type->addItems([
+            '0' => 'Admin',
+            '1' => 'Propietario',
+            '2' => 'Socio',
+            '3' => 'Funcionario'
+        ]);
         $unit_id       = new TDBCombo('system_unit_id','permission','SystemUnit','id','name');
         $groups        = new TDBCheckGroup('groups','permission','SystemGroup','id','name');
         $frontpage_id  = new TDBUniqueSearch('frontpage_id', 'permission', 'SystemProgram', 'id', 'name', 'name');
@@ -84,6 +91,7 @@ class SystemUserForm extends TPage
         $this->form->addFields( [new TLabel(_t('Login'))], [$login],  [new TLabel(_t('Email'))], [$email] );
         $this->form->addFields( [new TLabel(_t('Main unit'))], [$unit_id],  [new TLabel(_t('Front page'))], [$frontpage_id] );
         $this->form->addFields( [new TLabel(_t('Password'))], [$password],  [new TLabel(_t('Password confirmation'))], [$repassword] );
+        $this->form->addFields( [new TLabel('Tipo do usuario')], [$type]);
         $this->form->addFields( [new TFormSeparator(_t('Units'))] );
         $this->form->addFields( [$units] );
         $this->form->addFields( [new TFormSeparator(_t('Groups'))] );

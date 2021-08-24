@@ -27,7 +27,7 @@ class RoostSaleForm extends TPage
         $id = new THidden('id');
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
         $sale_type_id = new TDBUniqueSearch('sale_type_id', 'app', 'SaleType', 'id', 'name', null, $criteria);
         $sale_type_id->setMinLength(0);
         $sale_type_id->addValidation('Forma de pagamento', new TRequiredValidator);
@@ -46,7 +46,7 @@ class RoostSaleForm extends TPage
         $detail_id = new THidden('detail_id');
         $detail_system_user_id = new TDBUniqueSearch('detail_system_user_id', 'app', 'SystemUser', 'id', 'name');
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
         $criteria->add(new TFilter('amount', '>=', 0));
         $detail_inventory_id = new TDBUniqueSearch('detail_inventory_id', 'app', 'Inventory', 'id', 'product_id',null, $criteria);
         $detail_inventory_id->setMinLength(0);
@@ -307,7 +307,7 @@ class RoostSaleForm extends TPage
                 $key = $param['key'];
                 
                 $object = new Sale($key);
-                $items  = SaleInventory::where('sale_id', '=', $key)->where('system_user_id', '=', TSession::getValue('userid'))->load();
+                $items  = SaleInventory::where('sale_id', '=', $key)->where('system_user_id', '=', TSession::getValue('userunitid'))->load();
                 foreach( $items as $item )
                 {
                     $item->uniqid = uniqid();

@@ -175,7 +175,7 @@ class AssistenceSaleTypeFormList extends TPage
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
             
-            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
             

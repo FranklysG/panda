@@ -19,12 +19,6 @@ class AssistenceDashboard extends TPage
         
         try
         {
-            // veridicando se existe algum no estoque
-            if(!isset($_GET['debugTunele'])){
-                $pos_action = new TAction(['AssistenceProductList', 'onReload']);
-                new TMessage('warning', 'Estamos cuidando do desenvolvimento, foque na sua area de vendas por enquanto', $pos_action);
-            }
-
             TTransaction::open('app');
             // mapa_reservas semanais
             $criteria = new TCriteria;

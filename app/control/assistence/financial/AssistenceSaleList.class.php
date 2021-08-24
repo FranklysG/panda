@@ -28,7 +28,7 @@ class AssistenceSaleList extends TPage
         // create the form fields
         $id = new THidden('id');
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid')));
+        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
         $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'product_id', 'product_name', null, $criteria);
         $product_id->setMinLength(1);
         $product_id->setMask('{product_name} : R$ {final_price} ');
@@ -232,9 +232,9 @@ class AssistenceSaleList extends TPage
             TTransaction::open('app');
             
             // veridicando se existe algum no estoque
-            $verifyProduct = Product::where('system_user_id', '=', TSession::getValue('userid'))->first();
-            $verifyInventory = Inventory::where('system_user_id', '=', TSession::getValue('userid'))->first();
-            $verifySale = SaleType::where('system_user_id', '=', TSession::getValue('userid'))->first();
+            $verifyProduct = Product::where('system_user_id', '=', TSession::getValue('userunitid'))->first();
+            $verifyInventory = Inventory::where('system_user_id', '=', TSession::getValue('userunitid'))->first();
+            $verifySale = SaleType::where('system_user_id', '=', TSession::getValue('userunitid'))->first();
             if(empty($verifyProduct)){
                 $pos_action = new TAction(['AssistenceProductList', 'onReload']);
                 new TMessage('warning', 'Você precisa cadastrar alguns produtos e adicionalos ao estoque antes', $pos_action);
@@ -287,7 +287,11 @@ class AssistenceSaleList extends TPage
             }
 
             // citerios especificos
-            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid'))); 
+            $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+            foreach ($system_user_unit as $value) {
+                $ids[] = $value->system_user_id;
+            }
+            $criteria->add(new TFilter('system_user_id','IN', $ids));
             
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
@@ -304,7 +308,7 @@ class AssistenceSaleList extends TPage
                 foreach ($objects as $object)
                 {
                     $object->price = null;
-                    $sale_inventory = SaleInventory::where('sale_id', '=', $object->id)->where('system_user_id', '=', TSession::getValue('userid'))->load();
+                    $sale_inventory = SaleInventory::where('sale_id', '=', $object->id)->where('system_user_id', 'IN', $ids)->load();
                     if(!empty($sale_inventory)){
                         foreach ($sale_inventory as $value) {
                             $object->price += ($value->amount)*(($value->price)-($value->discount)); 
@@ -356,11 +360,17 @@ class AssistenceSaleList extends TPage
             $key = $param['key']; // get the parameter $key
             TTransaction::open('app'); // open a transaction with database
             
+            // citerios especificos
+            $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+            foreach ($system_user_unit as $value) {
+                $ids[] = $value->system_user_id;
+            }
+
             // creates a repository for Sale
             $repository = new TRepository('SaleInventory');
             $criteria = new TCriteria;
             $criteria->add(new TFilter('sale_id', '=', $key)); 
-            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userid'))); 
+            $criteria->add(new TFilter('system_user_id','IN', $ids));
             $objects = $repository->load($criteria, FALSE);
             
             if ($objects)
@@ -372,7 +382,7 @@ class AssistenceSaleList extends TPage
                     $inventory->amount += $object->amount;
                     $inventory->store(); 
                     
-                    $sale_inventory = SaleInventory::where('sale_id','=',$object->sale_id)->where('inventory_id', '=', $object->inventory_id)->where('system_user_id', '=', TSession::getValue('userid'))->delete();
+                    $sale_inventory = SaleInventory::where('sale_id','=',$object->sale_id)->where('inventory_id', '=', $object->inventory_id)->delete();
                 }
             }       
             
