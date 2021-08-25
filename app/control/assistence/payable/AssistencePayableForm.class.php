@@ -42,6 +42,7 @@ class AssistencePayableForm extends TPage
         );
         $status->setDefaultOption(false);
         $created_at = new TDate('created_at');
+        $created_at->addValidation('Data do vencimento', new TRequiredValidator);
         $updated_at = new TEntry('updated_at');
 
 

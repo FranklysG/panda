@@ -55,8 +55,6 @@ class RoostDashboard extends TPage
             $payable_cash_month = 0;
             $payable_cash_year = 0;
             foreach ($objects as $object) {
-
-                echo '<pre>'; print_r($object->sale_cash_year); echo '</pre>'; exit;
                 $sale_today += $object->sale_today;
                 $sale_cash_today += $object->sale_cash_today;
                 $sale_cash_month += $object->sale_cash_month;

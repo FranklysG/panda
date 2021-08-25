@@ -101,6 +101,10 @@ class RoostPayableList extends TPage
             return $div;
         });
 
+        $column_price->setTransformer(function($value){
+            return Convert::toMonetario($value);
+        });
+
         $column_updated_at->setTransformer(function($value){
             return Convert::toDate($value, 'd / m / Y');
         });
