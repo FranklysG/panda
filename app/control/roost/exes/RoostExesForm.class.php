@@ -33,6 +33,7 @@ class RoostExesForm extends TPage
         $price->setNumericMask(2, '.', ',', true);
         $price->addValidation('Preço do produto', new TRequiredValidator);
         $created_at = new TDate('created_at');
+        $created_at->addValidation('Data da despesa', new TRequiredValidator);
         $updated_at = new TEntry('updated_at');
 
 
