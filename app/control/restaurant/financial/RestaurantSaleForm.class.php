@@ -307,7 +307,7 @@ class RestaurantSaleForm extends TPage
                 $key = $param['key'];
                 
                 $object = new Sale($key);
-                $items  = SaleInventory::where('sale_id', '=', $key)->where('system_user_id', '=', TSession::getValue('userunitid'))->load();
+                $items  = SaleInventory::where('sale_id', '=', $key)->load();
                 foreach( $items as $item )
                 {
                     $item->uniqid = uniqid();
