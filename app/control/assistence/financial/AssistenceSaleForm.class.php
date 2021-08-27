@@ -48,9 +48,9 @@ class AssistenceSaleForm extends TPage
         $criteria = new TCriteria;
         $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
         $criteria->add(new TFilter('amount', '>=', 0));
-        $detail_inventory_id = new TDBUniqueSearch('detail_inventory_id', 'app', 'Inventory', 'id', 'product_id',null, $criteria);
+        $detail_inventory_id = new TDBUniqueSearch('detail_inventory_id', 'app', 'ViewInventory', 'id', 'product_id',null, $criteria);
         $detail_inventory_id->setMinLength(0);
-        $detail_inventory_id->setMask('{product->name}');
+        $detail_inventory_id->setMask('{product_name}');
         $change_action = new TAction(array($this, 'onChangeAction'));
         $detail_inventory_id->setChangeAction($change_action);
         $detail_amount = new TEntry('detail_amount');
@@ -362,13 +362,11 @@ class AssistenceSaleForm extends TPage
                     $detail->sale_id = $master->id;
                     $detail->store();
 
-                    $object = Inventory::where('id', '=', $detail->inventory_id)->where('amount', '>=', $detail->amount)->first();
+                    $object = Inventory::where('id', '=', $detail->inventory_id)->where('amount', '>=', $detail->amount)->where('status','=',1)->first();
                     if(!empty($object)){
                         $object->amount -= $detail->amount;
                         $object->store();
-                    }else{
-                        throw new Exception("Quantidade indisponivel no estoque", 001);  
-                    }
+                    } 
                 }
             }
             TTransaction::close(); // close the transaction

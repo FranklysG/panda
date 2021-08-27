@@ -39,6 +39,13 @@ class RoostInventoryForm extends TPage
         $final_price = new TEntry('final_price');
         $final_price->setNumericMask(2, ',', '.', true);
         $final_price->addValidation('Preço final', new TRequiredValidator);
+        $status = new TCombo('status');
+        $status->addItems(
+            [
+                '0' => 'INATIVO',
+                '1' => 'ATIVO'
+            ]
+        );
         $created_at = new TEntry('created_at');
         $updated_at = new TEntry('updated_at');
 
@@ -48,9 +55,10 @@ class RoostInventoryForm extends TPage
         $row = $this->form->addFields( [ new TLabel('Buscar produto (nome)'), $product_id ],
                                 [ new TLabel('<br />Quantidade disponivel'), $amount ],
                                 [ new TLabel('<br />Preço de custo'), $price ],
-                                [ new TLabel('<br />Preço de venda'), $final_price ]
+                                [ new TLabel('<br />Preço de venda'), $final_price ],
+                                [ new TLabel('<br />Subtrair estoque'), $status ]
                             );
-        $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
+        $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
 
         if (!empty($id))
         {

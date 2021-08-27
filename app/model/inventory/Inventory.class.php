@@ -23,6 +23,7 @@ class Inventory extends TRecord
         parent::addAttribute('amount');
         parent::addAttribute('price');
         parent::addAttribute('final_price');
+        parent::addAttribute('status');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');
     }

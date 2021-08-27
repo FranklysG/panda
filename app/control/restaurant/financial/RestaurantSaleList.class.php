@@ -382,9 +382,11 @@ class RestaurantSaleList extends TPage
                 // iterate the collection of active records
                 foreach ($objects as $object)
                 {
-                    $inventory = Inventory::where('id', '=', $object->inventory_id)->first();
-                    $inventory->amount += $object->amount;
-                    $inventory->store(); 
+                    $inventory = Inventory::where('id', '=', $object->inventory_id)->where('status','=',1)->first();
+                    if(!empty($inventory)){
+                        $inventory->amount += $object->amount;
+                        $inventory->store(); 
+                    }
                     
                     $sale_inventory = SaleInventory::where('sale_id','=',$object->sale_id)->where('inventory_id', '=', $object->inventory_id)->delete();
                 }

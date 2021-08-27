@@ -361,13 +361,11 @@ class RoostSaleForm extends TPage
                     $detail->sale_id = $master->id;
                     $detail->store();
 
-                    $object = Inventory::where('id', '=', $detail->inventory_id)->where('amount', '>=', $detail->amount)->first();
+                    $object = Inventory::where('id', '=', $detail->inventory_id)->where('amount', '>=', $detail->amount)->where('status','=',1)->first();
                     if(!empty($object)){
                         $object->amount -= $detail->amount;
                         $object->store();
-                    }else{
-                        throw new Exception("Quantidade indisponivel no estoque", 001);  
-                    }
+                    } 
                 }
             }
             TTransaction::close(); // close the transaction

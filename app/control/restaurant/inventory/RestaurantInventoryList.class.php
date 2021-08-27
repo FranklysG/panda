@@ -91,12 +91,32 @@ class RestaurantInventoryList extends TPage
         $column_id = new TDataGridColumn('id', 'Id', 'left');
         $column_product_name = new TDataGridColumn('product_name', 'PRODUTO', 'left');
         $column_product_sku = new TDataGridColumn('product_sku', 'SKU', 'left');
-        $column_amount = new TDataGridColumn('amount', 'QUANTIDADE DISPONIVEL', 'left');
+        $column_amount = new TDataGridColumn('amount', 'QD. DISPONIVEL', 'left');
         $column_price = new TDataGridColumn('price', 'PREÇO MEDIO', 'left');
         $column_final_price = new TDataGridColumn('final_price', 'PREÇO DE VENDA', 'left');
-        $column_total = new TDataGridColumn('= {amount} * {price}', 'TOTAL', 'left');
+        $column_total = new TDataGridColumn('= {amount} * {final_price}', 'TOTAL', 'left');
+        $column_status = new TDataGridColumn('status', 'SUBTRAIR ESTOQUE', 'center');
         $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
-        $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA MODIFICAZAÇÃO', 'right');
+        $column_updated_at = new TDataGridColumn('updated_at', 'ATUALIZADO', 'right');
+        
+        $column_status->setTransformer(function($value){
+            switch ($value) {
+                case 0:
+                    $class = 'danger';
+                    $label = 'INATIVO';
+                    break;
+                case 1:
+                    $class = 'success';
+                    $label = 'ATIVO';
+                    break;
+            }
+
+            $div = new TElement('span');
+            $div->class = "btn btn-{$class}";
+            $div->style = "text-shadow:none; font-size:12px; font-weight:bold;width:auto;";
+            $div->add($label);
+            return $div;
+        });
 
         $column_price->setTransformer(function($value){
             return Convert::toMonetario($value);
@@ -121,7 +141,8 @@ class RestaurantInventoryList extends TPage
         $this->datagrid->addColumn($column_amount);
         $this->datagrid->addColumn($column_price);
         $this->datagrid->addColumn($column_final_price);
-        // $this->datagrid->addColumn($column_created_at);
+        $this->datagrid->addColumn($column_total);
+        $this->datagrid->addColumn($column_status);
         $this->datagrid->addColumn($column_updated_at);
 
 
