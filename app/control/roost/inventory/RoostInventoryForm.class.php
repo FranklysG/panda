@@ -101,6 +101,13 @@ class RoostInventoryForm extends TPage
             $object->fromArray( (array) $data); // load the object with data
             $object->store(); // save the object
             
+            $objects = Inventory::where('product_id','=',$data->product_id)->load();  // create an empty object
+            if($objects){
+                foreach ($objects as $key => $value) {
+                    $value->final_price = $data->final_price;
+                    $value->store();
+                }
+            }
             // get the generated id
             $data->id = $object->id;
             

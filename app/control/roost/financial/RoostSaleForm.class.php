@@ -31,7 +31,7 @@ class RoostSaleForm extends TPage
         $sale_type_id = new TDBUniqueSearch('sale_type_id', 'app', 'SaleType', 'id', 'name', null, $criteria);
         $sale_type_id->setMinLength(0);
         $sale_type_id->addValidation('Forma de pagamento', new TRequiredValidator);
-        $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'system_user_id');
+        $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'id', 'system_user_id');
         $product_id->addValidation('Nome do produto', new TRequiredValidator);
         $price = new TEntry('price');
         $price->setNumericMask(2, '.', ',', true);
@@ -48,9 +48,9 @@ class RoostSaleForm extends TPage
         $criteria = new TCriteria;
         $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
         $criteria->add(new TFilter('amount', '>=', 0));
-        $detail_inventory_id = new TDBUniqueSearch('detail_inventory_id', 'app', 'Inventory', 'id', 'product_id',null, $criteria);
+        $detail_inventory_id = new TDBUniqueSearch('detail_inventory_id', 'app', 'ViewInventory', 'id', 'product_id',null, $criteria);
         $detail_inventory_id->setMinLength(0);
-        $detail_inventory_id->setMask('{product->name}');
+        $detail_inventory_id->setMask('{product_name}');
         $change_action = new TAction(array($this, 'onChangeAction'));
         $detail_inventory_id->setChangeAction($change_action);
         $detail_amount = new TEntry('detail_amount');

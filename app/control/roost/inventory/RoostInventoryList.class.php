@@ -39,7 +39,30 @@ class RoostInventoryList extends TPage
         $created_at = new TEntry('created_at');
         $updated_at = new TEntry('updated_at');
 
+        $criteria = new TCriteria;
+        TTransaction::open('app');
+        $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+        
+        foreach ($system_user_unit as $value) {
+            $ids[] = $value->system_user_id;
+        }
+        $criteria->add(new TFilter('system_user_id','IN', $ids));
+        $repositoy = new TRepository('Inventory');
+        $objects = $repositoy->load($criteria);
+        TTransaction::close();
+        $inventory_total = null;
+        foreach ($objects as $key => $object) {
+            $inventory_total += ($object->final_price * $object->amount);
+        }
 
+        $html = new THtmlRenderer('app/resources/system_inventory_dashboard.html');
+        $indicator = new THtmlRenderer('app/resources/info-box.html');
+        $indicator1 = new THtmlRenderer('app/resources/info-box.html');
+        $indicator->enableSection('main', ['title' => 'MONTANTE NO ESTOQUE',    'icon' => 'cart-arrow-down',       'background' => 'green', 'value' => Convert::toMonetario($inventory_total)]);
+        $html->enableSection('main', [
+            'indicator' => $indicator,
+        ] );
+        
         // add the fields
         $this->form->addFields( [ $id ]);
         $this->form->addFields( 
@@ -72,7 +95,7 @@ class RoostInventoryList extends TPage
         $column_amount = new TDataGridColumn('amount', 'QUANTIDADE DISPONIVEL', 'left');
         $column_price = new TDataGridColumn('price', 'PREÇO MEDIO', 'left');
         $column_final_price = new TDataGridColumn('final_price', 'PREÇO DE VENDA', 'left');
-        $column_total = new TDataGridColumn('= {amount} * {price}', 'TOTAL', 'left');
+        $column_total = new TDataGridColumn('= {amount} * {final_price}', 'TOTAL', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
         $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA MODIFICAZAÇÃO', 'right');
 
@@ -122,6 +145,7 @@ class RoostInventoryList extends TPage
         $container = new TVBox;
         $container->style = 'width: 100%';
         // $container->add(new TXMLBreadCrumb('menu.xml', __CLASS__));
+        $container->add($html);
         $container->add($this->form);
         $container->add(TPanelGroup::pack('', $this->datagrid, $this->pageNavigation));
         
@@ -362,26 +386,7 @@ class RoostInventoryList extends TPage
             $key = $param['key']; // get the parameter $key
             TTransaction::open('app'); // open a transaction with database
             
-            // creates a repository for Sale
-            $repository = new TRepository('SaleInventory');
-            $criteria = new TCriteria;
-            $criteria->add(new TFilter('sale_id', '=', $key));  
-            $objects = $repository->load($criteria, FALSE);
-            
-            if ($objects)
-            {
-                // iterate the collection of active records
-                foreach ($objects as $object)
-                {
-                    $inventory = Inventory::where('id', '=', $object->inventory_id)->first();
-                    $inventory->amount += $object->amount;
-                    $inventory->store(); 
-                    
-                    $sale_inventory = SaleInventory::where('sale_id','=',$object->sale_id)->where('inventory_id', '=', $object->inventory_id)->where('system_user_id', '=', TSession::getValue('userunitid'))->delete();
-                }
-            }       
-            
-            $object = new Sale($key, FALSE); // instantiates the Active Record
+            $object = new Inventory($key, FALSE); // instantiates the Active Record
             $object->delete(); // deletes the object from the database
             TTransaction::close(); // close the transaction
             
@@ -390,7 +395,8 @@ class RoostInventoryList extends TPage
         }
         catch (Exception $e) // in case of exception
         {
-            new TMessage('error', $e->getMessage()); // shows the exception error message
+            // new TMessage('error', $e->getMessage()); // shows the exception error message
+            new TMessage('warning', 'Existem vendas com esse produto cadastrado, exclua primeiro'); // shows the exception error message
             TTransaction::rollback(); // undo all pending operations
         }
     }
