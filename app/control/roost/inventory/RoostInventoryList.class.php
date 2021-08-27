@@ -72,6 +72,7 @@ class RoostInventoryList extends TPage
         $column_amount = new TDataGridColumn('amount', 'QUANTIDADE DISPONIVEL', 'left');
         $column_price = new TDataGridColumn('price', 'PREÇO MEDIO', 'left');
         $column_final_price = new TDataGridColumn('final_price', 'PREÇO DE VENDA', 'left');
+        $column_total = new TDataGridColumn('= {amount} * {price}', 'TOTAL', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
         $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA MODIFICAZAÇÃO', 'right');
 
@@ -80,6 +81,10 @@ class RoostInventoryList extends TPage
         });
 
         $column_final_price->setTransformer(function($value){
+            return Convert::toMonetario($value);
+        });
+
+        $column_total->setTransformer(function($value){
             return Convert::toMonetario($value);
         });
         
@@ -94,6 +99,7 @@ class RoostInventoryList extends TPage
         $this->datagrid->addColumn($column_amount);
         $this->datagrid->addColumn($column_price);
         $this->datagrid->addColumn($column_final_price);
+        $this->datagrid->addColumn($column_total);
         // $this->datagrid->addColumn($column_created_at);
         $this->datagrid->addColumn($column_updated_at);
 
