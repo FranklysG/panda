@@ -42,8 +42,8 @@ class RestaurantInventoryForm extends TPage
         $status = new TCombo('status');
         $status->addItems(
             [
-                '0' => 'INATIVO',
-                '1' => 'ATIVO'
+                '1' => 'ATIVO',
+                '0' => 'INATIVO'
             ]
         );
         $status->setDefaultOption(false);

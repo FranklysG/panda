@@ -42,10 +42,11 @@ class RoostInventoryForm extends TPage
         $status = new TCombo('status');
         $status->addItems(
             [
-                '0' => 'INATIVO',
-                '1' => 'ATIVO'
+                '1' => 'ATIVO',
+                '0' => 'INATIVO'
             ]
         );
+        $status->setDefaultOption(false);
         $created_at = new TEntry('created_at');
         $updated_at = new TEntry('updated_at');
 
