@@ -66,6 +66,7 @@ class RoostSaleList extends TPage
         $column_price = new TDataGridColumn('price', 'PREÇO', 'left');
         $column_discount = new TDataGridColumn('discount', 'DESCONTO', 'left');
         $column_total = new TDataGridColumn('= {amount} * ({price} - {discount})', 'TOTAL', 'left');
+        $column_time = new TDataGridColumn('created_at', 'HORARIO', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'DATA', 'left');
         $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
         
@@ -93,6 +94,14 @@ class RoostSaleList extends TPage
             return Convert::toMonetario($value);
         });
         
+        $column_time->setTransformer(function($value){
+            $time = ' AM';
+            if(Convert::toDate($value, 'H') > 12){
+                $time = ' PM';
+            }
+            return Convert::toDate($value, 'H:i').$time;
+        }); 
+        
         $column_created_at->setTransformer(function($value){
             return Convert::toDate($value, 'd / m / Y');
         }); 
@@ -106,6 +115,7 @@ class RoostSaleList extends TPage
         $this->datagrid->addColumn($column_system_user_id);
         $this->datagrid->addColumn($column_price);
         $this->datagrid->addColumn($column_sale_type_id);
+        $this->datagrid->addColumn($column_time);
         $this->datagrid->addColumn($column_created_at);
         // $this->datagrid->addColumn($column_updated_at);
         // $this->datagrid->addColumn($column_product_id);
