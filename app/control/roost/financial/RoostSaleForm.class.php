@@ -25,21 +25,11 @@ class RoostSaleForm extends TPage
 
         // master fields
         $id = new THidden('id');
-        $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
         $criteria = new TCriteria;
         $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
         $sale_type_id = new TDBUniqueSearch('sale_type_id', 'app', 'SaleType', 'id', 'name', null, $criteria);
         $sale_type_id->setMinLength(0);
         $sale_type_id->addValidation('Forma de pagamento', new TRequiredValidator);
-        $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'id', 'system_user_id');
-        $product_id->addValidation('Nome do produto', new TRequiredValidator);
-        $price = new TEntry('price');
-        $price->setNumericMask(2, '.', ',', true);
-        $discount = new TEntry('discount');
-        $discount->setNumericMask(2, '.', ',', true);
-        $quantity = new TEntry('quantity');
-        $created_at = new TEntry('created_at');
-        $updated_at = new TEntry('updated_at');
 
         // detail fields
         $detail_uniqid = new THidden('detail_uniqid');
@@ -61,6 +51,7 @@ class RoostSaleForm extends TPage
         $detail_price = new TEntry('detail_price');
         $detail_price->setNumericMask(2, '.', ',', true);
         $detail_final_price = new TEntry('detail_final_price');
+        $detail_description = new TEntry('detail_description');
         $detail_created_at = new TEntry('detail_created_at');
         $detail_updated_at = new TEntry('detail_updated_at');
         
@@ -75,8 +66,8 @@ class RoostSaleForm extends TPage
         $this->form->addFields( [$detail_id] );
         
         $this->form->addFields( [new TLabel('PRODUTO'), $detail_inventory_id] );
-        $row = $this->form->addFields( [new TLabel('QUANTIDADE'), $detail_amount], [new TLabel('PREÇO'), $detail_price] );
-        $row->layout = ['col-sm-4', 'col-sm-8'];
+        $row = $this->form->addFields( [new TLabel('QUANTIDADE'), $detail_amount], [new TLabel('N° QUARTO'), $detail_description], [new TLabel('PREÇO'), $detail_price] );
+        $row->layout = ['col-sm-4', 'col-sm-4', 'col-sm-4'];
         $this->form->addFields( [new TLabel('DESCONTO'), $detail_discount] );
 
         $add = TButton::create('add', [$this, 'onDetailAdd'], 'Adicionar produto', 'fa:plus-circle green');
@@ -91,10 +82,11 @@ class RoostSaleForm extends TPage
         $detail_grid_uniqid = new TDataGridColumn('uniqid', 'Uniqid', 'center');
         $detail_grid_system_id = new TDataGridColumn('system_user_id', 'System User Id', 'left');
         $detail_grid_inventory_id = new TDataGridColumn('inventory_id', 'Product Id', 'left');
-        $detail_grid_product_name = new TDataGridColumn('product_name', 'PRODUTO', 'left');
+        $detail_grid_product_name = new TDataGridColumn('{product_name} {description}', 'PRODUTO', 'left');
         $detail_grid_amount = new TDataGridColumn('amount', 'QTD', 'left');
         $detail_grid_price = new TDataGridColumn('price', 'PREÇO', 'left');
         $detail_grid_discount = new TDataGridColumn('discount', 'DESCONTO', 'left');
+        $detail_grid_description = new TDataGridColumn('description', 'N°', 'left');
         $detail_grid_total = new TDataGridColumn('= {amount} * ({price} - {discount})', 'TOTAL', 'left');
 
         $detail_grid_price->setTransformer(function($value){
@@ -114,6 +106,7 @@ class RoostSaleForm extends TPage
         $this->detail_list->addColumn( $detail_grid_id )->setVisibility(false);
         $this->detail_list->addColumn( $detail_grid_inventory_id )->setVisibility(false);
         $this->detail_list->addColumn( $detail_grid_product_name );
+        $this->detail_list->addColumn( $detail_grid_description )->setVisibility(false);
         $this->detail_list->addColumn( $detail_grid_amount );
         $this->detail_list->addColumn( $detail_grid_price );
         $this->detail_list->addColumn( $detail_grid_discount );
@@ -216,6 +209,7 @@ class RoostSaleForm extends TPage
             $grid_data['amount'] = $data->detail_amount;
             $grid_data['price'] = (!empty($data->detail_price))? $data->detail_price : Inventory::find($data->detail_inventory_id)->price;
             $grid_data['discount'] = $data->detail_discount;
+            $grid_data['description'] = $data->detail_description;
             // $grid_data['final_price'] = $data->detail_final_price;
             // $grid_data['created_at'] = $data->detail_created_at;
             // $grid_data['updated_at'] = $data->detail_updated_at;
@@ -233,6 +227,7 @@ class RoostSaleForm extends TPage
             $data->detail_inventory_id = '';
             // $data->detail_amount = '';
             $data->detail_price = '';
+            $data->detail_description = '';
             // $data->detail_discount = '';
             // $data->detail_created_at = '';
             // $data->detail_updated_at = '';
@@ -261,6 +256,7 @@ class RoostSaleForm extends TPage
         $data->detail_amount = $param['amount'];
         $data->detail_price = $param['price'];
         $data->detail_final_price = $param['final_price'];
+        $data->detail_description = $param['description'];
         $data->detail_created_at = $param['created_at'];
         $data->detail_updated_at = $param['updated_at'];
         
@@ -283,6 +279,7 @@ class RoostSaleForm extends TPage
         $data->detail_amount = '';
         $data->detail_price = '';
         $data->detail_final_price = '';
+        $data->detail_desciption = '';
         $data->detail_created_at = '';
         $data->detail_updated_at = '';
         
@@ -358,6 +355,7 @@ class RoostSaleForm extends TPage
                     $detail->price  = $param['sale_inventory_list_price'][$key];
                     $detail->amount  = $param['sale_inventory_list_amount'][$key];
                     $detail->discount  = $param['sale_inventory_list_discount'][$key];
+                    $detail->description  = $param['sale_inventory_list_description'][$key];
                     $detail->sale_id = $master->id;
                     $detail->store();
 

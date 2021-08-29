@@ -61,7 +61,7 @@ class RoostSaleList extends TPage
         $column_id = new TDataGridColumn('id', 'id', 'left');
         $column_system_user_id = new TDataGridColumn('system_user->name', 'RESPONSAVEL', 'left');
         $column_sale_type_id = new TDataGridColumn('sale_type_id', 'FORMA DE PAGAMENTO', 'left');
-        $column_product_id = new TDataGridColumn('inventory->product->name', 'PRODUTO', 'left');
+        $column_product = new TDataGridColumn('{product_name} {description}', 'QUARTO', 'left');
         $column_quantity = new TDataGridColumn('amount', 'QUANTIDADE', 'left');
         $column_price = new TDataGridColumn('price', 'PREÇO', 'left');
         $column_discount = new TDataGridColumn('discount', 'DESCONTO', 'left');
@@ -113,9 +113,10 @@ class RoostSaleList extends TPage
         // add the columns to the DataGrid
         // $this->datagrid->addColumn($column_id);
         $this->datagrid->addColumn($column_system_user_id);
+        $this->datagrid->addColumn($column_product);
         $this->datagrid->addColumn($column_price);
-        $this->datagrid->addColumn($column_sale_type_id);
         $this->datagrid->addColumn($column_time);
+        $this->datagrid->addColumn($column_sale_type_id);
         $this->datagrid->addColumn($column_created_at);
         // $this->datagrid->addColumn($column_updated_at);
         // $this->datagrid->addColumn($column_product_id);
@@ -321,10 +322,14 @@ class RoostSaleList extends TPage
                 // iterate the collection of active records
                 foreach ($objects as $object)
                 {
+                    $object->product_name = null;
+                    $object->description = null;
                     $object->price = null;
                     $sale_inventory = SaleInventory::where('sale_id', '=', $object->id)->where('system_user_id', 'IN', $ids)->load();
                     if(!empty($sale_inventory)){
                         foreach ($sale_inventory as $value) {
+                            $object->product_name = $value->inventory->product->name;
+                            $object->description = $value->description;
                             $object->price += ($value->amount)*(($value->price)-($value->discount)); 
                         }
                     }

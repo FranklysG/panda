@@ -26,6 +26,7 @@ class SaleInventory extends TRecord
         parent::addAttribute('price');
         parent::addAttribute('amount');
         parent::addAttribute('discount');
+        parent::addAttribute('description');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');
     }
