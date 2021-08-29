@@ -325,7 +325,7 @@ class RoostSaleList extends TPage
                     $object->product_name = null;
                     $object->description = null;
                     $object->price = null;
-                    $sale_inventory = SaleInventory::where('sale_id', '=', $object->id)->where('system_user_id', 'IN', $ids)->load();
+                    $sale_inventory = SaleInventory::where('sale_id', '=', $object->id)->where('system_user_id', 'IN', $ids)->orderBy('id', 'desc')->load();
                     if(!empty($sale_inventory)){
                         foreach ($sale_inventory as $value) {
                             $object->product_name = $value->inventory->product->name;
