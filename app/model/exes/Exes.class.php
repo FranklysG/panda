@@ -11,6 +11,7 @@ class Exes extends TRecord
     
     
     private $system_user;
+    private $inventory_id;
 
     /**
      * Constructor method
@@ -19,8 +20,10 @@ class Exes extends TRecord
     {
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('system_user_id');
+        parent::addAttribute('inventory_id');
         parent::addAttribute('description');
         parent::addAttribute('price');
+        parent::addAttribute('amount');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');
     }
@@ -50,6 +53,32 @@ class Exes extends TRecord
     
         // returns the associated object
         return $this->system_user;
+    }
+    
+    /**
+     * Method set_inventory
+     * Sample of usage: $exes->inventory = $object;
+     * @param $object Instance of Inventory
+     */
+    public function set_inventory(Inventory $object)
+    {
+        $this->inventory = $object;
+        $this->inventory_id = $object->id;
+    }
+    
+    /**
+     * Method get_inventory
+     * Sample of usage: $exes->inventory->attribute;
+     * @returns Inventory instance
+     */
+    public function get_inventory()
+    {
+        // loads the associated object
+        if (empty($this->inventory))
+            $this->inventory = new Inventory($this->inventory_id);
+    
+        // returns the associated object
+        return $this->inventory;
     }
     
 

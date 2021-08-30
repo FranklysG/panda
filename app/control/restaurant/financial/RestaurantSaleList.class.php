@@ -76,7 +76,7 @@ class RestaurantSaleList extends TPage
                 $label = $label->name;
             $div = new TElement('span');
             $div->class = "btn btn-{$class}";
-            $div->style = "text-shadow:none; font-size:12px; font-weight:bold;width:auto;";
+             $div->style = "text-shadow:none; font-size:12px; font-weight:bold;width:100%;";
             $div->add($label);
             return $div;
         });

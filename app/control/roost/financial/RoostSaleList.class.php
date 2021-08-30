@@ -67,7 +67,7 @@ class RoostSaleList extends TPage
         $column_discount = new TDataGridColumn('discount', 'DESCONTO', 'left');
         $column_total = new TDataGridColumn('= {amount} * ({price} - {discount})', 'TOTAL', 'left');
         $column_time = new TDataGridColumn('created_at', 'HORARIO', 'left');
-        $column_created_at = new TDataGridColumn('created_at', 'DATA', 'left');
+        $column_created_at = new TDataGridColumn('created_at', 'DATA', 'right');
         $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
         
         $column_sale_type_id->setTransformer(function($value){
@@ -77,7 +77,7 @@ class RoostSaleList extends TPage
                 $label = $label->name;
             $div = new TElement('span');
             $div->class = "btn btn-{$class}";
-            $div->style = "text-shadow:none; font-size:12px; font-weight:bold;width:auto;";
+             $div->style = "text-shadow:none; font-size:12px; font-weight:bold;width:100%;";
             $div->add($label);
             return $div;
         });

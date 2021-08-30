@@ -26,6 +26,16 @@ class RoostExesForm extends TPage
         // create the form fields
         $id = new THidden('id');
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
+        $criteria = new TCriteria;
+        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
+        $criteria->add(new TFilter('amount', '>=', 0));
+        $inventory_id = new TDBUniqueSearch('inventory_id', 'app', 'ViewInventory', 'id', 'product_id',null, $criteria);
+        $inventory_id->setMinLength(0);
+        $inventory_id->setMask('{product_name}');
+        $change_action = new TAction(array($this, 'onChangeAction'));
+        $inventory_id->setChangeAction($change_action);
+        $amount = new TEntry('amount');
+        $amount->forceUpperCase();
         $description = new TEntry('description');
         $description->forceUpperCase();
         $description->addValidation('Nome do produto', new TRequiredValidator);
@@ -39,12 +49,15 @@ class RoostExesForm extends TPage
 
         // add the fields
         $this->form->addFields( [ $id ] );
-        $row = $this->form->addFields( [ new TLabel('Descrição'), $description ],
+        $row = $this->form->addFields( 
+                                [ new TLabel('Produto'), $inventory_id ],
+                                [ new TLabel('<br />Quantidade'), $amount ],
+                                [ new TLabel('<br />Descrição'), $description ],
                                 [ new TLabel('<br />Preço'), $price ],
                                 [ new TLabel('<br />Data da despesa'), $created_at ]
                             );
         
-        $row->layout = ['col-sm-12','col-sm-12','col-sm-12'];
+        $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
         
 
         if (!empty($id))
@@ -73,6 +86,32 @@ class RoostExesForm extends TPage
         TScript::create("Template.closeRightPanel()");
     }
 
+     /**
+     * Action to be executed when the user changes the combo_change field
+     */
+    public static function onChangeAction($param)
+    {
+        try {
+            TTransaction::open('app');
+            $inventory_id = $param['inventory_id'];
+            $object = Inventory::where('id', '=', $inventory_id)->first();
+            $obj = new stdClass;
+            $obj->price = $object->final_price;
+            if (isset($object->product_image)) {
+                $userid = TSession::getValue('userid');
+                $path = "tmp/{$userid}/{$object->product_image}";
+                TScript::create("$('#image_frame').html('')");
+                TScript::create("$('#image_frame').append(\"<img style='max-height: 300px' src='$path'>\");");
+            }
+            
+            TForm::sendData('form_Exes', $obj);
+            TTransaction::close();
+        }catch (Exception $e) // in case of exception
+        {
+            new TMessage('error', $e->getMessage()); // shows the exception error message
+            TTransaction::rollback(); // undo all pending operations
+        }
+    }
     /**
      * Save form data
      * @param $param Request
@@ -93,6 +132,12 @@ class RoostExesForm extends TPage
             
             // get the generated id
             $data->id = $object->id;
+            $object = Inventory::where('id', '=', $data->inventory_id)->where('amount', '>=', $data->amount)->where('status','=',1)->first();
+            if(!empty($object)){
+                $object->amount -= $data->amount;
+                $object->store();
+            } 
+            
             
             $this->form->setData($data); // fill form data
             TTransaction::close(); // close the transaction

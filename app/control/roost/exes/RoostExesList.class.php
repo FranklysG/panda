@@ -64,6 +64,7 @@ class RoostExesList extends TPage
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'Id', 'left');
         $column_system_user_id = new TDataGridColumn('system_user->name', 'RESPONSAVEL', 'left');
+        $column_inventory_id = new TDataGridColumn('product_name', 'PRODUTO', 'left');
         $column_description = new TDataGridColumn('description', 'DESCRIÇÃO', 'left');
         $column_price = new TDataGridColumn('price', 'PREÇO', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
@@ -81,13 +82,14 @@ class RoostExesList extends TPage
         // $this->datagrid->addColumn($column_id);
         // $this->datagrid->addColumn($column_system_user_id);
         $this->datagrid->addColumn($column_description);
+        $this->datagrid->addColumn($column_inventory_id);
         $this->datagrid->addColumn($column_price);
         // $this->datagrid->addColumn($column_created_at);
         $this->datagrid->addColumn($column_updated_at);
 
 
         $action1 = new TDataGridAction(['RoostExesForm', 'onEdit'], ['id'=>'{id}']);
-        $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
+        $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}', 'inventory_id' => '{inventory_id}', 'amount' => '{amount}']);
         
         $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
         $this->datagrid->addAction($action2 ,_t('Delete'), 'far:trash-alt red');
@@ -277,6 +279,11 @@ class RoostExesList extends TPage
                 foreach ($objects as $object)
                 {
                     // add the object inside the datagrid
+                    $product_name = 'Sem produto';
+                    if($object->inventory_id){
+                        $product_name = Inventory::find($object->inventory_id)->product->name;
+                    }
+                    $object->product_name = $product_name;
                     $this->datagrid->addItem($object);
                 }
             }
@@ -324,6 +331,12 @@ class RoostExesList extends TPage
             TTransaction::open('app'); // open a transaction with database
             $object = new Exes($key, FALSE); // instantiates the Active Record
             $object->delete(); // deletes the object from the database
+
+            $inventory = Inventory::where('id', '=', $param['inventory_id'])->where('status','=',1)->first();
+            if(!empty($inventory)){
+                $inventory->amount += $param['amount'];
+                $inventory->store(); 
+            }
             TTransaction::close(); // close the transaction
             
             $pos_action = new TAction([__CLASS__, 'onReload']);
