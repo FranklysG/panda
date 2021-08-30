@@ -32,7 +32,7 @@ class RestaurantDashboard extends TPage
             $repositoy = new TRepository('ViewFinancial');
             $objects = $repositoy->load($criteria);
 
-            $html = new THtmlRenderer('app/resources/system_roost_dashboard.html');
+            $html = new THtmlRenderer('app/resources/restaurant/system_restaurant_dashboard.html');
             
             TTransaction::open('permission');
             $indicator1 = new THtmlRenderer('app/resources/info-box.html');

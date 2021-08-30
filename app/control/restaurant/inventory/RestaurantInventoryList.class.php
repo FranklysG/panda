@@ -57,7 +57,7 @@ class RestaurantInventoryList extends TPage
             $inventory_final_price += ($object->final_price * $object->amount);
         }
 
-        $html = new THtmlRenderer('app/resources/system_inventory_dashboard.html');
+        $html = new THtmlRenderer('app/resources/restaurant/system_inventory_dashboard.html');
         $indicator = new THtmlRenderer('app/resources/info-box.html');
         $indicator1 = new THtmlRenderer('app/resources/info-box.html');
         $indicator->enableSection('main', ['title' => 'MONTANTE INVESTIDO',    'icon' => 'cart-arrow-down',       'background' => 'light-blue', 'value' => Convert::toMonetario($inventory_price)]);
