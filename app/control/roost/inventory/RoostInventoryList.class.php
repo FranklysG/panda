@@ -50,17 +50,21 @@ class RoostInventoryList extends TPage
         $repositoy = new TRepository('Inventory');
         $objects = $repositoy->load($criteria);
         TTransaction::close();
-        $inventory_total = null;
+        $inventory_price = null;
+        $inventory_final_price = null;
         foreach ($objects as $key => $object) {
-            $inventory_total += ($object->final_price * $object->amount);
+            $inventory_price += ($object->price * $object->amount);
+            $inventory_final_price += ($object->final_price * $object->amount);
         }
 
         $html = new THtmlRenderer('app/resources/system_inventory_dashboard.html');
         $indicator = new THtmlRenderer('app/resources/info-box.html');
         $indicator1 = new THtmlRenderer('app/resources/info-box.html');
-        $indicator->enableSection('main', ['title' => 'MONTANTE NO ESTOQUE',    'icon' => 'cart-arrow-down',       'background' => 'green', 'value' => Convert::toMonetario($inventory_total)]);
+        $indicator->enableSection('main', ['title' => 'MONTANTE INVESTIDO',    'icon' => 'cart-arrow-down',       'background' => 'light-blue', 'value' => Convert::toMonetario($inventory_price)]);
+        $indicator1->enableSection('main', ['title' => 'MONTANTE NO ESTOQUE',    'icon' => 'cart-arrow-down',       'background' => 'green', 'value' => Convert::toMonetario($inventory_final_price)]);
         $html->enableSection('main', [
             'indicator' => $indicator,
+            'indicator1' => $indicator1
         ] );
         
         // add the fields
