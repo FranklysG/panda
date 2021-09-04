@@ -399,7 +399,7 @@ class RoostSaleList extends TPage
                 {
                     $inventory = Inventory::where('id', '=', $object->inventory_id)->where('status','=',1)->first();
                     if(!empty($inventory)){
-                        $inventory->amount += $object->amount;
+                        $inventory->amount_available += $object->amount;
                         $inventory->store(); 
                     }
                     

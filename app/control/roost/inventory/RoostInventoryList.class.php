@@ -101,7 +101,8 @@ class RoostInventoryList extends TPage
         $column_id = new TDataGridColumn('id', 'Id', 'left');
         $column_product_name = new TDataGridColumn('product_name', 'PRODUTO', 'left');
         $column_product_sku = new TDataGridColumn('product_sku', 'SKU', 'left');
-        $column_amount = new TDataGridColumn('amount', 'QTD. DISPONIVEL', 'left');
+        $column_amount = new TDataGridColumn('amount', 'QTD. COMPRADA', 'left');
+        $column_amount_available = new TDataGridColumn('amount_available', 'QTD. DISPONIVEL', 'left');
         $column_price = new TDataGridColumn('price', 'PREÇO MEDIO', 'left');
         $column_final_price = new TDataGridColumn('final_price', 'PREÇO DE VENDA', 'left');
         $column_total = new TDataGridColumn('= {amount} * {final_price}', 'TOTAL', 'left');
@@ -149,6 +150,7 @@ class RoostInventoryList extends TPage
         $this->datagrid->addColumn($column_product_sku);
         $this->datagrid->addColumn($column_product_name);
         $this->datagrid->addColumn($column_amount);
+        $this->datagrid->addColumn($column_amount_available);
         $this->datagrid->addColumn($column_price);
         $this->datagrid->addColumn($column_final_price);
         $this->datagrid->addColumn($column_total);

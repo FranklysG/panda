@@ -21,6 +21,7 @@ class Inventory extends TRecord
         parent::addAttribute('system_user_id');
         parent::addAttribute('product_id');
         parent::addAttribute('amount');
+        parent::addAttribute('amount_available');
         parent::addAttribute('price');
         parent::addAttribute('final_price');
         parent::addAttribute('status');

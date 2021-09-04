@@ -334,7 +334,7 @@ class RoostExesList extends TPage
 
             $inventory = Inventory::where('id', '=', $param['inventory_id'])->where('status','=',1)->first();
             if(!empty($inventory)){
-                $inventory->amount += $param['amount'];
+                $inventory->amount_available += $param['amount'];
                 $inventory->store(); 
             }
             TTransaction::close(); // close the transaction

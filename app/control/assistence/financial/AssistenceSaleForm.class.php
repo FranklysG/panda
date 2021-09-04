@@ -364,7 +364,7 @@ class AssistenceSaleForm extends TPage
 
                     $object = Inventory::where('id', '=', $detail->inventory_id)->where('amount', '>=', $detail->amount)->where('status','=',1)->first();
                     if(!empty($object)){
-                        $object->amount -= $detail->amount;
+                        $object->amount_available -= $detail->amount;
                         $object->store();
                     } 
                 }

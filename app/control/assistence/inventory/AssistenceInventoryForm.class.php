@@ -32,7 +32,7 @@ class AssistenceInventoryForm extends TPage
         $product_id->setMinLength(1);
         $product_id->addValidation('Nome do produto', new TRequiredValidator);
         $amount = new TEntry('amount');
-        $amount->addValidation('Quantidade disponivel', new TRequiredValidator);
+        $amount->addValidation('Quantidade', new TRequiredValidator);
         $price = new TEntry('price');
         $price->setNumericMask(2, ',', '.', true);
         $price->addValidation('Preço do produto', new TRequiredValidator);
@@ -54,7 +54,7 @@ class AssistenceInventoryForm extends TPage
         // add the fields
         $this->form->addFields( [ $id ] );
         $row = $this->form->addFields( [ new TLabel('Buscar produto (nome)'), $product_id ],
-                                [ new TLabel('<br />Quantidade disponivel'), $amount ],
+                                [ new TLabel('<br />Quantidade'), $amount ],
                                 [ new TLabel('<br />Preço de custo'), $price ],
                                 [ new TLabel('<br />Preço de venda'), $final_price ],
                                 [ new TLabel('<br />Subtrair estoque'), $status ]

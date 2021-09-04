@@ -134,7 +134,7 @@ class RoostExesForm extends TPage
             $data->id = $object->id;
             $object = Inventory::where('id', '=', $data->inventory_id)->where('amount', '>=', $data->amount)->where('status','=',1)->first();
             if(!empty($object)){
-                $object->amount -= $data->amount;
+                $object->amount_available -= $data->amount;
                 $object->store();
             } 
             
