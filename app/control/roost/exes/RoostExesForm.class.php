@@ -28,7 +28,7 @@ class RoostExesForm extends TPage
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
         $criteria = new TCriteria;
         $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
-        $criteria->add(new TFilter('amount', '>=', 0));
+        $criteria->add(new TFilter('amount_available', '>=', 0));
         $inventory_id = new TDBUniqueSearch('inventory_id', 'app', 'ViewInventory', 'id', 'product_id',null, $criteria);
         $inventory_id->setMinLength(0);
         $inventory_id->setMask('{product_name}');

@@ -155,7 +155,7 @@ class RoostInventoryList extends TPage
         $this->datagrid->addColumn($column_final_price);
         $this->datagrid->addColumn($column_total);
         $this->datagrid->addColumn($column_status);
-        $this->datagrid->addColumn($column_updated_at);
+        // $this->datagrid->addColumn($column_updated_at);
         
         
         $action1 = new TDataGridAction(['RoostInventoryForm', 'onEdit'], ['id'=>'{id}']);
@@ -365,9 +365,6 @@ class RoostInventoryList extends TPage
             $this->datagrid->clear();
             if ($objects)
             {
-                // iterate the collection of active records
-                // $product_id = null;
-                // $dados = null;
                 foreach ($objects as $object)
                 {
                     // add the object inside the datagrid

@@ -47,7 +47,7 @@ class AssistenceSaleForm extends TPage
         $detail_system_user_id = new TDBUniqueSearch('detail_system_user_id', 'app', 'SystemUser', 'id', 'name');
         $criteria = new TCriteria;
         $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
-        $criteria->add(new TFilter('amount', '>=', 0));
+        $criteria->add(new TFilter('amount_available', '>=', 0));
         $detail_inventory_id = new TDBUniqueSearch('detail_inventory_id', 'app', 'ViewInventory', 'id', 'product_id',null, $criteria);
         $detail_inventory_id->setMinLength(0);
         $detail_inventory_id->setMask('{product_name}');

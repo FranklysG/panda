@@ -31,8 +31,9 @@ class AssistenceInventoryForm extends TPage
         $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'name', null, $criteria);
         $product_id->setMinLength(1);
         $product_id->addValidation('Nome do produto', new TRequiredValidator);
-        $amount = new TEntry('amount');
-        $amount->addValidation('Quantidade', new TRequiredValidator);
+        $amount_available = new TEntry('amount_available');
+        $amount_available->addValidation('Quantidade', new TRequiredValidator);
+        $amount = new THidden('amount');
         $price = new TEntry('price');
         $price->setNumericMask(2, ',', '.', true);
         $price->addValidation('Preço do produto', new TRequiredValidator);
@@ -52,9 +53,9 @@ class AssistenceInventoryForm extends TPage
 
 
         // add the fields
-        $this->form->addFields( [ $id ] );
+        $this->form->addFields( [ $id, $amount ] );
         $row = $this->form->addFields( [ new TLabel('Buscar produto (nome)'), $product_id ],
-                                [ new TLabel('<br />Quantidade'), $amount ],
+                                [ new TLabel('<br />Quantidade'), $amount_available ],
                                 [ new TLabel('<br />Preço de custo'), $price ],
                                 [ new TLabel('<br />Preço de venda'), $final_price ],
                                 [ new TLabel('<br />Subtrair estoque'), $status ]
@@ -106,8 +107,9 @@ class AssistenceInventoryForm extends TPage
             $data = $this->form->getData(); // get form data as array
             
             $object = new Inventory;  // create an empty object
-            $object->system_user_id = TSession::getValue('userid');
             $object->fromArray( (array) $data); // load the object with data
+            $object->system_user_id = TSession::getValue('userid');
+            $object->amount = $data->amount_available;
             $object->store(); // save the object
             
             // get the generated id
