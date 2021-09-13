@@ -82,7 +82,7 @@ class AssistenceProductList extends TPage
         $column_alias = new TDataGridColumn('alias', 'APELIDO', 'left');
         $column_status = new TDataGridColumn('status', 'STATUS', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'CREATED At', 'left');
-        $column_updated_at = new TDataGridColumn('Ultima atualização', 'ULTIMA ATUALIZAÇÃO', 'left');
+        $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
 
         $column_status->setTransformer(function($value){
             switch ($value) {

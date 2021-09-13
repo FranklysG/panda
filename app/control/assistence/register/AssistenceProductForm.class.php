@@ -115,7 +115,7 @@ class AssistenceProductForm extends TPage
             if(!empty($data->image)){
                 $object->image = date('Y').'/'.date('m').'/'.$data->image;
             }
-            if(empty($data->sku) and Product::where('sku','!=',$data->sku)->load()){
+            if(!Product::where('sku','=',$data->sku)->load()){
                 $object->sku = AppUtil::hash(8);
             }
             $object->system_user_id = TSession::getValue('userid');
