@@ -37,6 +37,7 @@ class AssistenceSaleForm extends TPage
         $price->setNumericMask(2, '.', ',', true);
         $discount = new TEntry('discount');
         $discount->setNumericMask(2, '.', ',', true);
+        $description = new TText('description');
         $quantity = new TEntry('quantity');
         $created_at = new TEntry('created_at');
         $updated_at = new TEntry('updated_at');
@@ -78,6 +79,7 @@ class AssistenceSaleForm extends TPage
         $row = $this->form->addFields( [new TLabel('QUANTIDADE'), $detail_amount], [new TLabel('PREÇO'), $detail_price] );
         $row->layout = ['col-sm-4', 'col-sm-8'];
         $this->form->addFields( [new TLabel('DESCONTO'), $detail_discount] );
+        $this->form->addFields( [new TLabel('OBS:'), $description] );
 
         $add = TButton::create('add', [$this, 'onDetailAdd'], 'Adicionar produto', 'fa:plus-circle green');
         $add->getAction()->setParameter('static','1');

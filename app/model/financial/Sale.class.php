@@ -20,6 +20,7 @@ class Sale extends TRecord
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('system_user_id');
         parent::addAttribute('sale_type_id');
+        parent::addAttribute('description');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');
     }

@@ -30,6 +30,7 @@ class RoostSaleForm extends TPage
         $sale_type_id = new TDBUniqueSearch('sale_type_id', 'app', 'SaleType', 'id', 'name', null, $criteria);
         $sale_type_id->setMinLength(0);
         $sale_type_id->addValidation('Forma de pagamento', new TRequiredValidator);
+        $description = new TText('description');
 
         // detail fields
         $detail_uniqid = new THidden('detail_uniqid');
@@ -69,6 +70,7 @@ class RoostSaleForm extends TPage
         $row = $this->form->addFields( [new TLabel('QUANTIDADE'), $detail_amount], [new TLabel('N° QUARTO'), $detail_description], [new TLabel('PREÇO'), $detail_price] );
         $row->layout = ['col-sm-4', 'col-sm-4', 'col-sm-4'];
         $this->form->addFields( [new TLabel('DESCONTO'), $detail_discount] );
+        $this->form->addFields( [new TLabel('OBS:'), $description] );
 
         $add = TButton::create('add', [$this, 'onDetailAdd'], 'Adicionar produto', 'fa:plus-circle green');
         $add->getAction()->setParameter('static','1');
