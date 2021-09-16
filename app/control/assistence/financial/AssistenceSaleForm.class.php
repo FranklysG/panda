@@ -38,6 +38,7 @@ class AssistenceSaleForm extends TPage
         $discount = new TEntry('discount');
         $discount->setNumericMask(2, '.', ',', true);
         $description = new TText('description');
+        $description->setSize('100%',60);
         $quantity = new TEntry('quantity');
         $created_at = new TEntry('created_at');
         $updated_at = new TEntry('updated_at');

@@ -31,6 +31,7 @@ class RoostSaleForm extends TPage
         $sale_type_id->setMinLength(0);
         $sale_type_id->addValidation('Forma de pagamento', new TRequiredValidator);
         $description = new TText('description');
+        $description->setSize('100%',60);
 
         // detail fields
         $detail_uniqid = new THidden('detail_uniqid');

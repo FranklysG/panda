@@ -29,6 +29,7 @@ class SystemDocumentForm extends TPage
         $id = new THidden('id');
         $title = new TEntry('title');
         $description = new TText('description');
+        $description->setSize('100%',60);
         $category_id = new TDBCombo('category_id', 'communication', 'SystemDocumentCategory', 'id', 'name');
         $submission_date = new TDate('submission_date');
         $archive_date = new TDate('archive_date');
