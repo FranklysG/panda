@@ -61,11 +61,12 @@ class AssistenceSaleList extends TPage
         $column_id = new TDataGridColumn('id', 'id', 'left');
         $column_system_user_id = new TDataGridColumn('system_user->name', 'RESPONSAVEL', 'left');
         $column_sale_type_id = new TDataGridColumn('sale_type_id', 'FORMA DE PAGAMENTO', 'left');
-        $column_product_id = new TDataGridColumn('inventory->product->name', 'PRODUTO', 'left');
+        $column_product = new TDataGridColumn('{product_name} {description}', 'PRODUTO', 'left');
         $column_quantity = new TDataGridColumn('amount', 'QUANTIDADE', 'left');
         $column_price = new TDataGridColumn('price', 'PREÇO', 'left');
         $column_discount = new TDataGridColumn('discount', 'DESCONTO', 'left');
         $column_total = new TDataGridColumn('= {amount} * ({price} - {discount})', 'TOTAL', 'left');
+        $column_time = new TDataGridColumn('created_at', 'HORARIO', 'left');
         $column_created_at = new TDataGridColumn('created_at', 'DATA', 'left');
         $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
         
@@ -93,21 +94,30 @@ class AssistenceSaleList extends TPage
             return Convert::toMonetario($value);
         });
         
+        $column_time->setTransformer(function($value){
+            $time = ' AM';
+            if(Convert::toDate($value, 'H') > 12){
+                $time = ' PM';
+            }
+            return Convert::toDate($value, 'H:i').$time;
+        }); 
+        
         $column_updated_at->setTransformer(function($value){
             return Convert::toDate($value, 'd / m / Y');
         });
-
+        
         $column_created_at->setTransformer(function($value){
             return Convert::toDate($value, 'd / m / Y');
         });
 
         // add the columns to the DataGrid
         // $this->datagrid->addColumn($column_id);
-        // $this->datagrid->addColumn($column_system_user_id);
+        $this->datagrid->addColumn($column_system_user_id);
+        $this->datagrid->addColumn($column_product);
         $this->datagrid->addColumn($column_price);
+        $this->datagrid->addColumn($column_time);
         $this->datagrid->addColumn($column_sale_type_id);
         $this->datagrid->addColumn($column_updated_at);
-        // $this->datagrid->addColumn($column_product_id);
         // $this->datagrid->addColumn($column_quantity);
         // $this->datagrid->addColumn($column_discount);
         // $this->datagrid->addColumn($column_created_at);
@@ -311,10 +321,14 @@ class AssistenceSaleList extends TPage
                 // iterate the collection of active records
                 foreach ($objects as $object)
                 {
+                    $object->product_name = null;
+                    $object->description = null;
                     $object->price = null;
-                    $sale_inventory = SaleInventory::where('sale_id', '=', $object->id)->where('system_user_id', 'IN', $ids)->load();
+                    $sale_inventory = SaleInventory::where('sale_id', '=', $object->id)->where('system_user_id', 'IN', $ids)->orderBy('id', 'desc')->load();
                     if(!empty($sale_inventory)){
                         foreach ($sale_inventory as $value) {
+                            $object->product_name = $value->inventory->product->name;
+                            $object->description = $value->description;
                             $object->price += ($value->amount)*(($value->price)-($value->discount)); 
                         }
                     }
