@@ -40,7 +40,7 @@ class AssistenceProductForm extends TPage
         $alias->addValidation('Apelido do produto', new TRequiredValidator);
         $image = new TFile('image', TSession::getValue('userid'));
         $image->setAllowedExtensions( ['png', 'jpg', 'jpeg'] );
-        $image->addValidation('Imagem do produto', new TRequiredValidator);
+        // $image->addValidation('Imagem do produto', new TRequiredValidator);
         $status = new TCombo('status');
         $status->addItems(
             [
