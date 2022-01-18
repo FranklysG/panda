@@ -232,7 +232,11 @@ class RestaurantOfficeList extends TPage
             TTransaction::open('app');
             
             // veridicando se existe algum no estoque
-            $verifyOfficeType = OfficeType::where('system_user_id', '=', TSession::getValue('userunitid'))->first();
+            $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+            foreach ($system_user_unit as $value) {
+                $ids[] = $value->system_user_id;
+            }
+            $verifyOfficeType = OfficeType::where('system_user_id', 'IN', $ids)->first();
             if(empty($verifyOfficeType)){
                 $pos_action = new TAction(['RestaurantOfficeTypeFormList', 'onReload']);
                 new TMessage('warning', 'Você precisa cadastrar alguns tipos de serviços antes antes', $pos_action);
@@ -277,7 +281,7 @@ class RestaurantOfficeList extends TPage
                 $criteria->add(TSession::getValue(__CLASS__.'_filter_office_type_id')); // add the session filter
             }
 
-            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
+            $criteria->add(new TFilter('system_user_id', 'IN', $ids));
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
             

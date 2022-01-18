@@ -27,8 +27,14 @@ class RoostSaleList extends TPage
 
         // create the form fields
         $id = new THidden('id');
+        TTransaction::open('app');
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
+        $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+        foreach ($system_user_unit as $value) {
+            $ids[] = $value->system_user_id;
+        }
+        $criteria->add(new TFilter('system_user_id', 'IN', $ids));
+        TTransaction::close();
         $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'product_id', 'product_name', null, $criteria);
         $product_id->setMinLength(1);
         $product_id->setMask('{product_name} : R$ {final_price} ');
@@ -247,9 +253,13 @@ class RoostSaleList extends TPage
             TTransaction::open('app');
             
             // veridicando se existe algum no estoque
-            $verifyProduct = Product::where('system_user_id', '=', TSession::getValue('userunitid'))->first();
-            $verifyInventory = Inventory::where('system_user_id', '=', TSession::getValue('userunitid'))->first();
-            $verifySale = SaleType::where('system_user_id', '=', TSession::getValue('userunitid'))->first();
+            $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+            foreach ($system_user_unit as $value) {
+                $ids[] = $value->system_user_id;
+            }
+            $verifyProduct = Product::where('system_user_id', 'IN', $ids)->first();
+            $verifyInventory = Inventory::where('system_user_id', 'IN', $ids)->first();
+            $verifySale = SaleType::where('system_user_id', 'IN', $ids)->first();
             if(empty($verifyProduct)){
                 $pos_action = new TAction(['RoostProductList', 'onReload']);
                 new TMessage('warning', 'Você precisa cadastrar alguns produtos e adicionalos ao estoque antes', $pos_action);

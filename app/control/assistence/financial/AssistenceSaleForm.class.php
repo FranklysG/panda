@@ -26,8 +26,14 @@ class AssistenceSaleForm extends TPage
         // master fields
         $id = new THidden('id');
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
+        TTransaction::open('app');
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
+        $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+        foreach ($system_user_unit as $value) {
+            $ids[] = $value->system_user_id;
+        }
+        $criteria->add(new TFilter('system_user_id', 'IN', $ids));
+        TTransaction::close();
         $sale_type_id = new TDBUniqueSearch('sale_type_id', 'app', 'SaleType', 'id', 'name', null, $criteria);
         $sale_type_id->setMinLength(0);
         $sale_type_id->addValidation('Forma de pagamento', new TRequiredValidator);
@@ -48,8 +54,14 @@ class AssistenceSaleForm extends TPage
         $detail_id = new THidden('detail_id');
         $detail_system_user_id = new TDBUniqueSearch('detail_system_user_id', 'app', 'SystemUser', 'id', 'name');
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
+        TTransaction::open('app');
+        $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+        foreach ($system_user_unit as $value) {
+            $ids[] = $value->system_user_id;
+        }
+        $criteria->add(new TFilter('system_user_id', 'IN', $ids));
         $criteria->add(new TFilter('amount_available', '>=', 0));
+        TTransaction::close();
         $detail_inventory_id = new TDBUniqueSearch('detail_inventory_id', 'app', 'ViewInventory', 'id', 'product_id',null, $criteria);
         $detail_inventory_id->setMinLength(0);
         $detail_inventory_id->setMask('{product_name}');

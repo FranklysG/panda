@@ -25,9 +25,15 @@ class RoostProductForm extends TPage
 
         // create the form fields
         $id = new THidden('id');
+        TTransaction::open('app');
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
+        $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+        foreach ($system_user_unit as $value) {
+            $ids[] = $value->system_user_id;
+        }
+        $criteria->add(new TFilter('system_user_id', 'IN', $ids));
+        TTransaction::close();
         $brand_id = new TDBUniqueSearch('brand_id', 'app', 'Brand', 'id', 'name', null, $criteria);
         $brand_id->setMinLength(0);
         $brand_id->addValidation('Marca', new TRequiredValidator);

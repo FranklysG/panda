@@ -26,8 +26,14 @@ class RoostInventoryForm extends TPage
 
         // create the form fields
         $id = new THidden('id');
+        TTransaction::open('app');
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
+        $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+            foreach ($system_user_unit as $value) {
+                $ids[] = $value->system_user_id;
+            }
+            $criteria->add(new TFilter('system_user_id', 'IN', $ids));
+        TTransaction::close();
         $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'name', null, $criteria);
         $product_id->setMinLength(1);
         $product_id->addValidation('Nome do produto', new TRequiredValidator);

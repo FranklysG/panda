@@ -29,9 +29,15 @@ class RoostProductList extends TPage
 
         // create the form fields
         $id = new THidden('id');
+        TTransaction::open('app');
         $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
+        $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+            foreach ($system_user_unit as $value) {
+                $ids[] = $value->system_user_id;
+            }
+            $criteria->add(new TFilter('system_user_id', 'IN', $ids));
+        TTransaction::close();
         $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'name', null, $criteria);
         $product_id->setMinLength(1);
         $product_id->setMask('(SKU: {sku}) {name} ');
@@ -247,7 +253,11 @@ class RoostProductList extends TPage
             
              
             // veridicando se existe algum no estoque
-            $verifyBrand = Brand::where('system_user_id', '=', TSession::getValue('userunitid'))->first();
+            $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+            foreach ($system_user_unit as $value) {
+                $ids[] = $value->system_user_id;
+            }
+            $verifyBrand = Brand::where('system_user_id', 'IN', $ids)->first();
             if(empty($verifyBrand)){
                 $pos_action = new TAction(['RoostBrandList', 'onReload']);
                 new TMessage('warning', 'Você precisa cadastrar algumas marcas antes', $pos_action);
@@ -294,10 +304,6 @@ class RoostProductList extends TPage
             }
 
             // citerios especificos
-            $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
-            foreach ($system_user_unit as $value) {
-                $ids[] = $value->system_user_id;
-            }
             $criteria->add(new TFilter('system_user_id','IN', $ids));
             
             // load the objects according to criteria
