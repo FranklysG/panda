@@ -247,8 +247,6 @@ class AssistenceProductList extends TPage
             
              
             // veridicando se existe algum no estoque
-            echo '<pre>';print_r(__METHOD__); echo '</pre>';
-            echo '<pre>';print_r(TSession::getValue('userunitid')); echo '</pre>'; exit;
             $verifyBrand = Brand::where('system_user_id', '=', TSession::getValue('userunitid'))->first();
             if(empty($verifyBrand)){
                 $pos_action = new TAction(['AssistenceBrandList', 'onReload']);
