@@ -66,8 +66,8 @@ class AssistenceProductForm extends TPage
                                 [ new TLabel('<br />Marca'), $brand_id ],
                                 [ new TLabel('<br />Nome'), $name ],
                                 [ new TLabel('<br />Apelido'), $alias ],
-                                // [ new TLabel('<br />Imagem do produto'), $image ],
-                                // [ new TLabel('<br />'), $this->frame ],
+                                [ new TLabel('<br />Imagem do produto'), $image ],
+                                [ new TLabel('<br />'), $this->frame ],
                                 [ new TLabel('<br />Status'), $status ]);
 
         $row->layout = ['col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12','col-sm-12'];
