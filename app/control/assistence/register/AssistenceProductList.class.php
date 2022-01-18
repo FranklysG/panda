@@ -246,12 +246,8 @@ class AssistenceProductList extends TPage
             TTransaction::open('app');
             
              
-            // veridicando se existe algum no estoque$system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
-            foreach ($system_user_unit as $value) {
-                $ids[] = $value->system_user_id;
-            }
-
-            $verifyBrand = Brand::where('system_user_id','IN', $ids)->first();
+            // veridicando se existe algum no estoque
+            $verifyBrand = Brand::where('system_user_id', '=', TSession::getValue('userunitid'))->first();
             if(empty($verifyBrand)){
                 $pos_action = new TAction(['AssistenceBrandList', 'onReload']);
                 new TMessage('warning', 'Você precisa cadastrar algumas marcas antes', $pos_action);
@@ -298,6 +294,10 @@ class AssistenceProductList extends TPage
             }
 
             // citerios especificos
+            $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+            foreach ($system_user_unit as $value) {
+                $ids[] = $value->system_user_id;
+            }
             $criteria->add(new TFilter('system_user_id','IN', $ids));
             
             // load the objects according to criteria
