@@ -38,7 +38,6 @@ class AssistenceSaleForm extends TPage
         $sale_type_id->setMinLength(0);
         $sale_type_id->addValidation('Forma de pagamento', new TRequiredValidator);
         $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'system_user_id');
-        $product_id->setChangeAction(new TAction([$this, 'onComplete']));
         $product_id->addValidation('Nome do produto', new TRequiredValidator);
         $price = new TEntry('price');
         $price->setNumericMask(2, '.', ',', true);
