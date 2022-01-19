@@ -38,6 +38,7 @@ class AssistenceSaleForm extends TPage
         $sale_type_id->setMinLength(0);
         $sale_type_id->addValidation('Forma de pagamento', new TRequiredValidator);
         $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'system_user_id');
+        $product_id->setChangeAction(new TAction([$this, 'onComplete']));
         $product_id->addValidation('Nome do produto', new TRequiredValidator);
         $price = new TEntry('price');
         $price->setNumericMask(2, '.', ',', true);
@@ -65,8 +66,7 @@ class AssistenceSaleForm extends TPage
         $detail_inventory_id = new TDBUniqueSearch('detail_inventory_id', 'app', 'ViewInventory', 'id', 'product_id',null, $criteria);
         $detail_inventory_id->setMinLength(0);
         $detail_inventory_id->setMask('{product_name}');
-        $change_action = new TAction(array($this, 'onChangeAction'));
-        $detail_inventory_id->setChangeAction($change_action);
+        $detail_inventory_id->setChangeAction(new TAction([$this, 'onChangeAction']));
         $detail_amount = new TEntry('detail_amount');
         $detail_amount->setValue('1');
         $detail_discount = new TEntry('detail_discount');
@@ -78,10 +78,12 @@ class AssistenceSaleForm extends TPage
         $detail_created_at = new TEntry('detail_created_at');
         $detail_updated_at = new TEntry('detail_updated_at');
         
+        $this->frame = new TElement('div');
+        $this->frame->id = 'image_frame';
+        $this->frame->style = 'width:100px; border:none; padding:4px;';
+
         // master fields
         $this->form->addFields( [$id] );
-        $this->form->addFields( [new TLabel('TIPO DE PAGAMENTO') ,$sale_type_id] );
-       
         
         // detail fields
         // $this->form->addContent( ['<h4>PRODUTOS</h4><hr>'] );
@@ -89,6 +91,8 @@ class AssistenceSaleForm extends TPage
         $this->form->addFields( [$detail_id] );
         
         $this->form->addFields( [new TLabel('PRODUTO'), $detail_inventory_id] );
+        $this->form->addFields( [new TLabel('<br />'), $this->frame] );
+        $this->form->addFields( [new TLabel('TIPO DE PAGAMENTO') ,$sale_type_id] );
         $row = $this->form->addFields( [new TLabel('QUANTIDADE'), $detail_amount], [new TLabel('PREÇO'), $detail_price] );
         $row->layout = ['col-sm-4', 'col-sm-8'];
         $this->form->addFields( [new TLabel('DESCONTO'), $detail_discount] );
@@ -186,11 +190,12 @@ class AssistenceSaleForm extends TPage
             $object = Inventory::where('id', '=', $inventory_id)->first();
             $obj = new stdClass;
             $obj->detail_price = $object->final_price;
-            if (isset($object->product_image)) {
-                $userid = TSession::getValue('userid');
-                $path = "tmp/{$userid}/{$object->product_image}";
+            if (isset($object->product_id)) {
+                $userunitid = TSession::getValue('userunitid');
+                $image = Product::find($object->product_id)->image;
+                $path = "tmp/{$userunitid}/{$image}";
                 TScript::create("$('#image_frame').html('')");
-                TScript::create("$('#image_frame').append(\"<img style='max-height: 300px' src='$path'>\");");
+                TScript::create("$('#image_frame').append(\"<img style='max-height: 300px;' src='$path'>\");");
             }
             
             TForm::sendData('form_Sale', $obj);

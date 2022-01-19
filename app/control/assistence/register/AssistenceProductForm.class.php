@@ -162,13 +162,13 @@ class AssistenceProductForm extends TPage
         {
             if (isset($param['key']))
             {
-                $userid = TSession::getValue('userid');
+                $userunitid = TSession::getValue('userunitid');
                 $key = $param['key'];  // get the parameter $key
                 TTransaction::open('app'); // open a transaction
                
                 $object = new Product($key); // instantiates the Active Record
                 if (isset($object->image)) {
-                    $image = new TImage("tmp/{$userid}/{$object->image}");
+                    $image = new TImage("tmp/{$userunitid}/{$object->image}");
                     $image->style = 'width: 100%';
                     $this->frame->add($image);
                 }
@@ -189,9 +189,9 @@ class AssistenceProductForm extends TPage
 
     public static function onComplete($param)
     {
-        $userid = TSession::getValue('userid');
+        $userunitid = TSession::getValue('userunitid');
         // refresh photo_frame
-        $path = PATH."/tmp/{$userid}/{$param['image']}";
+        $path = PATH."/tmp/{$userunitid}/{$param['image']}";
         TScript::create("$('#image_frame').html('')");
         TScript::create("$('#image_frame').append(\"<img style='width:100%' src='$path'>\");");
     }
