@@ -26,14 +26,14 @@ class AdiantiUploaderService
         $folder = 'tmp/';
 
         // cria pasta se não existir e da permissão
-        if(!empty($param['userid'])){
-            $folder .= $param['userid'].'/'.date('Y').'/'.date('m').'/';
+        if(!empty($param['userunitid'])){
+            $folder .= $param['userunitid'].'/'.date('Y').'/'.date('m').'/';
             if (!file_exists($folder))
             {
                 mkdir($folder, 0777, true);
-                chmod('tmp/'.$param['userid'], 0777);
-                chmod('tmp/'.$param['userid'].'/'.date('Y'), 0777);
-                chmod('tmp/'.$param['userid'].'/'.date('Y').'/'.date('m'), 0777);
+                chmod('tmp/'.$param['userunitid'], 0777);
+                chmod('tmp/'.$param['userunitid'].'/'.date('Y'), 0777);
+                chmod('tmp/'.$param['userunitid'].'/'.date('Y').'/'.date('m'), 0777);
             }
         }
 
@@ -51,7 +51,7 @@ class AdiantiUploaderService
                 $file['name'] = $this->guid().'.'.$ext;
                 
                 $path = $folder.$file['name'];
-
+                
                 // check blocked file extension, not using finfo because file.php.2 problem
                 foreach ($block_extensions as $block_extension)
                 {
@@ -96,7 +96,7 @@ class AdiantiUploaderService
                     {
                         $response['type'] = 'success';
                         $response['fileName'] = $file['name'];
-                        chmod('tmp/'.$param['userid'].'/'.date('Y').'/'.date('m').'/'.$file['name'], 0777);
+                        chmod('tmp/'.$param['userunitid'].'/'.date('Y').'/'.date('m').'/'.$file['name'], 0777);
                     }
                     else
                     {

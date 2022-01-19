@@ -27,7 +27,7 @@ use Exception;
 class TFile extends TField implements AdiantiWidgetInterface
 {
     protected $id;
-    protected $userid;
+    protected $userunitid;
     protected $height;
     protected $completeAction;
     protected $errorAction;
@@ -47,15 +47,15 @@ class TFile extends TField implements AdiantiWidgetInterface
     /**
      * Constructor method
      * @param $name input name
-     * @param $userid vai definir a pasta que o arquivo vai ser salvo
+     * @param $userunitid vai definir a pasta que o arquivo vai ser salvo
      */
-    public function __construct($name, $userid = null)
+    public function __construct($name, $userunitid = null)
     {
         parent::__construct($name);
         $this->id = $this->name . '_' . mt_rand(1000000000, 1999999999);
         $this->uploaderClass = 'AdiantiUploaderService';
         $this->fileHandling = FALSE;
-        $this->userid = $userid;
+        $this->userunitid = $userunitid;
         $ini = AdiantiApplicationConfig::get();
         $this->seed = APPLICATION_NAME . ( !empty($ini['general']['seed']) ? $ini['general']['seed'] : 's8dkld83kf73kf094' );
         $this->imageGallery = false;
@@ -292,7 +292,7 @@ class TFile extends TField implements AdiantiWidgetInterface
         else
         {
             $hash = md5("{$this->seed}{$this->name}".base64_encode(serialize($this->extensions)));
-            $action = "engine.php?class={$this->uploaderClass}&userid={$this->userid}&name={$this->name}&hash={$hash}&extensions=".base64_encode(serialize($this->extensions));
+            $action = "engine.php?class={$this->uploaderClass}&userunitid={$this->userunitid}&name={$this->name}&hash={$hash}&extensions=".base64_encode(serialize($this->extensions));
         }
         
         if ($router = AdiantiCoreApplication::getRouter())
