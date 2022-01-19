@@ -42,13 +42,17 @@ class AssistenceSaleList extends TPage
         $created_at = new TDate('created_at');
         $updated_at = new TDate('updated_at');
 
+        $this->frame = new TElement('div');
+        $this->frame->id = 'image_frame';
+
         // add the fields
         $this->form->addFields( [ $id ] );
         $row = $this->form->addFields( [ new TLabel('Buscar produto'), $product_id ],
                                 [ new TLabel('Criado em'), $created_at ],
                                 [ new TLabel('até'), $updated_at ] );
         $row->layout = ['col-sm-4','col-sm-4','col-sm-4'];
-
+        $this->form->addFields( [$this->frame] );
+        
         // keep the form filled during navigation with session data
         $this->form->setData( TSession::getValue(__CLASS__ . '_filter_data') );
         
@@ -61,7 +65,7 @@ class AssistenceSaleList extends TPage
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
         $this->datagrid->style = 'width: 100%';
         $this->datagrid->datatable = 'true';
-        $this->datagrid->enablePopover('Produto', "<img style='max-height: 300px' src='tmp/".TSession::getvalue('userid')."/{product->image}'>");       
+        $this->datagrid->enablePopover('Produto', "<img style='max-height: 300px' src='tmp/".TSession::getvalue('userunitid')."/{product_image}'>");       
 
         // creates the datagrid columns
         $column_id = new TDataGridColumn('id', 'id', 'left');
@@ -338,6 +342,7 @@ class AssistenceSaleList extends TPage
                     if(!empty($sale_inventory)){
                         foreach ($sale_inventory as $value) {
                             $object->product_name = $value->inventory->product->name;
+                            $object->product_image = $value->inventory->product->image;
                             $object->description = $value->description;
                             $object->price += ($value->amount)*(($value->price)-($value->discount)); 
                         }

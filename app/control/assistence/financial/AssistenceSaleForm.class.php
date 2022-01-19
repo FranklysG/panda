@@ -77,10 +77,6 @@ class AssistenceSaleForm extends TPage
         $detail_created_at = new TEntry('detail_created_at');
         $detail_updated_at = new TEntry('detail_updated_at');
         
-        $this->frame = new TElement('div');
-        $this->frame->id = 'image_frame';
-        $this->frame->style = 'width:100px; border:none; padding:4px;';
-
         // master fields
         $this->form->addFields( [$id] );
         
@@ -90,7 +86,6 @@ class AssistenceSaleForm extends TPage
         $this->form->addFields( [$detail_id] );
         
         $this->form->addFields( [new TLabel('PRODUTO'), $detail_inventory_id] );
-        $this->form->addFields( [new TLabel('<br />'), $this->frame] );
         $this->form->addFields( [new TLabel('TIPO DE PAGAMENTO') ,$sale_type_id] );
         $row = $this->form->addFields( [new TLabel('QUANTIDADE'), $detail_amount], [new TLabel('PREÇO'), $detail_price] );
         $row->layout = ['col-sm-4', 'col-sm-8'];
@@ -195,6 +190,13 @@ class AssistenceSaleForm extends TPage
                 $path = "tmp/{$userunitid}/{$image}";
                 TScript::create("$('#image_frame').html('')");
                 TScript::create("$('#image_frame').append(\"<img style='max-height: 300px;' src='$path'>\");");
+                TScript::create("$('#image_frame').css({'position': 'fixed',
+                                                        'top': '7rem',
+                                                        'left': '17rem',
+                                                        'z-index': '1',
+                                                        'background':' #fff',
+                                                        'padding': '10px',
+                                                        'border': '1px solid #c2c2c2'})");
             }
             
             TForm::sendData('form_Sale', $obj);
