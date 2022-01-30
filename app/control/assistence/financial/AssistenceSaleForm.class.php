@@ -99,7 +99,8 @@ class AssistenceSaleForm extends TPage
         $this->detail_list->setId('sale_inventory_list');
         $this->detail_list->generateHiddenFields();
         $this->detail_list->style = "width:100%;margin-bottom: 10px";
-        
+        $this->detail_list->enablePopover('Produto', "<img style='max-height: 300px' src='tmp/".TSession::getvalue('userunitid')."/{product_image}'>");       
+
         $detail_grid_id = new TDataGridColumn('id', 'Id', 'center');
         $detail_grid_uniqid = new TDataGridColumn('uniqid', 'Uniqid', 'center');
         $detail_grid_system_id = new TDataGridColumn('system_user_id', 'System User Id', 'left');
@@ -335,6 +336,7 @@ class AssistenceSaleForm extends TPage
                 {
                     $item->uniqid = uniqid();
                     $item->product_name = $item->inventory->product->name;
+                    $item->product_image = $item->inventory->product->image;
                     $row = $this->detail_list->addItem( $item );
                     $row->id = $item->uniqid;
                 }
