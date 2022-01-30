@@ -171,6 +171,7 @@ class AssistenceSaleForm extends TPage
     public static function onClose($param)
     {
         TScript::create("Template.closeRightPanel()");
+        TScript::create("$('#image_frame').css({'display': 'none'})");
     }
 
     /**

@@ -36,6 +36,7 @@ class AssistenceInventoryForm extends TPage
         TTransaction::close();
         $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'name', null, $criteria);
         $product_id->setMinLength(1);
+        $product_id->setChangeAction(new TAction([$this, 'onChangeAction']));
         $product_id->addValidation('Nome do produto', new TRequiredValidator);
         $amount_available = new TEntry('amount_available');
         $amount_available->addValidation('Quantidade', new TRequiredValidator);
@@ -93,10 +94,40 @@ class AssistenceInventoryForm extends TPage
         parent::add($container);
     }
 
+     /**
+     * Action to be executed when the user changes the combo_change field
+     */
+    public static function onChangeAction($param)
+    {
+        try {
+            TTransaction::open('app');
+            if (isset($param['product_id'])) {
+                $id = $param['product_id'];
+                $userunitid = TSession::getValue('userunitid');
+                $image = Product::find($id)->image;
+                $path = "tmp/{$userunitid}/{$image}";
+                TScript::create("$('#image_frame').html('')");
+                TScript::create("$('#image_frame').append(\"<img style='max-height: 300px;' src='$path'>\");");
+                TScript::create("$('#image_frame').css({'position': 'fixed',
+                                                        'top': '7rem',
+                                                        'left': '17rem',
+                                                        'z-index': '1',
+                                                        'background':' #fff',
+                                                        'padding': '10px',
+                                                        'border': '1px solid #c2c2c2'})");
+            }
+            TTransaction::close();
+        }catch (Exception $e) // in case of exception
+        {
+            new TMessage('error', $e->getMessage()); // shows the exception error message
+            TTransaction::rollback(); // undo all pending operations
+        }
+    }
 
     public static function onClose($param)
     {
         TScript::create("Template.closeRightPanel()");
+        TScript::create("$('#image_frame').css({'display': 'none'})");
     }
 
     /**

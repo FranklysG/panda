@@ -78,6 +78,9 @@ class AssistenceInventoryList extends TPage
             'indicator2' => $indicator2
         ] );
         
+        $this->frame = new TElement('div');
+        $this->frame->id = 'image_frame';
+
         // add the fields
         $this->form->addFields( [ $id ]);
         $this->form->addFields( 
@@ -86,7 +89,7 @@ class AssistenceInventoryList extends TPage
                                 [ new TLabel('Criado em'), $created_at ] ,
                                 [ new TLabel('até'), $updated_at ] 
                             );
-
+        $this->form->addFields( [$this->frame] );
                             
         // keep the form filled during navigation with session data
         $this->form->setData( TSession::getValue(__CLASS__ . '_filter_data') );
@@ -100,7 +103,7 @@ class AssistenceInventoryList extends TPage
         $this->datagrid = new BootstrapDatagridWrapper(new TDataGrid);
         $this->datagrid->style = 'width: 100%';
         $this->datagrid->datatable = 'true';
-        // $this->datagrid->enablePopover('Popover', 'Hi <b> {name} </b>');
+        $this->datagrid->enablePopover('Produto', "<img style='max-height: 300px' src='tmp/".TSession::getvalue('userunitid')."/{product_image}'>"); 
         
 
         // creates the datagrid columns

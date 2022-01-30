@@ -2,3 +2,5 @@ task.md
 app/config 
 vendor/
 tmp/
+
+/database
