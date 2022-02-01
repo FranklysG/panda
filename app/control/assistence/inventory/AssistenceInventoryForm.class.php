@@ -104,7 +104,7 @@ class AssistenceInventoryForm extends TPage
             if (isset($param['product_id'])) {
                 $id = $param['product_id'];
                 $userunitid = TSession::getValue('userunitid');
-                $image = Product::find($id)->image;
+                $image = Product::find($id)->image ?? '../product_default_image.png';
                 $path = "tmp/{$userunitid}/{$image}";
                 TScript::create("$('#image_frame').html('')");
                 TScript::create("$('#image_frame').append(\"<img style='max-height: 300px;' src='$path'>\");");

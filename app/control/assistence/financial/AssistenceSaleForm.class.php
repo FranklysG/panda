@@ -188,7 +188,7 @@ class AssistenceSaleForm extends TPage
             $obj->detail_price = $object->final_price;
             if (isset($object->product_id)) {
                 $userunitid = TSession::getValue('userunitid');
-                $image = Product::find($object->product_id)->image;
+                $image = Product::find($object->product_id)->image ?? '../product_default_image.png';
                 $path = "tmp/{$userunitid}/{$image}";
                 TScript::create("$('#image_frame').html('')");
                 TScript::create("$('#image_frame').append(\"<img style='max-height: 300px;' src='$path'>\");");
@@ -237,6 +237,7 @@ class AssistenceSaleForm extends TPage
             $grid_data['id'] = $data->detail_id;
             $grid_data['inventory_id'] = $data->detail_inventory_id;
             $grid_data['product_name'] = Inventory::find($data->detail_inventory_id)->product->name;
+            $grid_data['product_image'] = Inventory::find($data->detail_inventory_id)->product->image;
             $grid_data['amount'] = $data->detail_amount;
             $grid_data['price'] = (!empty($data->detail_price))? $data->detail_price : Inventory::find($data->detail_inventory_id)->price;
             $grid_data['discount'] = $data->detail_discount;
@@ -336,7 +337,7 @@ class AssistenceSaleForm extends TPage
                 {
                     $item->uniqid = uniqid();
                     $item->product_name = $item->inventory->product->name;
-                    $item->product_image = $item->inventory->product->image;
+                    $item->product_image = $item->inventory->product->image ?? '../product_default_image.png';
                     $row = $this->detail_list->addItem( $item );
                     $row->id = $item->uniqid;
                 }
