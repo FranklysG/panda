@@ -40,7 +40,7 @@ class AssistenceProductList extends TPage
         TTransaction::close();
         $product_id = new TDBUniqueSearch('product_id', 'app', 'Product', 'id', 'name', null, $criteria);
         $product_id->setMinLength(1);
-        $product_id->setMask('(SKU: {sku}) {name} ');
+        $product_id->setMask('{name}');
         $sku = new TEntry('sku');
         $name = new TEntry('name');
         $alias = new TEntry('alias');
@@ -204,8 +204,12 @@ class AssistenceProductList extends TPage
         if (isset($data->id) AND ($data->id)) {
             $filter = new TFilter('id', '=', $data->id); // create the filter
             TSession::setValue(__CLASS__.'_filter_id',   $filter); // stores the filter in the session
+        } 
+        
+        if (isset($data->product_id) AND ($data->product_id)) {
+            $filter = new TFilter('id', '=', $data->product_id); // create the filter
+            TSession::setValue(__CLASS__.'_filter_id',   $filter); // stores the filter in the session
         }
-
 
         if (isset($data->sku) AND ($data->sku)) {
             $filter = new TFilter('sku', 'like', "%{$data->sku}%"); // create the filter
