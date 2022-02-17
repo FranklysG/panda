@@ -261,7 +261,12 @@ class AssistenceExesList extends TPage
                 $criteria->add(TSession::getValue(__CLASS__.'_filter_updated_at')); // add the session filter
             }
 
-            $criteria->add(new TFilter('system_user_id', '=', TSession::getValue('userunitid')));
+            $criteria = new TCriteria;
+            $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+            foreach ($system_user_unit as $value) {
+                $ids[] = $value->system_user_id;
+            }
+            $criteria->add(new TFilter('system_user_id', 'IN', $ids));
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
             
