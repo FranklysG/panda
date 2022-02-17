@@ -57,7 +57,7 @@ class AssistenceOfficeList extends TPage
         $indicator = new THtmlRenderer('app/resources/info-box.html');
         $indicator1 = new THtmlRenderer('app/resources/info-box.html');
         $indicator->enableSection('main', ['title' => 'Serviços Mês',    'icon' => 'cart-arrow-down',       'background' => 'orange', 'value' => Convert::toMonetario($office_price)]);
-        $indicator1->enableSection('main', ['title' => 'Comissão',    'icon' => 'cart-arrow-down',       'background' => 'green', 'value' => Convert::toMonetario($office_price*0.2)]);
+        $indicator1->enableSection('main', ['title' => 'Comissão',    'icon' => 'cart-arrow-down',       'background' => 'green', 'value' => Convert::toMonetario($office_price*0.04)]);
         $html->enableSection('main', [
             'indicator' => $indicator,
             'indicator1' => $indicator1,
