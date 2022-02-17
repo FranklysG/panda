@@ -138,6 +138,10 @@
         <action>AssistenceDashboard</action>
         <icon>fas:tachometer-alt fa-fw</icon>
       </menuitem>
+      <menuitem label="Perfil">
+        <action>AssistenceDashboardProfile</action>
+        <icon>fas:users fa-fw</icon>
+      </menuitem>
       <menuitem label="Dashboard">
         <action>RestaurantDashboard</action>
         <icon>fas:tachometer-alt fa-fw</icon>

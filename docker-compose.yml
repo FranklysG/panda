@@ -6,19 +6,17 @@ services:
       - ./database:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=toor
-      - MYSQL_DATABASE=mydb
+      - MYSQL_DATABASE=panda
     ports:
       - 3306:3306
-
   php:
     build: .
     ports:
-      - "80:80"
+      - "8080:8080"
       - "443:443"
     volumes:
       - ./:/var/www/html
     links:
       - db
-
 volumes:
   mysql-datavolume:

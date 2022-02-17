@@ -97,7 +97,7 @@ class AssistenceExesForm extends TPage
             $this->form->setData($data); // fill form data
             TTransaction::close(); // close the transaction
             
-            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction('AssistenceExesList', 'onReload'));
+            new TMessage('info', AdiantiCoreTranslator::translate('Record saved'), new TAction(['AssistenceExesList', 'onReload']));
         }
         catch (Exception $e) // in case of exception
         {

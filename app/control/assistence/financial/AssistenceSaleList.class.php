@@ -37,7 +37,7 @@ class AssistenceSaleList extends TPage
         TTransaction::close();
         $product_id = new TDBUniqueSearch('product_id', 'app', 'ViewInventory', 'product_id', 'product_name', null, $criteria);
         $product_id->setMinLength(1);
-        $product_id->setMask('{product_name} : R$ {final_price} ');
+        $product_id->setMask('{product_name}');
         $discount = new TEntry('discount');
         $created_at = new TDate('created_at');
         $updated_at = new TDate('updated_at');

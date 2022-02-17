@@ -37,14 +37,17 @@ class AssistenceOfficeList extends TPage
         $updated_at = new TDate('updated_at');
 
         TTransaction::open('app');
-        // mapa_reservas semanais
         $criteria = new TCriteria;
-        $criteria->add(new TFilter('id', '=', TSession::getValue('userid')));
+        $system_user_unit = SystemUserUnit::where('system_unit_id','=', TSession::getValue('userunitid'))->load();
+        foreach ($system_user_unit as $value) {
+            $ids[] = $value->system_user_id;
+        }
+        $criteria->add(new TFilter('system_user_id', 'IN', $ids));
         $criteria->add(new TFilter('date(created_at)', 'BETWEEN', date('Y-m-01'), date('Y-m-d')));
         $repositoy = new TRepository('Office');
         $objects = $repositoy->load($criteria);
-        TTransaction::open('permission');
-
+        TTransaction::close();
+        
         $office_price = null;
         foreach ($objects as $key => $object) {
             $office_price += $object->price;

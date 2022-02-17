@@ -62,9 +62,8 @@ class AssistenceSaleForm extends TPage
         $criteria->add(new TFilter('system_user_id', 'IN', $ids));
         $criteria->add(new TFilter('amount_available', '>=', 0));
         TTransaction::close();
-        $detail_inventory_id = new TDBUniqueSearch('detail_inventory_id', 'app', 'ViewInventory', 'id', 'product_id',null, $criteria);
-        $detail_inventory_id->setMinLength(0);
-        $detail_inventory_id->setMask('{product_name}');
+        $detail_inventory_id = new TDBUniqueSearch('detail_inventory_id', 'app', 'ViewInventory', 'product_id', 'product_name',null, $criteria);
+        $detail_inventory_id->setMinLength(1);
         $detail_inventory_id->setChangeAction(new TAction([$this, 'onChangeAction']));
         $detail_amount = new TEntry('detail_amount');
         $detail_amount->setValue('1');
@@ -183,7 +182,7 @@ class AssistenceSaleForm extends TPage
         try {
             TTransaction::open('app');
             $inventory_id = $param['detail_inventory_id'];
-            $object = Inventory::where('id', '=', $inventory_id)->first();
+            $object = ViewInventory::where('product_id', '=', $inventory_id)->first();
             $obj = new stdClass;
             $obj->detail_price = $object->final_price;
             if (isset($object->product_id)) {
@@ -229,23 +228,22 @@ class AssistenceSaleForm extends TPage
         {
             $this->form->validate();
             $data = $this->form->getData();
-            
+
             $uniqid = !empty($data->detail_uniqid) ? $data->detail_uniqid : uniqid();
             TTransaction::open('app');
+            $product = ViewInventory::where('product_id', '=', $data->detail_inventory_id)->first();
             $grid_data = [];
             $grid_data['uniqid'] = $uniqid;
             $grid_data['id'] = $data->detail_id;
-            $grid_data['inventory_id'] = $data->detail_inventory_id;
-            $grid_data['product_name'] = Inventory::find($data->detail_inventory_id)->product->name;
-            $grid_data['product_image'] = Inventory::find($data->detail_inventory_id)->product->image;
+            $grid_data['inventory_id'] = $product->id;
+            $grid_data['product_name'] = $product->product_name;
+            $grid_data['product_image'] = $product->product_image;
             $grid_data['amount'] = $data->detail_amount;
-            $grid_data['price'] = (!empty($data->detail_price))? $data->detail_price : Inventory::find($data->detail_inventory_id)->price;
+            $grid_data['price'] = (!empty($data->detail_price))? $data->detail_price : $product->price;
             $grid_data['discount'] = $data->detail_discount;
-            // $grid_data['final_price'] = $data->detail_final_price;
-            // $grid_data['created_at'] = $data->detail_created_at;
-            // $grid_data['updated_at'] = $data->detail_updated_at;
+
             TTransaction::close();
-            // insert row dynamically
+            
             $row = $this->detail_list->addItem( (object) $grid_data );
             $row->id = $uniqid;
             
@@ -254,13 +252,9 @@ class AssistenceSaleForm extends TPage
             // clear detail form fields
             $data->detail_uniqid = '';
             $data->detail_id = '';
-            // $data->detail_system_user_id = '';
             $data->detail_inventory_id = '';
-            // $data->detail_amount = '';
             $data->detail_price = '';
-            // $data->detail_discount = '';
-            // $data->detail_created_at = '';
-            // $data->detail_updated_at = '';
+            $data->detail_discount = '';
             
             // send data, do not fire change/exit events
             TForm::sendData( 'form_Sale', $data, false, false );
