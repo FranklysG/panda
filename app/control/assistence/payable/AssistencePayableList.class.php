@@ -28,7 +28,6 @@ class AssistencePayableList extends TPage
 
         // create the form fields
         $id = new THidden('id');
-        $system_user_id = new TDBUniqueSearch('system_user_id', 'app', 'SystemUser', 'id', 'name');
         $name = new TEntry('name');
         $price = new TEntry('price');
         $status = new TCombo('status');
@@ -74,7 +73,7 @@ class AssistencePayableList extends TPage
         $column_name = new TDataGridColumn('description', 'DESCRIÇÃO', 'left');
         $column_price = new TDataGridColumn('price', 'PREÇO', 'left');
         $column_status = new TDataGridColumn('status', 'STATUS', 'left');
-        $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
+        $column_created_at = new TDataGridColumn('created_at', 'ULTIMA ATUALIZAÇÃO', 'right');
         $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
 
         $column_status->setTransformer(function($value){
@@ -96,29 +95,29 @@ class AssistencePayableList extends TPage
 
             $div = new TElement('span');
             $div->class = "btn btn-{$class}";
-             $div->style = "text-shadow:none; font-size:12px; font-weight:bold;width:100%;";
+            $div->style = "text-shadow:none; font-size:12px; font-weight:bold;width:100%;";
             $div->add($label);
             return $div;
         });
 
-        $column_updated_at->setTransformer(function($value){
+        $column_created_at->setTransformer(function($value){
             return Convert::toDate($value, 'd / m / Y');
         });
 
         // add the columns to the DataGrid
         // $this->datagrid->addColumn($column_id);
-        // $this->datagrid->addColumn($column_system_user_id);
+        $this->datagrid->addColumn($column_system_user_id);
         $this->datagrid->addColumn($column_name);
         $this->datagrid->addColumn($column_price);
         $this->datagrid->addColumn($column_status);
-        // $this->datagrid->addColumn($column_created_at);
-        $this->datagrid->addColumn($column_updated_at);
+        $this->datagrid->addColumn($column_created_at);
+        // $this->datagrid->addColumn($column_updated_at);
 
 
         $action1 = new TDataGridAction(['AssistencePayableForm', 'onEdit'], ['id'=>'{id}']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
-        $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
+        // $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
         $this->datagrid->addAction($action2 ,_t('Delete'), 'far:trash-alt red');
         
         // create the datagrid model

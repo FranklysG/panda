@@ -10,7 +10,7 @@ class Payable extends TRecord
     const IDPOLICY =  'max'; // {max, serial}
     
     
-    private $system_user;
+    private $payable;
 
     /**
      * Constructor method
@@ -19,8 +19,9 @@ class Payable extends TRecord
     {
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('system_user_id');
-        parent::addAttribute('name');
+        parent::addAttribute('description');
         parent::addAttribute('price');
+        parent::addAttribute('status');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');
     }
@@ -28,7 +29,7 @@ class Payable extends TRecord
     
     /**
      * Method set_system_user
-     * Sample of usage: $payable->system_user = $object;
+     * Sample of usage: $sale_inventory->system_user = $object;
      * @param $object Instance of SystemUser
      */
     public function set_system_user(SystemUser $object)
@@ -39,7 +40,7 @@ class Payable extends TRecord
     
     /**
      * Method get_system_user
-     * Sample of usage: $payable->system_user->attribute;
+     * Sample of usage: $sale_inventory->system_user->attribute;
      * @returns SystemUser instance
      */
     public function get_system_user()

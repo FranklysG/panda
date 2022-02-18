@@ -66,30 +66,30 @@ class AssistenceExesList extends TPage
         $column_system_user_id = new TDataGridColumn('system_user->name', 'RESPONSAVEL', 'left');
         $column_description = new TDataGridColumn('description', 'DESCRIÇÃO', 'left');
         $column_price = new TDataGridColumn('price', 'PREÇO', 'left');
-        $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
+        $column_created_at = new TDataGridColumn('created_at', 'ULTIMA ATUALIZAÇÃO', 'right');
         $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA ATUALIZAÇÃO', 'right');
 
         $column_price->setTransformer(function($value){
             return Convert::toMonetario($value);
         });
 
-        $column_updated_at->setTransformer(function($value){
+        $column_created_at->setTransformer(function($value){
             return Convert::toDate($value, 'd / m / Y');
         });
 
         // add the columns to the DataGrid
         // $this->datagrid->addColumn($column_id);
-        // $this->datagrid->addColumn($column_system_user_id);
+        $this->datagrid->addColumn($column_system_user_id);
         $this->datagrid->addColumn($column_description);
         $this->datagrid->addColumn($column_price);
-        // $this->datagrid->addColumn($column_created_at);
-        $this->datagrid->addColumn($column_updated_at);
+        $this->datagrid->addColumn($column_created_at);
+        // $this->datagrid->addColumn($column_updated_at);
 
 
         $action1 = new TDataGridAction(['AssistenceExesForm', 'onEdit'], ['id'=>'{id}']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
-        $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
+        // $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
         $this->datagrid->addAction($action2 ,_t('Delete'), 'far:trash-alt red');
         
         // create the datagrid model

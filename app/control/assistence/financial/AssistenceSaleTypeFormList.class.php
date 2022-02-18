@@ -72,7 +72,7 @@ class AssistenceSaleTypeFormList extends TPage
         $column_system_user_id = new TDataGridColumn('system_user->name', 'RESPONSAVEL', 'left');
         $column_name = new TDataGridColumn('name', 'NOME', 'left');
         $column_status = new TDataGridColumn('status', 'STATUS', 'left');
-        $column_created_at = new TDataGridColumn('created_at', 'Created At', 'left');
+        $column_created_at = new TDataGridColumn('created_at', 'ULTIMA MODIFICAÇÃO', 'right');
         $column_updated_at = new TDataGridColumn('updated_at', 'ULTIMA MODIFICAÇÃO', 'right');
 
         $column_status->setTransformer(function($value){
@@ -99,18 +99,18 @@ class AssistenceSaleTypeFormList extends TPage
             return $div;
         });
 
-        $column_updated_at->setTransformer(function($value){
+        $column_created_at->setTransformer(function($value){
             return Convert::toDate($value, 'd / m / Y');
         });
 
 
         // add the columns to the DataGrid
         // $this->datagrid->addColumn($column_id);
-        // $this->datagrid->addColumn($column_system_user_id);
+        $this->datagrid->addColumn($column_system_user_id);
         $this->datagrid->addColumn($column_name);
         $this->datagrid->addColumn($column_status);
-        // $this->datagrid->addColumn($column_created_at);
-        $this->datagrid->addColumn($column_updated_at);
+        $this->datagrid->addColumn($column_created_at);
+        // $this->datagrid->addColumn($column_updated_at);
 
         
         // creates two datagrid actions

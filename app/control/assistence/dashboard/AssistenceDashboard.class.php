@@ -71,8 +71,8 @@ class AssistenceDashboard extends TPage
                 $indicator6->enableSection('main', ['title' => 'Despesas Ano', 'icon' => 'handshake',       'background' => 'red',  'value' => Convert::toMonetario($exes_cash_year)]);
                 $indicator7->enableSection('main', ['title' => 'Contas a pagar Mês', 'icon' => 'handshake',       'background' => 'red',  'value' => Convert::toMonetario($payable_cash_month)]);
                 $indicator8->enableSection('main', ['title' => 'Contas a pagar Ano', 'icon' => 'handshake',       'background' => 'red',  'value' => Convert::toMonetario($payable_cash_year)]);
-                $indicator9->enableSection('main', ['title' => 'Lucro esperado Mês', 'icon' => 'wallet',       'background' => 'green',  'value' => Convert::toMonetario(($sale_cash_month)-($payable_cash_month)-($exes_cash_month))]);
-                $indicator10->enableSection('main', ['title' => 'Lucro esperado Ano', 'icon' => 'cash-register',       'background' => 'green',  'value' => Convert::toMonetario(($sale_cash_year)-($payable_cash_year)-($exes_cash_year))]);
+                $indicator9->enableSection('main', ['title' => 'Lucro esperado Mês', 'icon' => 'wallet',       'background' => 'green',  'value' => Convert::toMonetario(($sale_cash_month)-(($payable_cash_month)+($exes_cash_month)))]);
+                $indicator10->enableSection('main', ['title' => 'Lucro esperado Ano', 'icon' => 'cash-register',       'background' => 'green',  'value' => Convert::toMonetario(($sale_cash_year)-(($payable_cash_year)+($exes_cash_year)))]);
             }
             
             $chart = new THtmlRenderer('app/resources/google_column_chart.html');

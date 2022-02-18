@@ -36,12 +36,13 @@ class AssistenceDashboardProfile extends TPage
 
             $sale_today = 0;
             $sale_cash_month = 0;
+            $comission = (4/100);
             foreach ($objects as $object) {
                 $sale_today += $object->sale_today;
                 $sale_cash_month += $object->sale_cash_month;
                 $indicator1->enableSection('main', ['title' => 'Vendas hoje',    'icon' => 'cart-arrow-down',       'background' => 'orange', 'value' => $sale_today]);
                 $indicator2->enableSection('main', ['title' => 'Faturamento Mês',   'icon' => 'money-bill-wave',      'background' => 'blue',   'value' => Convert::toMonetario($sale_cash_month)]);
-                $indicator3->enableSection('main', ['title' => 'Comissão',   'icon' => 'handshake',      'background' => 'purple',   'value' => Convert::toMonetario($sale_cash_month*0.04)]);
+                $indicator3->enableSection('main', ['title' => 'Comissão de '.round($comission*100, 0).'%',   'icon' => 'handshake',      'background' => 'purple',   'value' => Convert::toMonetario($sale_cash_month*$comission)]);
             }
             
             $chart = new THtmlRenderer('app/resources/google_column_chart.html');

@@ -47,7 +47,8 @@ class AssistenceOfficeList extends TPage
         $repositoy = new TRepository('Office');
         $objects = $repositoy->load($criteria);
         TTransaction::close();
-        
+
+        $comission = ((100/3)/100);
         $office_price = null;
         foreach ($objects as $key => $object) {
             $office_price += $object->price;
@@ -57,7 +58,7 @@ class AssistenceOfficeList extends TPage
         $indicator = new THtmlRenderer('app/resources/info-box.html');
         $indicator1 = new THtmlRenderer('app/resources/info-box.html');
         $indicator->enableSection('main', ['title' => 'Serviços Mês',    'icon' => 'cart-arrow-down',       'background' => 'orange', 'value' => Convert::toMonetario($office_price)]);
-        $indicator1->enableSection('main', ['title' => 'Comissão',    'icon' => 'cart-arrow-down',       'background' => 'green', 'value' => Convert::toMonetario($office_price*0.04)]);
+        $indicator1->enableSection('main', ['title' => 'Comissão de '.round($comission*100, 0).'%',    'icon' => 'cart-arrow-down',       'background' => 'green', 'value' => Convert::toMonetario($office_price*$comission)]);
         $html->enableSection('main', [
             'indicator' => $indicator,
             'indicator1' => $indicator1,
@@ -117,7 +118,7 @@ class AssistenceOfficeList extends TPage
         $action1 = new TDataGridAction(['AssistenceOfficeForm', 'onEdit'], ['id'=>'{id}']);
         $action2 = new TDataGridAction([$this, 'onDelete'], ['id'=>'{id}']);
         
-        $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
+        // $this->datagrid->addAction($action1, _t('Edit'),   'far:edit blue');
         $this->datagrid->addAction($action2 ,_t('Delete'), 'far:trash-alt red');
         
         // create the datagrid model
