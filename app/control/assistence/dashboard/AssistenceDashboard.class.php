@@ -83,7 +83,7 @@ class AssistenceDashboard extends TPage
             }
             
             $chart = new THtmlRenderer('app/resources/google_column_chart.html');
-            $data[] = [ 'Mês', 'Vendas'];
+            $data[] = [ 'Mês', 'Vendas', 'Serviços'];
         
             // média de ocupação mensal
             $meses = AppUtil::calendario();
@@ -95,22 +95,52 @@ class AssistenceDashboard extends TPage
             $objects = $repositoy->load($criteria, false);
 
             $data_count = [];
+
             if($objects){
                 foreach ($objects as $key => $value) {
-                    if(empty($data_count[date_parse($value->created_at)['day'].'/'.date_parse($value->created_at)['month']])){
-                        $data_count[date_parse($value->created_at)['day'].'/'.date_parse($value->created_at)['month']] = 1 ;
+                    if(empty($data_count['sale'][date_parse($value->created_at)['day'].'/'.date_parse($value->created_at)['month']])){
+                        $data_count['sale'][date_parse($value->created_at)['day'].'/'.date_parse($value->created_at)['month']] = 1 ;
                     }else{
-                        $data_count[date_parse($value->created_at)['day'].'/'.date_parse($value->created_at)['month']] += 1 ;
+                        $data_count['sale'][date_parse($value->created_at)['day'].'/'.date_parse($value->created_at)['month']] += 1 ;
                     }
                 }
             }
             
-            foreach($data_count as $key => $value){
-                $day = explode('/',$key)[0];
-                $month = explode('/',$key)[1];
-                $data[] = [ $day.'/'.Convert::rMes($month),   $value];
-            }
+            $criteria = new TCriteria;
+            $criteria->add(new TFilter('system_user_id', 'IN', $ids));
+            $criteria->add(new TFilter('date(created_at)', 'BETWEEN', date('Y-m-d', strtotime('-1 week')), date('Y-m-d')));
             
+            $repositoy = new TRepository('Office');
+            $objects = $repositoy->load($criteria, false);
+            
+            if($objects){
+                foreach ($objects as $key => $value) {
+                    if(empty($data_count['office'][date_parse($value->created_at)['day'].'/'.date_parse($value->created_at)['month']])){
+                        $data_count['office'][date_parse($value->created_at)['day'].'/'.date_parse($value->created_at)['month']] = 1 ;
+                    }else{
+                        $data_count['office'][date_parse($value->created_at)['day'].'/'.date_parse($value->created_at)['month']] += 1 ;
+                    }
+                }
+            }
+
+            foreach($data_count as $key => $value){
+                foreach($value as $key => $item){
+                    $day = explode('/',$key)[0];
+                    $month = explode('/',$key)[1];
+
+                    if(empty($data_count['sale'][$day.'/'.$month])){
+                        $data_count['sale'][$day.'/'.$month] = 0;
+                    }
+
+                    if(empty($data_count['office'][$day.'/'.$month])){
+                        $data_count['office'][$day.'/'.$month] = 0;
+                    }
+
+                    $data[] = [ $day.'/'.Convert::rMes($month),  $data_count['sale'][$day.'/'.$month] , $data_count['office'][$day.'/'.$month]];
+                }
+                break;
+            }
+
             // replace the main section variables
             $chart->enableSection('main', array('data'   => json_encode($data),
                                     'width'  => '100%',
