@@ -57,11 +57,17 @@ class AssistenceOfficeList extends TPage
         $html = new THtmlRenderer('app/resources/system_office_dashboard.html');
         $indicator = new THtmlRenderer('app/resources/info-box.html');
         $indicator1 = new THtmlRenderer('app/resources/info-box.html');
+        $indicator2 = new THtmlRenderer('app/resources/info-box.html');
+        $indicator3 = new THtmlRenderer('app/resources/info-box.html');
         $indicator->enableSection('main', ['title' => 'Serviços Mês',    'icon' => 'cart-arrow-down',       'background' => 'orange', 'value' => Convert::toMonetario($office_price)]);
-        $indicator1->enableSection('main', ['title' => 'Comissão de '.round($comission*100, 0).'%',    'icon' => 'cart-arrow-down',       'background' => 'green', 'value' => Convert::toMonetario($office_price*$comission)]);
+        $indicator1->enableSection('main', ['title' => 'Comissão Loja '.round($comission*100, 0).'%',    'icon' => 'cart-arrow-down',  'background' => 'blue', 'value' => Convert::toMonetario($office_price*$comission)]);
+        $indicator2->enableSection('main', ['title' => 'Comissão Socio '.round($comission*100, 0).'%',    'icon' => 'cart-arrow-down',  'background' => 'purple', 'value' => Convert::toMonetario($office_price*$comission)]);
+        $indicator3->enableSection('main', ['title' => 'Comissão Funcionáiro '.round($comission*100, 0).'%',    'icon' => 'cart-arrow-down', 'background' => 'green', 'value' => Convert::toMonetario($office_price*$comission)]);
         $html->enableSection('main', [
             'indicator' => $indicator,
             'indicator1' => $indicator1,
+            'indicator2' => $indicator2,
+            'indicator3' => $indicator3,
         ] );
         
         // add the fields
