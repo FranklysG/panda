@@ -62,7 +62,7 @@ class AssistenceOfficeList extends TPage
         $indicator->enableSection('main', ['title' => 'Serviços Mês',    'icon' => 'cart-arrow-down',       'background' => 'orange', 'value' => Convert::toMonetario($office_price)]);
         $indicator1->enableSection('main', ['title' => 'Comissão Loja '.round($comission*100, 0).'%',    'icon' => 'cart-arrow-down',  'background' => 'blue', 'value' => Convert::toMonetario($office_price*$comission)]);
         $indicator2->enableSection('main', ['title' => 'Comissão Socio '.round($comission*100, 0).'%',    'icon' => 'cart-arrow-down',  'background' => 'purple', 'value' => Convert::toMonetario($office_price*$comission)]);
-        $indicator3->enableSection('main', ['title' => 'Comissão Funcionáiro '.round($comission*100, 0).'%',    'icon' => 'cart-arrow-down', 'background' => 'green', 'value' => Convert::toMonetario($office_price*$comission)]);
+        $indicator3->enableSection('main', ['title' => 'Comissão Técnico '.round($comission*100, 0).'%',    'icon' => 'cart-arrow-down', 'background' => 'green', 'value' => Convert::toMonetario($office_price*$comission)]);
         $html->enableSection('main', [
             'indicator' => $indicator,
             'indicator1' => $indicator1,
